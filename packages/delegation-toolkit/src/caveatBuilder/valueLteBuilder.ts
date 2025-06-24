@@ -1,4 +1,4 @@
-import { concat, toHex } from 'viem';
+import { createValueLteTerms } from '@metamask/delegation-core';
 
 import type { Caveat, DeleGatorEnvironment } from '../types';
 
@@ -10,17 +10,13 @@ export const valueLte = 'valueLte';
  * @param environment - The DeleGator environment.
  * @param maxValue - The maximum value allowed for the transaction.
  * @returns The Caveat.
- * @throws Error if the maxValue is not a positive number.
+ * @throws Error if any of the parameters are invalid.
  */
 export const valueLteBuilder = (
   environment: DeleGatorEnvironment,
   maxValue: bigint,
 ): Caveat => {
-  if (maxValue < 0n) {
-    throw new Error('Invalid maxValue: must be greater than zero');
-  }
-
-  const terms = concat([toHex(maxValue, { size: 32 })]);
+  const terms = createValueLteTerms({ maxValue });
 
   const {
     caveatEnforcers: { ValueLteEnforcer },

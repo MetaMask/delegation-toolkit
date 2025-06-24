@@ -1,7 +1,7 @@
-import { type Address, isAddress, encodePacked } from 'viem';
+import { createERC20StreamingTerms } from '@metamask/delegation-core';
+import { type Address } from 'viem';
 
 import type { DeleGatorEnvironment, Caveat } from '../types';
-import { TIMESTAMP_UPPER_BOUND_SECONDS } from './shared';
 
 export const erc20Streaming = 'erc20Streaming';
 
@@ -30,46 +30,13 @@ export const erc20StreamingBuilder = (
   amountPerSecond: bigint,
   startTime: number,
 ): Caveat => {
-  if (!isAddress(tokenAddress, { strict: false })) {
-    throw new Error('Invalid tokenAddress: must be a valid address');
-  }
-
-  if (initialAmount < 0n) {
-    throw new Error('Invalid initialAmount: must be greater than zero');
-  }
-
-  if (maxAmount <= 0n) {
-    throw new Error('Invalid maxAmount: must be a positive number');
-  }
-
-  if (maxAmount < initialAmount) {
-    throw new Error('Invalid maxAmount: must be greater than initialAmount');
-  }
-
-  if (amountPerSecond <= 0n) {
-    throw new Error('Invalid amountPerSecond: must be a positive number');
-  }
-
-  if (startTime <= 0) {
-    throw new Error('Invalid startTime: must be a positive number');
-  }
-
-  if (startTime > TIMESTAMP_UPPER_BOUND_SECONDS) {
-    throw new Error(
-      'Invalid startTime: must be less than or equal to 253402300799',
-    );
-  }
-
-  const terms = encodePacked(
-    ['address', 'uint256', 'uint256', 'uint256', 'uint256'],
-    [
-      tokenAddress,
-      initialAmount,
-      maxAmount,
-      amountPerSecond,
-      BigInt(startTime),
-    ],
-  );
+  const terms = createERC20StreamingTerms({
+    tokenAddress,
+    initialAmount,
+    maxAmount,
+    amountPerSecond,
+    startTime,
+  });
 
   const {
     caveatEnforcers: { ERC20StreamingEnforcer },
