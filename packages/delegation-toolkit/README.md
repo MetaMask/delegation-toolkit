@@ -1,6 +1,6 @@
 # MetaMask Delegation Toolkit
 
-The MetaMask Delegation Toolkit is built on top of [viem](https://viem.sh) which enables developers to create smart accounts and frictionless new experiences based on granular permission sharing and trust.
+The MetaMask Delegation Toolkit is a [Viem](https://viem.sh)-based collection of tools for integrating MetaMask embedded smart account and create frictionless new experiences based on granular permission sharing and trust.
 
 ## Features
 ---
@@ -15,23 +15,21 @@ The MetaMask Delegation Toolkit is built on top of [viem](https://viem.sh) which
 ---
 
 Yarn:
-```
+```sh
 yarn add @metamask/delegation-toolkit
 ```
 
 Npm:
-```
+```sh
 npm install @metamask/delegation-toolkit
 ```
 
-## Usage 
+## Oveview 
 ---
-
-### Create a Smart Account
 
 ```ts
 import { createPublicClient, http } from "viem";
-import { lineaSepolia as chain } from "viem/chains";
+import { sepolia as chain } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import {
   Implementation,
@@ -43,93 +41,17 @@ const publicClient = createPublicClient({
   transport: http(),
 });
 
-const delegatorAccount = privateKeyToAccount("0x...");
+const account = privateKeyToAccount("0x...");
 
-const delegatorSmartAccount = await toMetaMaskSmartAccount({
+const smartAccount = await toMetaMaskSmartAccount({
   client: publicClient,
   implementation: Implementation.Hybrid,
-  deployParams: [delegatorAccount.address, [], [], []],
+  deployParams: [account.address, [], [], []],
   deploySalt: "0x",
-  signatory: { account: delegatorAccount },
+  signatory: { account },
 });
 ```
 
-### Create a Delegation
-
-```ts
-import { createDelegation } from "@metamask/delegation-toolkit";
-
-// Delegate account can either be a Smart Account or an EOA.
-const delegateAccount = "0x1ac.."
-
-const delegation = createDelegation({
-  to: delegateAccount,
-  from: delegatorSmartAccount.address,
-  // Empty caveats array - we recommend adding appropriate restrictions.
-  caveats: createCaveatBuilder({
-   environment,
-   allowEmptyCaveats: true,
-  }),
-});
-
-// Sign the delegation using delegator's smart account.
-const signature = await delegatorSmartAccount.signDelegation({
-  delegation
-});
-
-const signedDelegation = {
-  ...delegation,
-  signature,
-};
-```
-
-### Redeem a Delegation
-
-```ts
-import { createBundlerClient } from "viem/account-abstraction";
-import {
-  createExecution,
-  DelegationFramework,
-  SINGLE_DEFAULT_MODE,
-} from "@metamask/delegation-toolkit";
-import { zeroAddress } from "viem";
-
-const bundlerClient = createBundlerClient({
-  client: publicClient,
-  transport: http("https://your-bundler-rpc.com"),
-});
-
-// Use the signed delegation
-const delegations = [ signedDelegation ];
-
-// Sends 0 ETH to zero address(0x0000000000000000000000000000000000000000)
-const executions = [{
-  target: zeroAddress,  
-  value: 0n, 
-  callData: "0x"
-}];
-
-const redeemDelegationCalldata = DelegationFramework.encode.redeemDelegations({
-  delegations: [ delegations ],
-  modes: [ SINGLE_DEFAULT_MODE ],
-  executions: [ executions ]
-});
-
-// Assuming delegate account is a smart account. To learn how to redeem a 
-// delegation with EOA, please head to the documentation.
-// https://docs.gator.metamask.io/how-to/redeem-delegation#redeem-with-an-eoa
-const userOperationHash = await bundlerClient.sendUserOperation({
-  account: delegateSmartAccount,
-  calls: [
-    {
-      to: delegateSmartAccount.address,
-      data: redeemDelegationCalldata
-    }
-  ],
-  maxFeePerGas: 1n,
-  maxPriorityFeePerGas: 1n,
-});
-```
 
 ## Documentation
 ---
@@ -138,4 +60,11 @@ const userOperationHash = await bundlerClient.sendUserOperation({
 ## Contributing
 ---
 
-If you're interested in contributing, please see our full [contributing guide](/CONTRIBUTING.md).
+If you are interested in contributing, please [see the contribution guide](/CONTRIBUTING.md#Contributing).
+
+
+## Useful Links
+- [Delegation Toolkit Quick start](https://docs.metamask.io/delegation-toolkit/get-started/quickstart/)
+- [Delegation Toolkit CLI Quick start](https://docs.metamask.io/delegation-toolkit/development/get-started/cli-quickstart/)
+- [Scaffold ETH extension](https://github.com/metamask/gator-extension)
+- [API reference](https://docs.metamask.io/delegation-toolkit/development/reference/)
