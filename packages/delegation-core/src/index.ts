@@ -1,4 +1,4 @@
-export type { Hex } from './types';
+export type { Hex, Delegation, Caveat } from './types';
 
 export {
   createValueLteTerms,
@@ -8,3 +8,9 @@ export {
   createNativeTokenStreamingTerms,
   createERC20StreamingTerms,
 } from './caveats';
+
+export {
+  encodeDelegations,
+  decodeDelegations,
+  ROOT_AUTHORITY,
+} from './delegation';

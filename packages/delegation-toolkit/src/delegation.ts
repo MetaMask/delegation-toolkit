@@ -1,4 +1,8 @@
 import {
+  encodeDelegations as encodeDelegationsCore,
+  decodeDelegations as decodeDelegationsCore,
+} from '@metamask/delegation-core';
+import {
   encodeAbiParameters,
   parseAbiParameters,
   keccak256,
@@ -6,7 +10,6 @@ import {
   toBytes,
   toHex,
   getAddress,
-  decodeAbiParameters,
 } from 'viem';
 import type {
   TypedData,
@@ -98,19 +101,10 @@ export type DelegationStruct = Omit<Delegation, 'salt'> & {
  * @param delegations - The delegations to encode.
  * @returns The encoded delegations.
  */
-export const encodeDelegations = (delegations: Delegation[]) => {
+export const encodeDelegations = (delegations: Delegation[]): Hex => {
   const delegationStructs = delegations.map(toDelegationStruct);
 
-  return encodeAbiParameters(
-    [
-      {
-        components: DELEGATION_ABI_TYPE_COMPONENTS,
-        name: 'delegations',
-        type: 'tuple[]',
-      },
-    ],
-    [delegationStructs],
-  );
+  return encodeDelegationsCore(delegationStructs);
 };
 
 /**
@@ -132,14 +126,8 @@ export const encodePermissionContexts = (delegations: Delegation[][]) => {
  * @returns An array of decoded delegations.
  */
 export const decodeDelegations = (encoded: Hex): Delegation[] => {
-  // decodeAbiParameters returns an array of decoded parameters. Since we're decoding a single parameter (an array
-  // of delegations), we destructure the first element into delegationStructs.
-  const [delegationStructs] = decodeAbiParameters(
-    [{ type: 'tuple[]', components: DELEGATION_ABI_TYPE_COMPONENTS }],
-    encoded,
-  ) as [DelegationStruct[]];
-
-  return delegationStructs.map(toDelegation);
+  // decodeDelegationsCore returns DelegationStruct, so we need to map it back to Delegation
+  return decodeDelegationsCore(encoded).map(toDelegation);
 };
 
 /**
