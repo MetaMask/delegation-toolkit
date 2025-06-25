@@ -24,7 +24,7 @@ Npm:
 npm install @metamask/delegation-toolkit
 ```
 
-## Oveview 
+## Overview 
 ---
 
 ```ts
