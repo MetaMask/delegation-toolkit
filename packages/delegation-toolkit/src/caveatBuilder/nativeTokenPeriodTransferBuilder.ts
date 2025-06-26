@@ -1,4 +1,4 @@
-import { concat, toHex } from 'viem';
+import { createNativeTokenPeriodTransferTerms } from '@metamask/delegation-core';
 
 import type { Caveat, DeleGatorEnvironment } from '../types';
 
@@ -15,7 +15,7 @@ export const nativeTokenPeriodTransfer = 'nativeTokenPeriodTransfer';
  * @param periodDuration - The duration of each period in seconds.
  * @param startDate - The timestamp when the first period begins.
  * @returns The Caveat.
- * @throws Error if any of the numeric parameters are invalid.
+ * @throws Error if any of the parameters are invalid.
  */
 export const nativeTokenPeriodTransferBuilder = (
   environment: DeleGatorEnvironment,
@@ -23,23 +23,11 @@ export const nativeTokenPeriodTransferBuilder = (
   periodDuration: number,
   startDate: number,
 ): Caveat => {
-  if (periodAmount <= 0n) {
-    throw new Error('Invalid periodAmount: must be a positive number');
-  }
-
-  if (periodDuration <= 0) {
-    throw new Error('Invalid periodDuration: must be a positive number');
-  }
-
-  if (startDate <= 0) {
-    throw new Error('Invalid startDate: must be a positive number');
-  }
-
-  const terms = concat([
-    toHex(periodAmount, { size: 32 }),
-    toHex(periodDuration, { size: 32 }),
-    toHex(startDate, { size: 32 }),
-  ]);
+  const terms = createNativeTokenPeriodTransferTerms({
+    periodAmount,
+    periodDuration,
+    startDate,
+  });
 
   const {
     caveatEnforcers: { NativeTokenPeriodTransferEnforcer },

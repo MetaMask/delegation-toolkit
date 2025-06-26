@@ -1,3 +1,5 @@
+import { createExactCalldataTerms } from '@metamask/delegation-core';
+
 import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const exactCalldata = 'exactCalldata';
@@ -10,15 +12,13 @@ export const exactCalldata = 'exactCalldata';
  * @param environment - The DeleGator environment.
  * @param callData - The expected calldata to match against.
  * @returns The Caveat.
- * @throws Error if the callData is invalid.
+ * @throws Error if any of the parameters are invalid.
  */
 export const exactCalldataBuilder = (
   environment: DeleGatorEnvironment,
   callData: `0x${string}`,
 ): Caveat => {
-  if (!callData.startsWith('0x')) {
-    throw new Error('Invalid callData: must be a hex string starting with 0x');
-  }
+  const terms = createExactCalldataTerms({ callData });
 
   const {
     caveatEnforcers: { ExactCalldataEnforcer },
@@ -30,7 +30,7 @@ export const exactCalldataBuilder = (
 
   return {
     enforcer: ExactCalldataEnforcer,
-    terms: callData,
+    terms,
     args: '0x',
   };
 };

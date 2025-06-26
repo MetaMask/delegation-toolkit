@@ -19,12 +19,12 @@ describe('valueLteEnforcerBuilder()', () => {
   describe('validation', () => {
     it('should fail with negative max value', () => {
       expect(() => buildWithMaxValue(-1n)).to.throw(
-        'Invalid maxValue: must be greater than zero',
+        'Invalid maxValue: must be greater than or equal to zero',
       );
     });
 
     it('should allow positive max value', () => {
-      expect(() => buildWithMaxValue(1n)).to.not.throw();
+      expect(() => buildWithMaxValue(0n)).to.not.throw();
       expect(() => buildWithMaxValue(1000000000000000000n)).to.not.throw();
     });
   });

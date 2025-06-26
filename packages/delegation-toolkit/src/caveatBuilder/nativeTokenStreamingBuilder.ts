@@ -1,7 +1,6 @@
-import { encodePacked } from 'viem';
+import { createNativeTokenStreamingTerms } from '@metamask/delegation-core';
 
 import type { DeleGatorEnvironment, Caveat } from '../types';
-import { TIMESTAMP_UPPER_BOUND_SECONDS } from './shared';
 
 export const nativeTokenStreaming = 'nativeTokenStreaming';
 
@@ -14,11 +13,7 @@ export const nativeTokenStreaming = 'nativeTokenStreaming';
  * @param amountPerSecond - The rate at which the allowance increases per second.
  * @param startTime - The timestamp from which the allowance streaming begins.
  * @returns The Caveat.
- * @throws Error if the initial amount is not greater than zero.
- * @throws Error if the max amount is not a positive number.
- * @throws Error if the max amount is not greater than initial amount.
- * @throws Error if the amount per second is not a positive number.
- * @throws Error if the start time is not a positive number or exceeds the upper bound.
+ * @throws Error if any of the parameters are invalid.
  */
 export const nativeTokenStreamingBuilder = (
   environment: DeleGatorEnvironment,
@@ -27,36 +22,12 @@ export const nativeTokenStreamingBuilder = (
   amountPerSecond: bigint,
   startTime: number,
 ): Caveat => {
-  if (initialAmount < 0n) {
-    throw new Error('Invalid initialAmount: must be greater than zero');
-  }
-
-  if (maxAmount <= 0n) {
-    throw new Error('Invalid maxAmount: must be a positive number');
-  }
-
-  if (maxAmount < initialAmount) {
-    throw new Error('Invalid maxAmount: must be greater than initialAmount');
-  }
-
-  if (amountPerSecond <= 0n) {
-    throw new Error('Invalid amountPerSecond: must be a positive number');
-  }
-
-  if (startTime <= 0) {
-    throw new Error('Invalid startTime: must be a positive number');
-  }
-
-  if (startTime > TIMESTAMP_UPPER_BOUND_SECONDS) {
-    throw new Error(
-      'Invalid startTime: must be less than or equal to 253402300799',
-    );
-  }
-
-  const terms = encodePacked(
-    ['uint256', 'uint256', 'uint256', 'uint256'],
-    [initialAmount, maxAmount, amountPerSecond, BigInt(startTime)],
-  );
+  const terms = createNativeTokenStreamingTerms({
+    initialAmount,
+    maxAmount,
+    amountPerSecond,
+    startTime,
+  });
 
   const {
     caveatEnforcers: { NativeTokenStreamingEnforcer },
