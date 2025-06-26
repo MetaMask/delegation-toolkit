@@ -4,8 +4,10 @@ import {
   encodeDelegations,
   decodeDelegations,
   ROOT_AUTHORITY,
+  getDelegationHash,
 } from '../src/delegation';
-import type { Delegation, Caveat } from '../src/types';
+import type { DelegationStruct, CaveatStruct } from '../src/types';
+import { bytesToHex } from '@metamask/utils';
 
 describe('delegation', () => {
   describe('ROOT_AUTHORITY', () => {
@@ -26,7 +28,7 @@ describe('delegation', () => {
     });
 
     it('encodes single delegation with no caveats', () => {
-      const delegation: Delegation = {
+      const delegation: DelegationStruct = {
         delegate: '0x1234567890123456789012345678901234567890',
         delegator: '0xABCDEF0123456789012345678901234567890123',
         authority: ROOT_AUTHORITY,
@@ -43,13 +45,13 @@ describe('delegation', () => {
     });
 
     it('encodes single delegation with caveats', () => {
-      const caveat: Caveat = {
+      const caveat: CaveatStruct = {
         enforcer: '0x9999999999999999999999999999999999999999',
         terms: '0xdeadbeef',
         args: '0xcafebabe',
       };
 
-      const delegation: Delegation = {
+      const delegation: DelegationStruct = {
         delegate: '0x1234567890123456789012345678901234567890',
         delegator: '0xABCDEF0123456789012345678901234567890123',
         authority: ROOT_AUTHORITY,
@@ -66,7 +68,7 @@ describe('delegation', () => {
     });
 
     it('encodes multiple delegations', () => {
-      const delegation1: Delegation = {
+      const delegation1: DelegationStruct = {
         delegate: '0x1111111111111111111111111111111111111111',
         delegator: '0x2222222222222222222222222222222222222222',
         authority: ROOT_AUTHORITY,
@@ -75,7 +77,7 @@ describe('delegation', () => {
         signature: '0xaaa',
       };
 
-      const delegation2: Delegation = {
+      const delegation2: DelegationStruct = {
         delegate: '0x3333333333333333333333333333333333333333',
         delegator: '0x4444444444444444444444444444444444444444',
         authority:
@@ -93,19 +95,19 @@ describe('delegation', () => {
     });
 
     it('encodes delegation with multiple caveats', () => {
-      const caveat1: Caveat = {
+      const caveat1: CaveatStruct = {
         enforcer: '0x1111111111111111111111111111111111111111',
         terms: '0xdeadbeef',
         args: '0xcafebabe',
       };
 
-      const caveat2: Caveat = {
+      const caveat2: CaveatStruct = {
         enforcer: '0x2222222222222222222222222222222222222222',
         terms: '0xfeedface',
         args: '0xdeadc0de',
       };
 
-      const delegation: Delegation = {
+      const delegation: DelegationStruct = {
         delegate: '0x1234567890123456789012345678901234567890',
         delegator: '0xABCDEF0123456789012345678901234567890123',
         authority: ROOT_AUTHORITY,
@@ -124,7 +126,7 @@ describe('delegation', () => {
     it('handles delegation with custom authority', () => {
       const customAuthority =
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd';
-      const delegation: Delegation = {
+      const delegation: DelegationStruct = {
         delegate: '0x1234567890123456789012345678901234567890',
         delegator: '0xABCDEF0123456789012345678901234567890123',
         authority: customAuthority,
@@ -141,7 +143,7 @@ describe('delegation', () => {
     });
 
     it('handles delegation with large salt', () => {
-      const delegation: Delegation = {
+      const delegation: DelegationStruct = {
         delegate: '0x1234567890123456789012345678901234567890',
         delegator: '0xABCDEF0123456789012345678901234567890123',
         authority: ROOT_AUTHORITY,
@@ -158,7 +160,7 @@ describe('delegation', () => {
     });
 
     it('handles delegation with empty signature', () => {
-      const delegation: Delegation = {
+      const delegation: DelegationStruct = {
         delegate: '0x1234567890123456789012345678901234567890',
         delegator: '0xABCDEF0123456789012345678901234567890123',
         authority: ROOT_AUTHORITY,
@@ -175,7 +177,7 @@ describe('delegation', () => {
     });
 
     it('produces consistent output for same input', () => {
-      const delegation: Delegation = {
+      const delegation: DelegationStruct = {
         delegate: '0x1234567890123456789012345678901234567890',
         delegator: '0xABCDEF0123456789012345678901234567890123',
         authority: ROOT_AUTHORITY,
@@ -191,7 +193,7 @@ describe('delegation', () => {
     });
 
     it('handles mixed case addresses correctly', () => {
-      const delegation: Delegation = {
+      const delegation: DelegationStruct = {
         delegate: '0x1234567890123456789012345678901234567890', // test case handling
         delegator: '0xAbCdEf0123456789012345678901234567890123', // mixed case
         authority: ROOT_AUTHORITY,
@@ -214,13 +216,13 @@ describe('delegation', () => {
     });
 
     it('encodes as specified return type', () => {
-      const caveat: Caveat = {
+      const caveat: CaveatStruct = {
         enforcer: '0x9999999999999999999999999999999999999999',
         terms: '0xdeadbeef',
         args: '0xcafebabe',
       };
 
-      const delegation: Delegation = {
+      const delegation: DelegationStruct = {
         delegate: '0x1234567890123456789012345678901234567890',
         delegator: '0xABCDEF0123456789012345678901234567890123',
         authority: ROOT_AUTHORITY,
@@ -260,7 +262,7 @@ describe('delegation', () => {
     });
 
     it('decodes single delegation with no caveats', () => {
-      const delegation: Delegation = {
+      const delegation: DelegationStruct = {
         delegate: '0x1234567890123456789012345678901234567890',
         delegator: '0xABCDEF0123456789012345678901234567890123',
         authority: ROOT_AUTHORITY,
@@ -448,7 +450,7 @@ describe('delegation', () => {
 
   describe('encodeDelegations and decodeDelegations, round trip', () => {
     it('encode then decode produces same result', () => {
-      const originalDelegation: Delegation = {
+      const originalDelegation: DelegationStruct = {
         delegate: '0x1234567890123456789012345678901234567890',
         delegator: '0xABCDEF0123456789012345678901234567890123',
         authority: ROOT_AUTHORITY,
@@ -485,7 +487,7 @@ describe('delegation', () => {
     });
 
     it('encode then decode produces same result when encoding as bytes', () => {
-      const originalDelegation: Delegation = {
+      const originalDelegation: DelegationStruct = {
         delegate: '0x1234567890123456789012345678901234567890',
         delegator: '0xABCDEF0123456789012345678901234567890123',
         authority: ROOT_AUTHORITY,
@@ -522,7 +524,7 @@ describe('delegation', () => {
     });
 
     it('handles multiple complex delegations', () => {
-      const originalDelegations: Delegation[] = [
+      const originalDelegations: DelegationStruct[] = [
         {
           delegate: '0x1111111111111111111111111111111111111111',
           delegator: '0x2222222222222222222222222222222222222222',
@@ -563,6 +565,566 @@ describe('delegation', () => {
       const decoded = decodeDelegations(encoded);
 
       expect(decoded).toStrictEqual(originalDelegations);
+    });
+  });
+
+  describe('getDelegationHash', () => {
+    it('returns the correct hash for a delegation with no caveats', () => {
+      const delegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority:
+          '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+        caveats: [],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const hash = getDelegationHash(delegation);
+
+      expect(hash).toMatchInlineSnapshot(
+        `"0xcaeb6434dc99e3098ff79ea1458a16b3e53b380f211cdb359628f9302d9c41b4"`,
+      );
+    });
+
+    it('returns the correct hash for a delegation with a single caveat', () => {
+      const delegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [
+          {
+            enforcer: '0x9999999999999999999999999999999999999999',
+            terms: '0xdeadbeef',
+            args: '0xcafebabe',
+          },
+        ],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const hash = getDelegationHash(delegation);
+
+      expect(hash).toMatchInlineSnapshot(
+        `"0x5905e2625ef1d9549cb95647cd03544cf3ce2ba11d14be226dc5c3c203112296"`,
+      );
+    });
+
+    it('returns the correct hash for a delegation with multiple caveats', () => {
+      const delegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [
+          {
+            enforcer: '0x1111111111111111111111111111111111111111',
+            terms: '0xdeadbeef',
+            args: '0xcafebabe',
+          },
+          {
+            enforcer: '0x2222222222222222222222222222222222222222',
+            terms: '0xfeedface',
+            args: '0xdeadc0de',
+          },
+        ],
+        salt: 0x123n,
+        signature: '0x456789',
+      };
+
+      const hash = getDelegationHash(delegation);
+
+      expect(hash).toMatchInlineSnapshot(
+        `"0x1518659cbda8860b6e71f6600960d6a6f4718fc18b77849e5706a6cfd9c55957"`,
+      );
+    });
+
+    it('returns the correct hash for a delegation with custom authority', () => {
+      const customAuthority =
+        '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd';
+      const delegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: customAuthority,
+        caveats: [],
+        salt: 0x999n,
+        signature: '0xffffff',
+      };
+
+      const hash = getDelegationHash(delegation);
+
+      expect(hash).toMatchInlineSnapshot(
+        `"0xeb8ff35e32030bee23e16167e98536ccf4dffb79558d0fb76b73628fc70805cd"`,
+      );
+    });
+
+    it('returns the correct hash for a delegation with zero salt', () => {
+      const delegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [],
+        salt: 0x0n,
+        signature: '0x123456',
+      };
+
+      const hash = getDelegationHash(delegation);
+
+      expect(hash).toMatchInlineSnapshot(
+        `"0xa05839f6864d332530b2d1a4043668777940e609931ae9c09d19b866a1408a6b"`,
+      );
+    });
+
+    it('returns the correct hash for a delegation with maximum salt', () => {
+      const delegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [],
+        salt: 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffn,
+        signature: '0x123456',
+      };
+
+      const hash = getDelegationHash(delegation);
+
+      expect(hash).toMatchInlineSnapshot(
+        `"0xbbc3b60ea68fa14fa170a207435a4ae96cf3adc8ab488d7bfa57e9c8da67f9af"`,
+      );
+    });
+
+    it('produces consistent hashes for the same delegation', () => {
+      const delegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [
+          {
+            enforcer: '0x9999999999999999999999999999999999999999',
+            terms: '0xdeadbeef',
+            args: '0xcafebabe',
+          },
+        ],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const hash1 = getDelegationHash(delegation);
+      const hash2 = getDelegationHash(delegation);
+
+      expect(hash1).toEqual(hash2);
+    });
+
+    it('produces different hashes for different delegates', () => {
+      const baseDelegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const altDelegation: DelegationStruct = {
+        ...baseDelegation,
+        delegate: '0x9876543210987654321098765432109876543210',
+      };
+
+      const hash1 = getDelegationHash(baseDelegation);
+      const hash2 = getDelegationHash(altDelegation);
+
+      expect(hash1).not.toEqual(hash2);
+    });
+
+    it('produces different hashes for different delegators', () => {
+      const baseDelegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const altDelegation: DelegationStruct = {
+        ...baseDelegation,
+        delegator: '0x9876543210987654321098765432109876543210',
+      };
+
+      const hash1 = getDelegationHash(baseDelegation);
+      const hash2 = getDelegationHash(altDelegation);
+
+      expect(hash1).not.toEqual(hash2);
+    });
+
+    it('produces different hashes for different authorities', () => {
+      const baseDelegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const altDelegation: DelegationStruct = {
+        ...baseDelegation,
+        authority:
+          '0x1111111111111111111111111111111111111111111111111111111111111111',
+      };
+
+      const hash1 = getDelegationHash(baseDelegation);
+      const hash2 = getDelegationHash(altDelegation);
+
+      expect(hash1).not.toEqual(hash2);
+    });
+
+    it('produces different hashes for different salts', () => {
+      const baseDelegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const altDelegation: DelegationStruct = {
+        ...baseDelegation,
+        salt: 0x43n,
+      };
+
+      const hash1 = getDelegationHash(baseDelegation);
+      const hash2 = getDelegationHash(altDelegation);
+
+      expect(hash1).not.toEqual(hash2);
+    });
+
+    it('produces different hashes for different caveat enforcers', () => {
+      const baseDelegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [
+          {
+            enforcer: '0x1111111111111111111111111111111111111111',
+            terms: '0xdeadbeef',
+            args: '0xcafebabe',
+          },
+        ],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const altDelegation: DelegationStruct = {
+        ...baseDelegation,
+        caveats: [
+          {
+            enforcer: '0x2222222222222222222222222222222222222222',
+            terms: '0xdeadbeef',
+            args: '0xcafebabe',
+          },
+        ],
+      };
+
+      const hash1 = getDelegationHash(baseDelegation);
+      const hash2 = getDelegationHash(altDelegation);
+
+      expect(hash1).not.toEqual(hash2);
+    });
+
+    it('produces different hashes for different caveat terms', () => {
+      const baseDelegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [
+          {
+            enforcer: '0x1111111111111111111111111111111111111111',
+            terms: '0xdeadbeef',
+            args: '0xcafebabe',
+          },
+        ],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const altDelegation: DelegationStruct = {
+        ...baseDelegation,
+        caveats: [
+          {
+            enforcer: '0x1111111111111111111111111111111111111111',
+            terms: '0xfeedface',
+            args: '0xcafebabe',
+          },
+        ],
+      };
+
+      const hash1 = getDelegationHash(baseDelegation);
+      const hash2 = getDelegationHash(altDelegation);
+
+      expect(hash1).not.toEqual(hash2);
+    });
+
+    it('produces the same hash regardless of caveat args (args are not part of hash)', () => {
+      const baseDelegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [
+          {
+            enforcer: '0x1111111111111111111111111111111111111111',
+            terms: '0xdeadbeef',
+            args: '0xcafebabe',
+          },
+        ],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const altDelegation: DelegationStruct = {
+        ...baseDelegation,
+        caveats: [
+          {
+            enforcer: '0x1111111111111111111111111111111111111111',
+            terms: '0xdeadbeef',
+            args: '0xdeadc0de', // Different args
+          },
+        ],
+      };
+
+      const hash1 = getDelegationHash(baseDelegation);
+      const hash2 = getDelegationHash(altDelegation);
+
+      // Args should not affect the hash according to the implementation
+      expect(hash1).toEqual(hash2);
+    });
+
+    it('produces the same hash regardless of signature (signature is not part of hash)', () => {
+      const baseDelegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const altDelegation: DelegationStruct = {
+        ...baseDelegation,
+        signature: '0xffffff', // Different signature
+      };
+
+      const hash1 = getDelegationHash(baseDelegation);
+      const hash2 = getDelegationHash(altDelegation);
+
+      // Signature should not affect the hash according to the implementation
+      expect(hash1).toEqual(hash2);
+    });
+
+    it('produces different hashes for different caveat order', () => {
+      const baseDelegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [
+          {
+            enforcer: '0x1111111111111111111111111111111111111111',
+            terms: '0xdeadbeef',
+            args: '0xcafebabe',
+          },
+          {
+            enforcer: '0x2222222222222222222222222222222222222222',
+            terms: '0xfeedface',
+            args: '0xdeadc0de',
+          },
+        ],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const altDelegation: DelegationStruct = {
+        ...baseDelegation,
+        caveats: [
+          {
+            enforcer: '0x2222222222222222222222222222222222222222',
+            terms: '0xfeedface',
+            args: '0xdeadc0de',
+          },
+          {
+            enforcer: '0x1111111111111111111111111111111111111111',
+            terms: '0xdeadbeef',
+            args: '0xcafebabe',
+          },
+        ],
+      };
+
+      const hash1 = getDelegationHash(baseDelegation);
+      const hash2 = getDelegationHash(altDelegation);
+
+      expect(hash1).not.toEqual(hash2);
+    });
+
+    it('handles delegations with empty caveat terms', () => {
+      const delegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [
+          {
+            enforcer: '0x1111111111111111111111111111111111111111',
+            terms: '0x',
+            args: '0xcafebabe',
+          },
+        ],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const hash = getDelegationHash(delegation);
+
+      expect(hash).toMatchInlineSnapshot(
+        `"0xf3abc9ca79229932c0967a5d0b1a9185c4adbd63e217cc579a5230b64335224b"`,
+      );
+    });
+
+    it('returns a hex string by default', () => {
+      const delegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const hash = getDelegationHash(delegation);
+
+      expect(hash).toMatchInlineSnapshot(
+        `"0xcaeb6434dc99e3098ff79ea1458a16b3e53b380f211cdb359628f9302d9c41b4"`,
+      );
+    });
+
+    it('handles mixed case addresses consistently', () => {
+      const delegation1: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [
+          {
+            enforcer: '0xaaBBccDDeeFF1122334455667788990011223344',
+            terms: '0xdead',
+            args: '0xbeef',
+          },
+        ],
+        salt: 0x1n,
+        signature: '0x789',
+      };
+
+      const delegation2: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xabcdef0123456789012345678901234567890123', // lowercase
+        authority: ROOT_AUTHORITY,
+        caveats: [
+          {
+            enforcer: '0xAABBCCDDEEFF1122334455667788990011223344', // uppercase
+            terms: '0xdead',
+            args: '0xbeef',
+          },
+        ],
+        salt: 0x1n,
+        signature: '0x789',
+      };
+
+      const hash1 = getDelegationHash(delegation1);
+      const hash2 = getDelegationHash(delegation2);
+
+      // Addresses should be treated the same regardless of case
+      expect(hash1).toEqual(hash2);
+    });
+
+    it('returns bytes when specified in options', () => {
+      const delegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const hash = getDelegationHash(delegation, { out: 'bytes' });
+
+      expect(hash).toBeInstanceOf(Uint8Array);
+      expect(hash).toMatchInlineSnapshot(`
+        Uint8Array [
+          202,
+          235,
+          100,
+          52,
+          220,
+          153,
+          227,
+          9,
+          143,
+          247,
+          158,
+          161,
+          69,
+          138,
+          22,
+          179,
+          229,
+          59,
+          56,
+          15,
+          33,
+          28,
+          219,
+          53,
+          150,
+          40,
+          249,
+          48,
+          45,
+          156,
+          65,
+          180,
+        ]
+      `);
+    });
+
+    it('returns hex when explicitly specified in options', () => {
+      const delegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const hash = getDelegationHash(delegation, { out: 'hex' });
+
+      expect(hash).toMatchInlineSnapshot(
+        `"0xcaeb6434dc99e3098ff79ea1458a16b3e53b380f211cdb359628f9302d9c41b4"`,
+      );
+    });
+
+    it('produces same result in different formats', () => {
+      const delegation: DelegationStruct = {
+        delegate: '0x1234567890123456789012345678901234567890',
+        delegator: '0xABCDEF0123456789012345678901234567890123',
+        authority: ROOT_AUTHORITY,
+        caveats: [],
+        salt: 0x42n,
+        signature: '0x789abc',
+      };
+
+      const hashHex = getDelegationHash(delegation, { out: 'hex' });
+      const hashBytes = getDelegationHash(delegation, { out: 'bytes' });
+
+      const hashFromBytes = bytesToHex(hashBytes);
+
+      expect(hashHex).toBe(hashFromBytes);
     });
   });
 });

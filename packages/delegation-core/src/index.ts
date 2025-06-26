@@ -1,4 +1,8 @@
-export type { Hex, Delegation, Caveat } from './types';
+export type {
+  Hex,
+  DelegationStruct as Delegation,
+  CaveatStruct as Caveat,
+} from './types';
 
 export {
   createValueLteTerms,
@@ -12,5 +16,9 @@ export {
 export {
   encodeDelegations,
   decodeDelegations,
+  getDelegationHash,
   ROOT_AUTHORITY,
+  ANY_BENEFICIARY,
+  DELEGATION_TYPEHASH,
+  CAVEAT_TYPEHASH,
 } from './delegation';

@@ -9,7 +9,7 @@ export type { Hex } from '@metamask/utils';
  * @property terms - The terms or conditions of the caveat encoded as hex data.
  * @property args - Additional arguments required by the caveat enforcer, encoded as hex data.
  */
-export type Caveat<TBytes extends BytesLike = BytesLike> = {
+export type CaveatStruct<TBytes extends BytesLike = BytesLike> = {
   enforcer: TBytes;
   terms: TBytes;
   args: TBytes;
@@ -25,11 +25,11 @@ export type Caveat<TBytes extends BytesLike = BytesLike> = {
  * @property salt - A unique value to prevent replay attacks and ensure uniqueness of the delegation.
  * @property signature - The cryptographic signature validating this delegation.
  */
-export type Delegation<TBytes extends BytesLike = BytesLike> = {
+export type DelegationStruct<TBytes extends BytesLike = BytesLike> = {
   delegate: TBytes;
   delegator: TBytes;
   authority: TBytes;
-  caveats: Caveat<TBytes>[];
+  caveats: CaveatStruct<TBytes>[];
   salt: bigint;
   signature: TBytes;
 };

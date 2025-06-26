@@ -1,5 +1,6 @@
-import { encodeSingle, decodeSingle } from '@metamask/abi-utils';
+import { encode, encodeSingle, decodeSingle } from '@metamask/abi-utils';
 import { type BytesLike } from '@metamask/utils';
+import { keccak_256 } from '@noble/hashes/sha3';
 
 import {
   bytesLikeToBytes,
@@ -9,13 +10,34 @@ import {
   type EncodingOptions,
   type ResultValue,
 } from './returns';
-import type { Delegation, Hex } from './types';
+import type { CaveatStruct, DelegationStruct, Hex } from './types';
+
+/**
+ * To be used in a delegation to allow any beneficiary to redeem the delegation.
+ */
+export const ANY_BENEFICIARY = '0x0000000000000000000000000000000000000a11';
 
 /**
  * To be used on a delegation as the root authority.
  */
 export const ROOT_AUTHORITY =
   '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+
+/**
+ * The typehash for a delegation, used when generating a delegation hash.
+ *
+ * keccak('Delegation(address delegate,address delegator,bytes32 authority,Caveat[] caveats,uint256 salt)')
+ */
+export const DELEGATION_TYPEHASH =
+  '0x88c1d2ecf185adf710588203a5f263f0ff61be0d33da39792cde19ba9aa4331e';
+
+/**
+ * The typehash for a caveat, used when generating a caveat hash.
+ *
+ * keccak('Caveat(address enforcer,bytes terms)')
+ */
+export const CAVEAT_TYPEHASH =
+  '0x80ad7e1b04ee6d994a125f4714ca0720908bd80ed16063ec8aee4b88e9253e2d';
 
 /**
  * The ABI types for an array of delegations.
@@ -30,11 +52,11 @@ const DELEGATION_ARRAY_ABI_TYPES =
  * @returns The encoded delegations as a hex string (default) or Uint8Array.
  */
 export function encodeDelegations(
-  delegations: Delegation[],
+  delegations: DelegationStruct[],
   options?: EncodingOptions<'hex'>,
 ): Hex;
 export function encodeDelegations(
-  delegations: Delegation[],
+  delegations: DelegationStruct[],
   options: EncodingOptions<'bytes'>,
 ): Uint8Array;
 /**
@@ -44,7 +66,7 @@ export function encodeDelegations(
  * @returns The encoded delegations as a hex string (default) or Uint8Array.
  */
 export function encodeDelegations(
-  delegations: Delegation[],
+  delegations: DelegationStruct[],
   options: EncodingOptions<ResultValue> = defaultOptions,
 ): Hex | Uint8Array {
   let result: Uint8Array;
@@ -83,7 +105,7 @@ export function encodeDelegations(
 const delegationFromDecodedDelegation = <TEncoding extends BytesLike>(
   decodedDelegation: DecodedDelegation,
   convertFn: (value: BytesLike) => TEncoding,
-): Delegation<TEncoding> => {
+): DelegationStruct<TEncoding> => {
   const [delegate, delegator, authority, caveats, salt, signature] =
     decodedDelegation;
 
@@ -124,11 +146,11 @@ type DecodedDelegation = [
 export function decodeDelegations(
   encoded: BytesLike,
   options?: EncodingOptions<'hex'>,
-): Delegation<Hex>[];
+): DelegationStruct<Hex>[];
 export function decodeDelegations(
   encoded: BytesLike,
   options: EncodingOptions<'bytes'>,
-): Delegation<Uint8Array>[];
+): DelegationStruct<Uint8Array>[];
 /**
  * Decodes an encoded permission context back into an array of delegations.
  * @param encoded - The encoded delegations as a hex string or Uint8Array.
@@ -138,7 +160,7 @@ export function decodeDelegations(
 export function decodeDelegations(
   encoded: BytesLike,
   options: EncodingOptions<ResultValue> = defaultOptions,
-): Delegation<Hex>[] | Delegation<Uint8Array>[] {
+): DelegationStruct<Hex>[] | DelegationStruct<Uint8Array>[] {
   // it's possible to short circuit for empty delegations, but due to the
   // complexity of the input type, and the relative infrequency of empty delegations,
   // it's not worthwhile.
@@ -157,4 +179,87 @@ export function decodeDelegations(
   return decodedStructs.map((struct) =>
     delegationFromDecodedDelegation(struct, bytesLikeToHex),
   );
+}
+
+/**
+ * Calculates the hash of a delegation for signing purposes.
+ * The hash is computed by encoding the delegation parameters with the delegation typehash
+ * and then applying keccak256 hashing.
+ *
+ * @param delegation - The delegation to hash.
+ * @param options - Encoding options. Defaults to { out: 'hex' }.
+ * @returns The keccak256 hash of the encoded delegation as a hex string (default) or Uint8Array.
+ */
+export function getDelegationHash(
+  delegation: DelegationStruct,
+  options?: EncodingOptions<'hex'>,
+): Hex;
+export function getDelegationHash(
+  delegation: DelegationStruct,
+  options: EncodingOptions<'bytes'>,
+): Uint8Array;
+/**
+ * Calculates the hash of a delegation for signing purposes.
+ * The hash is computed by encoding the delegation parameters with the delegation typehash
+ * and then applying keccak256 hashing.
+ *
+ * @param delegation - The delegation to hash.
+ * @param options - Encoding options. Defaults to { out: 'hex' }.
+ * @returns The keccak256 hash of the encoded delegation as a hex string (default) or Uint8Array.
+ */
+export function getDelegationHash(
+  delegation: DelegationStruct,
+  options: EncodingOptions<ResultValue> = defaultOptions,
+): Hex | Uint8Array {
+  const encoded = encode(
+    ['bytes32', 'address', 'address', 'bytes32', 'bytes32', 'uint256'],
+    [
+      DELEGATION_TYPEHASH,
+      delegation.delegate,
+      delegation.delegator,
+      delegation.authority,
+      getCaveatsArrayHash(delegation.caveats),
+      delegation.salt,
+    ],
+  );
+  const hash = keccak_256(encoded);
+  return prepareResult(hash, options);
+}
+
+/**
+ * Calculates the hash of an array of caveats. The caveats are individually abi
+ * encoded and hashed, and concatenated. The resulting byte array is then
+ * hashed to produce the CaveatsArrayHash.
+ *
+ * @param caveats - The array of caveats to hash.
+ * @returns The keccak256 hash of the encoded caveat array.
+ */
+function getCaveatsArrayHash(caveats: CaveatStruct[]): Uint8Array {
+  const byteLength = 32 * caveats.length;
+  const encoded = new Uint8Array(byteLength);
+
+  for (let i = 0; i < caveats.length; i++) {
+    const caveat = caveats[i];
+    if (!caveat) {
+      throw new Error(`Caveat was undefined at index ${i}`);
+    }
+    const caveatHash = getCaveatHash(caveat);
+    encoded.set(caveatHash, i * 32);
+  }
+
+  return keccak_256(encoded);
+}
+
+/**
+ * Calculates the hash of a single caveat.
+ * @param caveat - The caveat to hash.
+ * @returns The keccak256 hash of the encoded caveat.
+ */
+function getCaveatHash(caveat: CaveatStruct): Uint8Array {
+  const encoded = encode(
+    ['bytes32', 'address', 'bytes32'],
+    [CAVEAT_TYPEHASH, caveat.enforcer, caveat.terms],
+  );
+  const hash = keccak_256(encoded);
+  return hash;
 }
