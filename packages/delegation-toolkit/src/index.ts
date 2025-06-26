@@ -1,10 +1,11 @@
 export { toMetaMaskSmartAccount } from './toMetaMaskSmartAccount';
 
 export {
-  ANY_BENEFICIARY,
   createDelegation,
   createOpenDelegation,
   signDelegation,
+  ROOT_AUTHORITY,
+  ANY_BENEFICIARY,
 } from './delegation';
 
 export type {
@@ -35,7 +36,7 @@ export {
   getDeleGatorEnvironment,
 } from './delegatorEnvironment';
 
-export { Implementation, ROOT_AUTHORITY, ANY_DELEGATE } from './constants';
+export { Implementation } from './constants';
 
 export { createExecution } from './executions';
 

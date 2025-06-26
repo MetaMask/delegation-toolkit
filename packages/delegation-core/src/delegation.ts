@@ -1,6 +1,6 @@
 import { encode, encodeSingle, decodeSingle } from '@metamask/abi-utils';
 import { type BytesLike } from '@metamask/utils';
-import { keccak_256 } from '@noble/hashes/sha3';
+import { keccak_256 as keccak256 } from '@noble/hashes/sha3';
 
 import {
   bytesLikeToBytes,
@@ -222,7 +222,7 @@ export function getDelegationHash(
       delegation.salt,
     ],
   );
-  const hash = keccak_256(encoded);
+  const hash = keccak256(encoded);
   return prepareResult(hash, options);
 }
 
@@ -247,7 +247,7 @@ function getCaveatsArrayHash(caveats: CaveatStruct[]): Uint8Array {
     encoded.set(caveatHash, i * 32);
   }
 
-  return keccak_256(encoded);
+  return keccak256(encoded);
 }
 
 /**
@@ -260,6 +260,6 @@ function getCaveatHash(caveat: CaveatStruct): Uint8Array {
     ['bytes32', 'address', 'bytes32'],
     [CAVEAT_TYPEHASH, caveat.enforcer, caveat.terms],
   );
-  const hash = keccak_256(encoded);
+  const hash = keccak256(encoded);
   return hash;
 }

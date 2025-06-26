@@ -1,16 +1,13 @@
 import {
   encodeDelegations as encodeDelegationsCore,
   decodeDelegations as decodeDelegationsCore,
+  getDelegationHash as getDelegationHashCore,
+  ANY_BENEFICIARY,
+  DELEGATION_TYPEHASH,
+  CAVEAT_TYPEHASH,
+  ROOT_AUTHORITY,
 } from '@metamask/delegation-core';
-import {
-  encodeAbiParameters,
-  parseAbiParameters,
-  keccak256,
-  hashMessage,
-  toBytes,
-  toHex,
-  getAddress,
-} from 'viem';
+import { hashMessage, toBytes, toHex, getAddress } from 'viem';
 import type {
   TypedData,
   AbiParameter,
@@ -23,12 +20,15 @@ import type {
 } from 'viem';
 
 import { type Caveats, resolveCaveats } from './caveatBuilder';
-import {
-  CAVEAT_ABI_TYPE_COMPONENTS,
-  getCaveatArrayPacketHash,
-} from './caveats';
-import { ROOT_AUTHORITY } from './constants';
+import { CAVEAT_ABI_TYPE_COMPONENTS } from './caveats';
 import type { Delegation } from './types';
+
+export {
+  ANY_BENEFICIARY,
+  DELEGATION_TYPEHASH,
+  CAVEAT_TYPEHASH,
+  ROOT_AUTHORITY,
+};
 
 /**
  * The ABI type components of a Delegation.
@@ -142,21 +142,6 @@ export const decodePermissionContexts = (encoded: Hex[]): Delegation[][] => {
 };
 
 /**
- * To be used in the allowList field of a gas delegation so as not to restrict who can redeem the gas delegation.
- */
-export const ANY_BENEFICIARY = '0x0000000000000000000000000000000000000a11';
-
-/**
- * To be used when generating a delegation hash to be signed
- * NOTE: signature is omitted from the Delegation typehash
- */
-export const DELEGATION_TYPEHASH = keccak256(
-  toHex(
-    'Delegation(address delegate,address delegator,bytes32 authority,Caveat[] caveats,uint256 salt)Caveat(address enforcer,bytes terms)',
-  ),
-);
-
-/**
  * TypedData to be used when signing a Delegation. Delegation value for `signature` and Caveat values for `args` are omitted as they cannot be known at signing time.
  */
 export const SIGNABLE_DELEGATION_TYPED_DATA: TypedData = {
@@ -200,19 +185,7 @@ export const prepDelegationHashForPasskeySign = (delegationHash: Hex) => {
 export const getDelegationHashOffchain = (input: Delegation): Hex => {
   const delegationStruct = toDelegationStruct(input);
 
-  const encoded = encodeAbiParameters(
-    parseAbiParameters('bytes32, address, address, bytes32, bytes32, uint'),
-    [
-      DELEGATION_TYPEHASH,
-      delegationStruct.delegate,
-      delegationStruct.delegator,
-      delegationStruct.authority,
-      getCaveatArrayPacketHash(delegationStruct.caveats),
-      delegationStruct.salt,
-    ],
-  );
-
-  return keccak256(encoded);
+  return getDelegationHashCore(delegationStruct);
 };
 
 type BaseCreateDelegationOptions = {

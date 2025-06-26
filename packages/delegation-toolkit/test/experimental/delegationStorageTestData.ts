@@ -1,5 +1,7 @@
-import { ROOT_AUTHORITY } from '../../src/constants';
-import { getDelegationHashOffchain } from '../../src/delegation';
+import {
+  ROOT_AUTHORITY,
+  getDelegationHashOffchain,
+} from '../../src/delegation';
 import type { Delegation } from '../../src/types';
 
 export const TEST_ACCOUNT = '0x0E9bBA6e2D962645c5FB1064d86cc6dE6050739C';

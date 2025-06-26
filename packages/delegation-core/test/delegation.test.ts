@@ -1,3 +1,4 @@
+import { bytesToHex } from '@metamask/utils';
 import { describe, it, expect } from 'vitest';
 
 import {
@@ -7,7 +8,6 @@ import {
   getDelegationHash,
 } from '../src/delegation';
 import type { DelegationStruct, CaveatStruct } from '../src/types';
-import { bytesToHex } from '@metamask/utils';
 
 describe('delegation', () => {
   describe('ROOT_AUTHORITY', () => {
