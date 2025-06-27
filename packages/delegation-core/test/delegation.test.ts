@@ -606,7 +606,7 @@ describe('delegation', () => {
       const hash = getDelegationHash(delegation);
 
       expect(hash).toMatchInlineSnapshot(
-        `"0x5905e2625ef1d9549cb95647cd03544cf3ce2ba11d14be226dc5c3c203112296"`,
+        `"0x2c67f5e651bf654552c047f3bdc935996eb8867fea62274ebd6643522a34ea65"`,
       );
     });
 
@@ -634,7 +634,7 @@ describe('delegation', () => {
       const hash = getDelegationHash(delegation);
 
       expect(hash).toMatchInlineSnapshot(
-        `"0x1518659cbda8860b6e71f6600960d6a6f4718fc18b77849e5706a6cfd9c55957"`,
+        `"0x71a41e757d3aba596d483d0414a1681961573e8024238c4e72b19c194627fbdb"`,
       );
     });
 
@@ -982,7 +982,7 @@ describe('delegation', () => {
       const hash = getDelegationHash(delegation);
 
       expect(hash).toMatchInlineSnapshot(
-        `"0xf3abc9ca79229932c0967a5d0b1a9185c4adbd63e217cc579a5230b64335224b"`,
+        `"0xeb607828d330ff18bb9e0cffb3941c53c289fdf9ab412f7bc0fe3c09dfd2878c"`,
       );
     });
 

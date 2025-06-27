@@ -1,5 +1,5 @@
 import { encode, encodeSingle, decodeSingle } from '@metamask/abi-utils';
-import { type BytesLike } from '@metamask/utils';
+import { hexToBytes, type BytesLike } from '@metamask/utils';
 import { keccak_256 as keccak256 } from '@noble/hashes/sha3';
 
 import {
@@ -256,9 +256,14 @@ function getCaveatsArrayHash(caveats: CaveatStruct[]): Uint8Array {
  * @returns The keccak256 hash of the encoded caveat.
  */
 function getCaveatHash(caveat: CaveatStruct): Uint8Array {
+  const termsBytes =
+    typeof caveat.terms === 'string' ? hexToBytes(caveat.terms) : caveat.terms;
+
+  const termsHash = keccak256(termsBytes);
+
   const encoded = encode(
     ['bytes32', 'address', 'bytes32'],
-    [CAVEAT_TYPEHASH, caveat.enforcer, caveat.terms],
+    [CAVEAT_TYPEHASH, caveat.enforcer, termsHash],
   );
   const hash = keccak256(encoded);
   return hash;
