@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { size, toHex } from 'viem';
+import { maxUint256, size, toHex } from 'viem';
 
 import { idBuilder } from '../../src/caveatBuilder/idBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';
@@ -11,27 +11,20 @@ describe('idBuilder()', () => {
     caveatEnforcers: { IdEnforcer: randomAddress() },
   } as any as DeleGatorEnvironment;
 
-  const buildWithId = (id: number) => {
+  const buildWithId = (id: bigint | number) => {
     return idBuilder(environment, id);
   };
 
   describe('validation', () => {
-    it('should fail with an invalid id (not a number)', () => {
-      const invalidId = 'not-a-hex-string' as any;
-      expect(() => buildWithId(invalidId)).to.throw(
-        'Invalid id: must be an integer',
-      );
-    });
-
     it('should fail with an invalid id (not an integer)', () => {
-      const invalidId = Math.random() * 2 ** 32;
+      const invalidId = Math.random();
       expect(() => buildWithId(invalidId)).to.throw(
         'Invalid id: must be an integer',
       );
     });
 
     it('should fail with an invalid id (negative)', () => {
-      const invalidId = -1;
+      const invalidId = -1n;
       expect(() => buildWithId(invalidId)).to.throw(
         'Invalid id: must be positive',
       );
@@ -39,19 +32,31 @@ describe('idBuilder()', () => {
 
     it('should fail with an invalid id (too high)', () => {
       const invalidId = 2n ** 256n;
-      expect(() => buildWithId(Number(invalidId))).to.throw(
+      expect(() => buildWithId(invalidId)).to.throw(
         'Invalid id: must be less than 2^256',
       );
     });
   });
 
   describe('builds a caveat', () => {
-    it('should build a caveat with a valid id', () => {
+    it('should build a caveat with a valid Number', () => {
       const validId = Math.floor(Math.random() * 2 ** 32);
 
       const caveat = buildWithId(validId);
 
       const expectedTerms = toHex(validId, { size: 32 });
+
+      expect(caveat).to.deep.equal({
+        enforcer: environment.caveatEnforcers.IdEnforcer,
+        terms: expectedTerms,
+        args: '0x',
+      });
+    });
+
+    it('should build a caveat with a large bigint', () => {
+      const caveat = buildWithId(maxUint256);
+
+      const expectedTerms = toHex(maxUint256, { size: 32 });
 
       expect(caveat).to.deep.equal({
         enforcer: environment.caveatEnforcers.IdEnforcer,
