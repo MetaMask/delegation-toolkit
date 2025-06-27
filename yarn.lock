@@ -1260,6 +1260,7 @@ __metadata:
     "@metamask/abi-utils": "npm:^3.0.0"
     "@metamask/auto-changelog": "npm:^3.4.4"
     "@metamask/utils": "npm:^11.4.0"
+    "@noble/hashes": "npm:^1.8.0"
     "@types/node": "npm:^20.10.6"
     tsup: "npm:^7.2.0"
     typescript: "npm:5.0.4"
@@ -1500,6 +1501,13 @@ __metadata:
   version: 1.7.1
   resolution: "@noble/hashes@npm:1.7.1"
   checksum: 10/ca3120da0c3e7881d6a481e9667465cc9ebbee1329124fb0de442e56d63fef9870f8cc96f264ebdb18096e0e36cebc0e6e979a872d545deb0a6fed9353f17e05
+  languageName: node
+  linkType: hard
+
+"@noble/hashes@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "@noble/hashes@npm:1.8.0"
+  checksum: 10/474b7f56bc6fb2d5b3a42132561e221b0ea4f91e590f4655312ca13667840896b34195e2b53b7f097ec080a1fdd3b58d902c2a8d0fbdf51d2e238b53808a177e
   languageName: node
   linkType: hard
 

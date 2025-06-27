@@ -2,9 +2,9 @@ import { expect } from 'chai';
 import { stub } from 'sinon';
 
 import { resolveCaveats } from '../src/caveatBuilder';
-import { ROOT_AUTHORITY } from '../src/constants';
 import {
   type DelegationStruct,
+  ROOT_AUTHORITY,
   toDelegationStruct,
   createDelegation,
   createOpenDelegation,
