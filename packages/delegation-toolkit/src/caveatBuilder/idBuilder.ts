@@ -14,21 +14,31 @@ export const id = 'id';
  */
 export function idBuilder(
   environment: DeleGatorEnvironment,
-  idValue: number,
+  idValue: bigint | number,
 ): Caveat {
-  if (!Number.isInteger(idValue)) {
-    throw new Error('Invalid id: must be an integer');
+  let idValueBigInt: bigint;
+
+  if (typeof idValue === 'number') {
+    if (!Number.isInteger(idValue)) {
+      throw new Error('Invalid id: must be an integer');
+    }
+
+    idValueBigInt = BigInt(idValue);
+  } else if (typeof idValue === 'bigint') {
+    idValueBigInt = idValue;
+  } else {
+    throw new Error('Invalid id: must be a bigint or number');
   }
 
-  if (idValue < 0) {
+  if (idValueBigInt < 0n) {
     throw new Error('Invalid id: must be positive');
   }
 
-  if (idValue > maxUint256) {
+  if (idValueBigInt > maxUint256) {
     throw new Error('Invalid id: must be less than 2^256');
   }
 
-  const terms = toHex(idValue, { size: 32 });
+  const terms = toHex(idValueBigInt, { size: 32 });
 
   const {
     caveatEnforcers: { IdEnforcer },

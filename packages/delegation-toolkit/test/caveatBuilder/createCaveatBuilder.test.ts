@@ -238,7 +238,7 @@ describe('createCaveatBuilder()', () => {
     it("should add an 'id' caveat", () => {
       const builder = createCaveatBuilder(environment);
 
-      const id = Math.floor(Math.random() * 2 ** 32);
+      const id = BigInt(Math.floor(Math.random() * 2 ** 32));
       const caveats = builder.addCaveat('id', id).build();
 
       expect(caveats).to.deep.equal([
