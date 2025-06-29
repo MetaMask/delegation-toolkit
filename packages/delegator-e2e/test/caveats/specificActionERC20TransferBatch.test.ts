@@ -205,7 +205,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 
   const recipientBalanceAfter = await getErc20Balance(recipient, tokenAddress);
   expect(recipientBalanceAfter - recipientBalanceBefore).toBe(0n);

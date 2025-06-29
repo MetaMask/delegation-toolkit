@@ -289,7 +289,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 
   const counterCodeAfter = await publicClient.getCode({
     address: deployedAddress,

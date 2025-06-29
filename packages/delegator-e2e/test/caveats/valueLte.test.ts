@@ -183,5 +183,5 @@ const runTest_expectFailure = async (
 ) => {
   await expect(
     submitUserOperationForTest(maxValue, executionValue),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 };

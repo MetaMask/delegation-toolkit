@@ -292,7 +292,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 
   const countAfter = await aliceCounter.read.count();
   expect(countAfter, 'Expected count to remain 0n').toEqual(0n);

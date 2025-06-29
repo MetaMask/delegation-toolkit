@@ -201,7 +201,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 
   const balanceAfter = await publicClient.getBalance({
     address: bobAddress,

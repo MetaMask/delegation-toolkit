@@ -10,7 +10,7 @@ import type {
   WalletClient,
 } from 'viem';
 import {
-  createClient,
+  createPublicClient,
   createWalletClient,
   custom,
   encodeFunctionData,
@@ -61,7 +61,7 @@ describe('erc7710RedeemDelegationAction', () => {
       } as any as DeleGatorEnvironment);
 
       metaMaskSmartAccount = await toMetaMaskSmartAccount({
-        client: createClient({
+        client: createPublicClient({
           transport: await createHardhatTransport(),
           chain: publicClient.chain,
         }),

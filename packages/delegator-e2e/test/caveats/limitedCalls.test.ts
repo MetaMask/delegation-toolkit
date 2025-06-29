@@ -91,7 +91,9 @@ const runTest_expectFailure = async (
   runs: number,
   expectedError: string,
 ) => {
-  await expect(runTest(limit, runs)).rejects.toThrow(expectedError);
+  await expect(runTest(limit, runs)).rejects.toThrow(
+    Buffer.from(expectedError).toString('hex'),
+  );
 };
 
 const runTest = async (limit: number, runs: number) => {

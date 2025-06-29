@@ -163,6 +163,8 @@ test('Bob attempts to redeem with invalid terms length', async () => {
     ],
   });
 
+  const expectedError = 'NativeBalanceChangeEnforcer:invalid-terms-length';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -174,7 +176,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('NativeBalanceChangeEnforcer:invalid-terms-length');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 const testRun_expectSuccess = async (
@@ -325,5 +327,5 @@ const testRun_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 };

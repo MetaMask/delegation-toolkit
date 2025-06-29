@@ -355,6 +355,8 @@ test('Bob attempts to redeem with invalid terms length', async () => {
     ],
   });
 
+  const expectedError = 'NativeTokenStreamingEnforcer:invalid-terms-length';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -366,7 +368,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('NativeTokenStreamingEnforcer:invalid-terms-length');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 test('Bob attempts to redeem with invalid max amount', async () => {
@@ -424,6 +426,8 @@ test('Bob attempts to redeem with invalid max amount', async () => {
     ],
   });
 
+  const expectedError = 'NativeTokenStreamingEnforcer:invalid-max-amount';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -435,7 +439,7 @@ test('Bob attempts to redeem with invalid max amount', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('NativeTokenStreamingEnforcer:invalid-max-amount');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 test('Bob attempts to redeem with zero start time', async () => {
@@ -494,6 +498,8 @@ test('Bob attempts to redeem with zero start time', async () => {
     ],
   });
 
+  const expectedError = 'NativeTokenStreamingEnforcer:invalid-zero-start-time';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -505,7 +511,7 @@ test('Bob attempts to redeem with zero start time', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('NativeTokenStreamingEnforcer:invalid-zero-start-time');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 const runTest_expectSuccess = async (
@@ -647,7 +653,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 
   const recipientBalanceAfter = await publicClient.getBalance({
     address: recipient,

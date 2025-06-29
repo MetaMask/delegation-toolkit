@@ -222,8 +222,10 @@ test('Bob attempts to call the increment function directly', async () => {
     }),
   });
 
+  const expectedError = 'Ownable: caller is not the owner';
+
   await expect(sendTransactionResponse).rejects.toThrow(
-    'Ownable: caller is not the owner',
+    Buffer.from(expectedError).toString('hex'),
   );
 
   const countAfter = await counterContract.read.count();

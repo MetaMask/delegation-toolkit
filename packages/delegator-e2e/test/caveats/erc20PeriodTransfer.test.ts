@@ -239,7 +239,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 
   const recipientBalanceAfter = await getErc20Balance(
     recipient,
@@ -376,6 +376,8 @@ test('Bob attempts to redeem with invalid terms length', async () => {
     ],
   });
 
+  const expectedError = 'ERC20PeriodTransferEnforcer:invalid-terms-length';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -387,7 +389,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('ERC20PeriodTransferEnforcer:invalid-terms-length');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 test('Bob attempts to redeem with invalid execution length', async () => {
@@ -445,6 +447,8 @@ test('Bob attempts to redeem with invalid execution length', async () => {
     ],
   });
 
+  const expectedError = 'ERC20PeriodTransferEnforcer:invalid-execution-length';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -456,7 +460,7 @@ test('Bob attempts to redeem with invalid execution length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('ERC20PeriodTransferEnforcer:invalid-execution-length');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 test('Bob attempts to redeem with invalid contract', async () => {
@@ -512,6 +516,8 @@ test('Bob attempts to redeem with invalid contract', async () => {
     ],
   });
 
+  const expectedError = 'ERC20PeriodTransferEnforcer:invalid-contract';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -523,7 +529,7 @@ test('Bob attempts to redeem with invalid contract', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('ERC20PeriodTransferEnforcer:invalid-contract');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 test('Bob attempts to redeem with invalid method', async () => {
@@ -578,6 +584,8 @@ test('Bob attempts to redeem with invalid method', async () => {
     ],
   });
 
+  const expectedError = 'ERC20PeriodTransferEnforcer:invalid-method';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -589,7 +597,7 @@ test('Bob attempts to redeem with invalid method', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('ERC20PeriodTransferEnforcer:invalid-method');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 test('Bob attempts to redeem with zero start date', async () => {
@@ -651,6 +659,8 @@ test('Bob attempts to redeem with zero start date', async () => {
     ],
   });
 
+  const expectedError = 'ERC20PeriodTransferEnforcer:invalid-zero-start-date';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -662,7 +672,7 @@ test('Bob attempts to redeem with zero start date', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('ERC20PeriodTransferEnforcer:invalid-zero-start-date');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 test('Bob attempts to redeem with zero period amount', async () => {
@@ -724,6 +734,9 @@ test('Bob attempts to redeem with zero period amount', async () => {
     ],
   });
 
+  const expectedError =
+    'ERC20PeriodTransferEnforcer:invalid-zero-period-amount';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -735,7 +748,7 @@ test('Bob attempts to redeem with zero period amount', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('ERC20PeriodTransferEnforcer:invalid-zero-period-amount');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 test('Bob attempts to redeem with zero period duration', async () => {
@@ -797,6 +810,9 @@ test('Bob attempts to redeem with zero period duration', async () => {
     ],
   });
 
+  const expectedError =
+    'ERC20PeriodTransferEnforcer:invalid-zero-period-duration';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -808,7 +824,7 @@ test('Bob attempts to redeem with zero period duration', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('ERC20PeriodTransferEnforcer:invalid-zero-period-duration');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 test('Bob attempts to redeem before start date', async () => {
@@ -862,6 +878,8 @@ test('Bob attempts to redeem before start date', async () => {
     ],
   });
 
+  const expectedError = 'ERC20PeriodTransferEnforcer:transfer-not-started';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -873,5 +891,5 @@ test('Bob attempts to redeem before start date', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('ERC20PeriodTransferEnforcer:transfer-not-started');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });

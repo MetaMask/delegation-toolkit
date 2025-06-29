@@ -168,7 +168,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 };
 
 test('maincase: Bob redeems the delegation with exact matching batch executions', async () => {
