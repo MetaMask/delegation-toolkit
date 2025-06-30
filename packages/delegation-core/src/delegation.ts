@@ -13,7 +13,7 @@ import {
 import type { CaveatStruct, DelegationStruct, Hex } from './types';
 
 /**
- * To be used in a delegation to allow any beneficiary to redeem the delegation.
+ * When designated as the delegate address in a delegation, this allows any beneficiary to redeem the delegation.
  */
 export const ANY_BENEFICIARY = '0x0000000000000000000000000000000000000a11';
 
@@ -26,7 +26,7 @@ export const ROOT_AUTHORITY =
 /**
  * The typehash for a delegation, used when generating a delegation hash.
  *
- * keccak('Delegation(address delegate,address delegator,bytes32 authority,Caveat[] caveats,uint256 salt)')
+ * keccak('Delegation(address delegate,address delegator,bytes32 authority,Caveat[] caveats,uint256 salt)Caveat(address enforcer,bytes terms)')
  */
 export const DELEGATION_TYPEHASH =
   '0x88c1d2ecf185adf710588203a5f263f0ff61be0d33da39792cde19ba9aa4331e';
