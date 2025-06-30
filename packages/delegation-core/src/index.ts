@@ -16,7 +16,7 @@ export {
 export {
   encodeDelegations,
   decodeDelegations,
-  getDelegationHash,
+  hashDelegation,
   ROOT_AUTHORITY,
   ANY_BENEFICIARY,
   DELEGATION_TYPEHASH,

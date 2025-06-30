@@ -5,7 +5,7 @@ import {
   encodeDelegations,
   decodeDelegations,
   ROOT_AUTHORITY,
-  getDelegationHash,
+  hashDelegation,
 } from '../src/delegation';
 import type { DelegationStruct, CaveatStruct } from '../src/types';
 
@@ -568,7 +568,7 @@ describe('delegation', () => {
     });
   });
 
-  describe('getDelegationHash', () => {
+  describe('hashDelegation', () => {
     it('returns the correct hash for a delegation with no caveats', () => {
       const delegation: DelegationStruct = {
         delegate: '0x1234567890123456789012345678901234567890',
@@ -580,7 +580,7 @@ describe('delegation', () => {
         signature: '0x789abc',
       };
 
-      const hash = getDelegationHash(delegation);
+      const hash = hashDelegation(delegation);
 
       expect(hash).toMatchInlineSnapshot(
         `"0xcaeb6434dc99e3098ff79ea1458a16b3e53b380f211cdb359628f9302d9c41b4"`,
@@ -603,7 +603,7 @@ describe('delegation', () => {
         signature: '0x789abc',
       };
 
-      const hash = getDelegationHash(delegation);
+      const hash = hashDelegation(delegation);
 
       expect(hash).toMatchInlineSnapshot(
         `"0x2c67f5e651bf654552c047f3bdc935996eb8867fea62274ebd6643522a34ea65"`,
@@ -631,7 +631,7 @@ describe('delegation', () => {
         signature: '0x456789',
       };
 
-      const hash = getDelegationHash(delegation);
+      const hash = hashDelegation(delegation);
 
       expect(hash).toMatchInlineSnapshot(
         `"0x71a41e757d3aba596d483d0414a1681961573e8024238c4e72b19c194627fbdb"`,
@@ -650,7 +650,7 @@ describe('delegation', () => {
         signature: '0xffffff',
       };
 
-      const hash = getDelegationHash(delegation);
+      const hash = hashDelegation(delegation);
 
       expect(hash).toMatchInlineSnapshot(
         `"0xeb8ff35e32030bee23e16167e98536ccf4dffb79558d0fb76b73628fc70805cd"`,
@@ -667,7 +667,7 @@ describe('delegation', () => {
         signature: '0x123456',
       };
 
-      const hash = getDelegationHash(delegation);
+      const hash = hashDelegation(delegation);
 
       expect(hash).toMatchInlineSnapshot(
         `"0xa05839f6864d332530b2d1a4043668777940e609931ae9c09d19b866a1408a6b"`,
@@ -684,7 +684,7 @@ describe('delegation', () => {
         signature: '0x123456',
       };
 
-      const hash = getDelegationHash(delegation);
+      const hash = hashDelegation(delegation);
 
       expect(hash).toMatchInlineSnapshot(
         `"0xbbc3b60ea68fa14fa170a207435a4ae96cf3adc8ab488d7bfa57e9c8da67f9af"`,
@@ -707,8 +707,8 @@ describe('delegation', () => {
         signature: '0x789abc',
       };
 
-      const hash1 = getDelegationHash(delegation);
-      const hash2 = getDelegationHash(delegation);
+      const hash1 = hashDelegation(delegation);
+      const hash2 = hashDelegation(delegation);
 
       expect(hash1).toEqual(hash2);
     });
@@ -728,8 +728,8 @@ describe('delegation', () => {
         delegate: '0x9876543210987654321098765432109876543210',
       };
 
-      const hash1 = getDelegationHash(baseDelegation);
-      const hash2 = getDelegationHash(altDelegation);
+      const hash1 = hashDelegation(baseDelegation);
+      const hash2 = hashDelegation(altDelegation);
 
       expect(hash1).not.toEqual(hash2);
     });
@@ -749,8 +749,8 @@ describe('delegation', () => {
         delegator: '0x9876543210987654321098765432109876543210',
       };
 
-      const hash1 = getDelegationHash(baseDelegation);
-      const hash2 = getDelegationHash(altDelegation);
+      const hash1 = hashDelegation(baseDelegation);
+      const hash2 = hashDelegation(altDelegation);
 
       expect(hash1).not.toEqual(hash2);
     });
@@ -771,8 +771,8 @@ describe('delegation', () => {
           '0x1111111111111111111111111111111111111111111111111111111111111111',
       };
 
-      const hash1 = getDelegationHash(baseDelegation);
-      const hash2 = getDelegationHash(altDelegation);
+      const hash1 = hashDelegation(baseDelegation);
+      const hash2 = hashDelegation(altDelegation);
 
       expect(hash1).not.toEqual(hash2);
     });
@@ -792,8 +792,8 @@ describe('delegation', () => {
         salt: 0x43n,
       };
 
-      const hash1 = getDelegationHash(baseDelegation);
-      const hash2 = getDelegationHash(altDelegation);
+      const hash1 = hashDelegation(baseDelegation);
+      const hash2 = hashDelegation(altDelegation);
 
       expect(hash1).not.toEqual(hash2);
     });
@@ -825,8 +825,8 @@ describe('delegation', () => {
         ],
       };
 
-      const hash1 = getDelegationHash(baseDelegation);
-      const hash2 = getDelegationHash(altDelegation);
+      const hash1 = hashDelegation(baseDelegation);
+      const hash2 = hashDelegation(altDelegation);
 
       expect(hash1).not.toEqual(hash2);
     });
@@ -858,8 +858,8 @@ describe('delegation', () => {
         ],
       };
 
-      const hash1 = getDelegationHash(baseDelegation);
-      const hash2 = getDelegationHash(altDelegation);
+      const hash1 = hashDelegation(baseDelegation);
+      const hash2 = hashDelegation(altDelegation);
 
       expect(hash1).not.toEqual(hash2);
     });
@@ -891,8 +891,8 @@ describe('delegation', () => {
         ],
       };
 
-      const hash1 = getDelegationHash(baseDelegation);
-      const hash2 = getDelegationHash(altDelegation);
+      const hash1 = hashDelegation(baseDelegation);
+      const hash2 = hashDelegation(altDelegation);
 
       // Args should not affect the hash according to the implementation
       expect(hash1).toEqual(hash2);
@@ -913,8 +913,8 @@ describe('delegation', () => {
         signature: '0xffffff', // Different signature
       };
 
-      const hash1 = getDelegationHash(baseDelegation);
-      const hash2 = getDelegationHash(altDelegation);
+      const hash1 = hashDelegation(baseDelegation);
+      const hash2 = hashDelegation(altDelegation);
 
       // Signature should not affect the hash according to the implementation
       expect(hash1).toEqual(hash2);
@@ -957,8 +957,8 @@ describe('delegation', () => {
         ],
       };
 
-      const hash1 = getDelegationHash(baseDelegation);
-      const hash2 = getDelegationHash(altDelegation);
+      const hash1 = hashDelegation(baseDelegation);
+      const hash2 = hashDelegation(altDelegation);
 
       expect(hash1).not.toEqual(hash2);
     });
@@ -979,7 +979,7 @@ describe('delegation', () => {
         signature: '0x789abc',
       };
 
-      const hash = getDelegationHash(delegation);
+      const hash = hashDelegation(delegation);
 
       expect(hash).toMatchInlineSnapshot(
         `"0xeb607828d330ff18bb9e0cffb3941c53c289fdf9ab412f7bc0fe3c09dfd2878c"`,
@@ -996,7 +996,7 @@ describe('delegation', () => {
         signature: '0x789abc',
       };
 
-      const hash = getDelegationHash(delegation);
+      const hash = hashDelegation(delegation);
 
       expect(hash).toMatchInlineSnapshot(
         `"0xcaeb6434dc99e3098ff79ea1458a16b3e53b380f211cdb359628f9302d9c41b4"`,
@@ -1034,8 +1034,8 @@ describe('delegation', () => {
         signature: '0x789',
       };
 
-      const hash1 = getDelegationHash(delegation1);
-      const hash2 = getDelegationHash(delegation2);
+      const hash1 = hashDelegation(delegation1);
+      const hash2 = hashDelegation(delegation2);
 
       // Addresses should be treated the same regardless of case
       expect(hash1).toEqual(hash2);
@@ -1051,7 +1051,7 @@ describe('delegation', () => {
         signature: '0x789abc',
       };
 
-      const hash = getDelegationHash(delegation, { out: 'bytes' });
+      const hash = hashDelegation(delegation, { out: 'bytes' });
 
       expect(hash).toBeInstanceOf(Uint8Array);
       expect(hash).toMatchInlineSnapshot(`
@@ -1102,7 +1102,7 @@ describe('delegation', () => {
         signature: '0x789abc',
       };
 
-      const hash = getDelegationHash(delegation, { out: 'hex' });
+      const hash = hashDelegation(delegation, { out: 'hex' });
 
       expect(hash).toMatchInlineSnapshot(
         `"0xcaeb6434dc99e3098ff79ea1458a16b3e53b380f211cdb359628f9302d9c41b4"`,
@@ -1119,8 +1119,8 @@ describe('delegation', () => {
         signature: '0x789abc',
       };
 
-      const hashHex = getDelegationHash(delegation, { out: 'hex' });
-      const hashBytes = getDelegationHash(delegation, { out: 'bytes' });
+      const hashHex = hashDelegation(delegation, { out: 'hex' });
+      const hashBytes = hashDelegation(delegation, { out: 'bytes' });
 
       const hashFromBytes = bytesToHex(hashBytes);
 

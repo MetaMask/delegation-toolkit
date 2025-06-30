@@ -240,6 +240,31 @@ import { ROOT_AUTHORITY } from '@metamask/delegation-core';
 console.log(ROOT_AUTHORITY); // Root authority identifier
 ```
 
+#### `hashDelegation(delegation)`
+
+Computes a hash for a given delegation object.
+
+**Parameters:**
+- `delegation: DelegationStruct` - The delegation object to hash
+
+**Returns:** `Hex` - The hash of the delegation
+
+**Example:**
+```typescript
+import { hashDelegation } from '@metamask/delegation-core';
+
+const delegation = {
+  delegate: '0x742d35Cc6634C0532925a3b8d40EC49b0e8BaA5e',
+  delegator: '0x...',
+  authority: '0x...',
+  caveats: [],
+  salt: 0n,
+  signature: '0x...'
+};
+
+const hash = hashDelegation(delegation);
+```
+
 ## Type Definitions
 
 ### Core Types
@@ -247,16 +272,16 @@ console.log(ROOT_AUTHORITY); // Root authority identifier
 ```typescript
 export type Hex = `0x${string}`;
 
-export type Delegation = {
+export type DelegationStruct = {
   delegate: string;
   delegator: string;
   authority: string;
-  caveats: Caveat[];
+  caveats: CaveatStruct[];
   salt: bigint;
   signature: string;
 };
 
-export type Caveat = {
+export type CaveatStruct = {
   enforcer: string;
   terms: string;
 };

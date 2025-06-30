@@ -190,11 +190,11 @@ export function decodeDelegations(
  * @param options - Encoding options. Defaults to { out: 'hex' }.
  * @returns The keccak256 hash of the encoded delegation as a hex string (default) or Uint8Array.
  */
-export function getDelegationHash(
+export function hashDelegation(
   delegation: DelegationStruct,
   options?: EncodingOptions<'hex'>,
 ): Hex;
-export function getDelegationHash(
+export function hashDelegation(
   delegation: DelegationStruct,
   options: EncodingOptions<'bytes'>,
 ): Uint8Array;
@@ -207,7 +207,7 @@ export function getDelegationHash(
  * @param options - Encoding options. Defaults to { out: 'hex' }.
  * @returns The keccak256 hash of the encoded delegation as a hex string (default) or Uint8Array.
  */
-export function getDelegationHash(
+export function hashDelegation(
   delegation: DelegationStruct,
   options: EncodingOptions<ResultValue> = defaultOptions,
 ): Hex | Uint8Array {

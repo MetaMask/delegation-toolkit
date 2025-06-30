@@ -1,7 +1,7 @@
 import {
   encodeDelegations as encodeDelegationsCore,
   decodeDelegations as decodeDelegationsCore,
-  getDelegationHash as getDelegationHashCore,
+  hashDelegation,
   ANY_BENEFICIARY,
   DELEGATION_TYPEHASH,
   CAVEAT_TYPEHASH,
@@ -185,7 +185,7 @@ export const prepDelegationHashForPasskeySign = (delegationHash: Hex) => {
 export const getDelegationHashOffchain = (input: Delegation): Hex => {
   const delegationStruct = toDelegationStruct(input);
 
-  return getDelegationHashCore(delegationStruct);
+  return hashDelegation(delegationStruct);
 };
 
 type BaseCreateDelegationOptions = {
