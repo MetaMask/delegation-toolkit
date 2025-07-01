@@ -8,6 +8,12 @@ Core utilities for creating and managing delegation terms and caveats in the Met
 npm install @metamask/delegation-core
 ```
 
+or
+
+```bash
+yarn add @metamask/delegation-core
+```
+
 ## Overview
 
 This package provides utilities for:

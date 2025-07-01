@@ -7,13 +7,13 @@
     "MetaMask",
     "Ethereum"
   ],
-  "homepage": "https://github.com/MetaMask/delegation-toolkit/tree/main/packages/delegation-core#readme",
+  "homepage": "https://github.com/metamask/delegation-toolkit/tree/main/packages/delegation-core#readme",
   "bugs": {
-    "url": "https://github.com/MetaMask/delegation-toolkit/issues"
+    "url": "https://github.com/metamask/delegation-toolkit/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MetaMask/delegation-toolkit.git"
+    "url": "https://github.com/metamask/delegation-toolkit.git"
   },
   "author": "MetaMask <hello@metamask.io>",
   "sideEffects": false,
@@ -46,8 +46,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "changelog:update": "../../scripts/update-changelog.sh @metamask/delegation-abis",
-    "changelog:validate": "../../scripts/validate-changelog.sh @metamask/delegation-abis",
+    "changelog:update": "../../scripts/update-changelog.sh @metamask/delegation-core",
+    "changelog:validate": "../../scripts/validate-changelog.sh @metamask/delegation-core",
     "clean": "rm -rf dist",
     "lint": "yarn lint:eslint",
     "lint:complete": "yarn lint:eslint && yarn lint:constraints && yarn lint:misc --check && yarn lint:dependencies --check && yarn lint:changelog",
@@ -67,7 +67,7 @@
     "@types/node": "^20.10.6",
     "tsup": "^7.2.0",
     "typescript": "5.0.4",
-    "vitest": "2.1.9"
+    "vitest": "^2.1.9"
   },
   "dependencies": {
     "@metamask/abi-utils": "^3.0.0",

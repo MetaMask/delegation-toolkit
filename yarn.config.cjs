@@ -437,8 +437,8 @@ function expectWorkspaceDescription(workspace) {
  */
 async function expectWorkspaceLicense(workspace) {
   if (
-    !(await workspaceFileExists(workspace, 'LICENSE')) &&
-    !(await workspaceFileExists(workspace, 'LICENCE'))
+    !(await workspaceFileExists(workspace, 'LICENSE.APACHE2')) ||
+    !(await workspaceFileExists(workspace, 'LICENSE.MIT0'))
   ) {
     workspace.error('Could not find LICENSE file');
   }
