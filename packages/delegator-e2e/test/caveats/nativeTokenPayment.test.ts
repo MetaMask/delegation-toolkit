@@ -177,13 +177,13 @@ test('Bob attempts to redeem the delegation without providing a valid permission
     ),
   });
 
-  const permissionsContext = '0x';
+  const permissionsContext = '0x' as const;
 
   await runTest_expectFailure(
     delegationRequiringNativeTokenPayment,
     permissionsContext,
     recipient,
-    '', // The NativeTokenPaymentEnforcer rejects when it fails to decode the permissions context
+    undefined, // The NativeTokenPaymentEnforcer rejects when it fails to decode the permissions context
   );
 });
 
@@ -295,15 +295,21 @@ const runTest_expectFailure = async (
   delegation: Delegation,
   permissionsContext: Hex,
   recipient: Address,
-  expectedError: string,
+  expectedError: string | undefined,
 ) => {
   const balanceBefore = await publicClient.getBalance({
     address: recipient,
   });
 
-  await expect(
+  const rejects = expect(
     submitUserOpForTest(delegation, permissionsContext),
-  ).rejects.toThrow(expectedError);
+  ).rejects;
+
+  if (expectedError) {
+    await rejects.toThrow(expectedError);
+  } else {
+    await rejects.toThrow();
+  }
 
   const balanceAfter = await publicClient.getBalance({
     address: recipient,
