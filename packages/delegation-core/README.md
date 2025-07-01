@@ -196,7 +196,7 @@ Creates terms for an ERC20TokenPeriodTransfer caveat that validates that ERC20 t
   - `startDate: number` - Unix timestamp when the first period begins.
 - `options?: EncodingOptions` - Optional encoding options
 
-**Returns:** `Hex | Uint8Array` - 128-byte encoded terms (32 bytes per parameter)
+**Returns:** `Hex | Uint8Array` - 116-byte encoded terms (20 bytes for address + 32 bytes per parameter)
 
 **Example:**
 ```typescript
