@@ -11,6 +11,7 @@ export {
   createExactCalldataTerms,
   createNativeTokenStreamingTerms,
   createERC20StreamingTerms,
+  createERC20TokenPeriodTransferTerms,
 } from './caveats';
 
 export {

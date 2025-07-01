@@ -184,6 +184,33 @@ const terms = createERC20StreamingTerms({
 });
 ```
 
+#### `createERC20TokenPeriodTransferTerms(terms, options?)`
+
+Creates terms for an ERC20TokenPeriodTransfer caveat that validates that ERC20 token transfers do not exceed a specified amount within a given time period.
+
+**Parameters:**
+- `terms: ERC20TokenPeriodTransferTerms`
+  - `tokenAddress: BytesLike` - The address of the ERC20 token.
+  - `periodAmount: bigint` - The maximum amount that can be transferred within each period.
+  - `periodDuration: number` - The duration of each period in seconds.
+  - `startDate: number` - Unix timestamp when the first period begins.
+- `options?: EncodingOptions` - Optional encoding options
+
+**Returns:** `Hex | Uint8Array` - 128-byte encoded terms (32 bytes per parameter)
+
+**Example:**
+```typescript
+import { createERC20TokenPeriodTransferTerms } from '@metamask/delegation-core';
+
+// Allow 100 tokens per day starting from a specific date
+const terms = createERC20TokenPeriodTransferTerms({
+  tokenAddress: '0xA0b86a33E6441E74C65c6BF2A6d73B895B9b34A2',
+  periodAmount: 100n,  // 100 tokens
+  periodDuration: 86400,  // 24 hours in seconds
+  startDate: 1640995200  // 2022-01-01 00:00:00 UTC
+});
+```
+
 ### Delegation Utilities
 
 #### `encodeDelegations(delegations)`

@@ -1,4 +1,4 @@
-import { concat, isAddress, toHex } from 'viem';
+import { createERC20TokenPeriodTransferTerms } from '@metamask/delegation-core';
 import type { Address } from 'viem';
 
 import type { Caveat, DeleGatorEnvironment } from '../types';
@@ -26,28 +26,12 @@ export const erc20PeriodTransferBuilder = (
   periodDuration: number,
   startDate: number,
 ): Caveat => {
-  if (!isAddress(tokenAddress)) {
-    throw new Error('Invalid tokenAddress: must be a valid address');
-  }
-
-  if (periodAmount <= 0n) {
-    throw new Error('Invalid periodAmount: must be a positive number');
-  }
-
-  if (periodDuration <= 0) {
-    throw new Error('Invalid periodDuration: must be a positive number');
-  }
-
-  if (startDate <= 0) {
-    throw new Error('Invalid startDate: must be a positive number');
-  }
-
-  const terms = concat([
+  const terms = createERC20TokenPeriodTransferTerms({
     tokenAddress,
-    toHex(periodAmount, { size: 32 }),
-    toHex(periodDuration, { size: 32 }),
-    toHex(startDate, { size: 32 }),
-  ]);
+    periodAmount,
+    periodDuration,
+    startDate,
+  });
 
   const {
     caveatEnforcers: { ERC20PeriodTransferEnforcer },
