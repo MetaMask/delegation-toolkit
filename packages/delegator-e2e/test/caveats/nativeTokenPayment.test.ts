@@ -4,7 +4,6 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   getDelegationHashOffchain,
-  SINGLE_DEFAULT_MODE,
 } from '@metamask/delegation-toolkit/utils';
 import {
   createCaveatBuilder,
@@ -12,6 +11,7 @@ import {
   createExecution,
   Implementation,
   toMetaMaskSmartAccount,
+  ExecutionMode,
   type MetaMaskSmartAccount,
   type Delegation,
 } from '@metamask/delegation-toolkit';
@@ -336,7 +336,7 @@ const submitUserOpForTest = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });

@@ -38,7 +38,7 @@ export {
 
 export { Implementation } from './constants';
 
-export { createExecution } from './executions';
+export { createExecution, ExecutionMode } from './executions';
 
 export type { ExecutionStruct, CreateExecutionArgs } from './executions';
 
