@@ -18,12 +18,12 @@ import {
   signDelegation,
   aggregateSignature,
   type MetaMaskSmartAccount,
+  type PartialSignature,
 } from '@metamask/delegation-toolkit';
 import {
   encodePermissionContexts,
   encodeExecutionCalldatas,
   SINGLE_DEFAULT_MODE,
-  type PartialSignature,
 } from '@metamask/delegation-toolkit/utils';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import {

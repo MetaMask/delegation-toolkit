@@ -65,9 +65,7 @@ beforeEach(async () => {
   const aliceCounter = await deployCounter(aliceSmartAccount.address);
   aliceCounterContractAddress = aliceCounter.address;
 
-  const caveats = createCaveatBuilder(aliceSmartAccount.environment, {
-    allowEmptyCaveats: true,
-  })
+  const caveats = createCaveatBuilder(aliceSmartAccount.environment)
     .addCaveat('allowedTargets', [aliceCounterContractAddress])
     .addCaveat('allowedMethods', ['increment()'])
     .addCaveat('valueLte', 0n);

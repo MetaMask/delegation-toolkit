@@ -41,13 +41,13 @@ describe('createCaveatBuilder()', () => {
       const builder = createCaveatBuilder(environment);
 
       expect(() => builder.build()).to.throw(
-        'No caveats found. If you definitely want to create an empty caveat collection, set `allowEmptyCaveats`.',
+        'No caveats found. If you definitely want to create an empty caveat collection, set `allowInsecureUnrestrictedDelegation` to `true`.',
       );
     });
 
     it('should allow empty caveats, when configured', () => {
       const builder = createCaveatBuilder(environment, {
-        allowEmptyCaveats: true,
+        allowInsecureUnrestrictedDelegation: true,
       });
 
       expect(() => builder.build()).to.not.throw();
@@ -391,7 +391,7 @@ describe('createCaveatBuilder()', () => {
     it("should add a 'nativeTokenPayment' caveat", () => {
       const builder = createCaveatBuilder(environment);
       const amount = 1000000000000000000n; // 1 ETH in wei
-      const recipient = randomAddress(true);
+      const recipient = randomAddress('lowercase');
 
       const caveats = builder
         .addCaveat('nativeTokenPayment', recipient, amount)

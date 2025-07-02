@@ -193,6 +193,7 @@ type BaseCreateDelegationOptions = {
   caveats: Caveats;
   parentDelegation?: Delegation | Hex;
   salt?: Hex;
+  allowInsecureUnrestrictedDelegation?: boolean;
 };
 
 /**
@@ -236,7 +237,7 @@ export const createDelegation = (
     delegate: options.to,
     delegator: options.from,
     authority: resolveAuthority(options.parentDelegation),
-    caveats: resolveCaveats(options.caveats),
+    caveats: resolveCaveats(options),
     salt: options.salt ?? '0x',
     signature: '0x',
   };
@@ -254,7 +255,7 @@ export const createOpenDelegation = (
     delegate: ANY_BENEFICIARY,
     delegator: options.from,
     authority: resolveAuthority(options.parentDelegation),
-    caveats: resolveCaveats(options.caveats),
+    caveats: resolveCaveats(options),
     salt: options.salt ?? '0x',
     signature: '0x',
   };
@@ -278,6 +279,7 @@ export const signDelegation = async ({
   chainId,
   name = 'DelegationManager',
   version = '1',
+  allowInsecureUnrestrictedDelegation = false,
 }: {
   signer: WalletClient<Transport, Chain, Account>;
   delegation: Omit<Delegation, 'signature'>;
@@ -285,11 +287,21 @@ export const signDelegation = async ({
   chainId: number;
   name?: string;
   version?: string;
+  allowInsecureUnrestrictedDelegation?: boolean;
 }) => {
   const delegationStruct = toDelegationStruct({
     ...delegation,
     signature: '0x',
   });
+
+  if (
+    delegationStruct.caveats.length === 0 &&
+    !allowInsecureUnrestrictedDelegation
+  ) {
+    throw new Error(
+      'No caveats found. If you definitely want to sign a delegation without caveats, set `allowInsecureUnrestrictedDelegation` to `true`.',
+    );
+  }
 
   return signer.signTypedData({
     account: signer.account,

@@ -142,7 +142,7 @@ test('Bob attempts to redeem the delegation without an argsEqualityCheckEnforcer
     to: bobSmartAccount.environment.caveatEnforcers.NativeTokenPaymentEnforcer!,
     from: bobSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment, {
-      allowEmptyCaveats: true,
+      allowInsecureUnrestrictedDelegation: true,
     }),
   });
 

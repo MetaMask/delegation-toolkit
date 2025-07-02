@@ -13,21 +13,32 @@ import {
   decodeDelegations,
   encodePermissionContexts,
   decodePermissionContexts,
+  signDelegation,
 } from '../src/delegation';
 import type { Caveat, Delegation } from '../src/types';
+import { randomAddress } from './utils';
+import { getAddress } from 'viem';
 
 const mockDelegate = '0x1234567890123456789012345678901234567890' as const;
 const mockDelegator = '0x0987654321098765432109876543210987654321' as const;
 const mockSignature =
   '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890' as const;
 
+// delegation encoding in @metamask/delegation-core will lowercase any Hex strings
+const mockCaveat: Caveat = {
+  enforcer: randomAddress('lowercase'),
+  terms: '0x',
+  args: '0x',
+};
+
 describe('toDelegationStruct', () => {
   it('should convert a basic delegation to struct', () => {
+    // toDelegationStruct will checksum the addresses
     const delegation: Delegation = {
       delegate: mockDelegate,
       delegator: mockDelegator,
       authority: ROOT_AUTHORITY,
-      caveats: [],
+      caveats: [mockCaveat],
       salt: '0x123',
       signature: mockSignature,
     };
@@ -37,7 +48,7 @@ describe('toDelegationStruct', () => {
       delegate: mockDelegate,
       delegator: mockDelegator,
       authority: ROOT_AUTHORITY,
-      caveats: [],
+      caveats: [{ ...mockCaveat, enforcer: getAddress(mockCaveat.enforcer) }],
       salt: 291n,
       signature: mockSignature,
     });
@@ -113,7 +124,7 @@ describe('resolveAuthority', () => {
       delegate: mockDelegate,
       delegator: mockDelegator,
       authority: ROOT_AUTHORITY,
-      caveats: [],
+      caveats: [mockCaveat],
       salt: '0x',
       signature: '0x',
     };
@@ -128,14 +139,14 @@ describe('createDelegation', () => {
     const result = createDelegation({
       to: mockDelegate,
       from: mockDelegator,
-      caveats: [],
+      caveats: [mockCaveat],
     });
 
     expect(result).to.deep.equal({
       delegate: mockDelegate,
       delegator: mockDelegator,
       authority: ROOT_AUTHORITY,
-      caveats: [],
+      caveats: [mockCaveat],
       salt: '0x',
       signature: '0x',
     });
@@ -147,7 +158,7 @@ describe('createDelegation', () => {
     const result = createDelegation({
       to: mockDelegate,
       from: mockDelegator,
-      caveats: [],
+      caveats: [mockCaveat],
       parentDelegation: parentHash,
     });
 
@@ -155,7 +166,7 @@ describe('createDelegation', () => {
       delegate: mockDelegate,
       delegator: mockDelegator,
       authority: parentHash,
-      caveats: [],
+      caveats: [mockCaveat],
       salt: '0x',
       signature: '0x',
     });
@@ -197,14 +208,14 @@ describe('createDelegation', () => {
     const result = createDelegation({
       to: mockDelegate,
       from: mockDelegator,
-      caveats: [],
+      caveats: [mockCaveat],
       salt: customSalt,
     });
     expect(result).to.deep.equal({
       delegate: mockDelegate,
       delegator: mockDelegator,
       authority: ROOT_AUTHORITY,
-      caveats: [],
+      caveats: [mockCaveat],
       salt: customSalt,
       signature: '0x',
     });
@@ -215,14 +226,14 @@ describe('createOpenDelegation', () => {
   it('should create a basic open delegation with root authority', () => {
     const result = createOpenDelegation({
       from: mockDelegator,
-      caveats: [],
+      caveats: [mockCaveat],
     });
 
     expect(result).to.deep.equal({
       delegate: '0x0000000000000000000000000000000000000a11',
       delegator: mockDelegator,
       authority: ROOT_AUTHORITY,
-      caveats: [],
+      caveats: [mockCaveat],
       salt: '0x',
       signature: '0x',
     });
@@ -233,7 +244,7 @@ describe('createOpenDelegation', () => {
       '0x1234567890123456789012345678901234567890123456789012345678901234' as const;
     const result = createOpenDelegation({
       from: mockDelegator,
-      caveats: [],
+      caveats: [mockCaveat],
       parentDelegation: parentHash,
     });
 
@@ -241,7 +252,7 @@ describe('createOpenDelegation', () => {
       delegate: '0x0000000000000000000000000000000000000a11',
       delegator: mockDelegator,
       authority: parentHash,
-      caveats: [],
+      caveats: [mockCaveat],
       salt: '0x',
       signature: '0x',
     });
@@ -281,17 +292,49 @@ describe('createOpenDelegation', () => {
     const customSalt = '0xdeadbeef';
     const result = createOpenDelegation({
       from: mockDelegator,
-      caveats: [],
+      caveats: [mockCaveat],
       salt: customSalt,
     });
     expect(result).to.deep.equal({
       delegate: '0x0000000000000000000000000000000000000a11',
       delegator: mockDelegator,
       authority: ROOT_AUTHORITY,
-      caveats: [],
+      caveats: [mockCaveat],
       salt: customSalt,
       signature: '0x',
     });
+  });
+
+  it('should throw an error if no caveats are provided', () => {
+    expect(() =>
+      createOpenDelegation({
+        from: mockDelegator,
+        caveats: [],
+      }),
+    ).to.throw(
+      'No caveats found. If you definitely want to create an empty caveat collection, set `allowInsecureUnrestrictedDelegation` to `true`.',
+    );
+  });
+
+  it('should throw an error if no caveats are provided and allowInsecureUnrestrictedDelegation is false', () => {
+    expect(() =>
+      createOpenDelegation({
+        from: mockDelegator,
+        caveats: [],
+      }),
+    ).to.throw(
+      'No caveats found. If you definitely want to create an empty caveat collection, set `allowInsecureUnrestrictedDelegation` to `true`.',
+    );
+  });
+
+  it('should not throw an error if no caveats are provided and allowInsecureUnrestrictedDelegation is true', () => {
+    expect(() =>
+      createOpenDelegation({
+        from: mockDelegator,
+        caveats: [],
+        allowInsecureUnrestrictedDelegation: true,
+      }),
+    ).to.not.throw();
   });
 });
 
@@ -305,7 +348,7 @@ describe('resolveCaveats', () => {
       },
     ];
 
-    const result = resolveCaveats(caveats);
+    const result = resolveCaveats({ caveats });
     expect(result).to.equal(caveats);
     expect(result).to.deep.equal(caveats);
   });
@@ -323,7 +366,7 @@ describe('resolveCaveats', () => {
       build: stub().returns(mockCaveats),
     };
 
-    const result = resolveCaveats(mockBuilder as any);
+    const result = resolveCaveats({ caveats: mockBuilder as any });
 
     expect(mockBuilder.build.calledOnce).to.equal(true);
     expect(result).to.deep.equal(mockCaveats);
@@ -334,7 +377,9 @@ describe('resolveCaveats', () => {
       build: stub().throws(new Error('Build failed')),
     };
 
-    expect(() => resolveCaveats(mockBuilder as any)).to.throw('Build failed');
+    expect(() => resolveCaveats({ caveats: mockBuilder as any })).to.throw(
+      'Build failed',
+    );
     expect(mockBuilder.build.calledOnce).to.equal(true);
   });
 });
@@ -344,7 +389,7 @@ describe('encodeDelegations', () => {
     delegate: mockDelegate,
     delegator: mockDelegator,
     authority: ROOT_AUTHORITY,
-    caveats: [],
+    caveats: [mockCaveat],
     salt: '0x123',
     signature: mockSignature,
   };
@@ -396,7 +441,7 @@ describe('decodeDelegations', () => {
     delegate: mockDelegate,
     delegator: mockDelegator,
     authority: ROOT_AUTHORITY,
-    caveats: [],
+    caveats: [mockCaveat],
     salt: '0x123',
     signature: mockSignature,
   };
@@ -448,7 +493,7 @@ describe('encodePermissionContexts', () => {
     delegate: mockDelegate,
     delegator: mockDelegator,
     authority: ROOT_AUTHORITY,
-    caveats: [],
+    caveats: [mockCaveat],
     salt: '0x123',
     signature: mockSignature,
   };
@@ -509,7 +554,7 @@ describe('decodePermissionContexts', () => {
     delegate: mockDelegate,
     delegator: mockDelegator,
     authority: ROOT_AUTHORITY,
-    caveats: [],
+    caveats: [mockCaveat],
     salt: '0x123',
     signature: mockSignature,
   };
@@ -562,5 +607,82 @@ describe('decodePermissionContexts', () => {
     const decoded = decodePermissionContexts(encoded);
 
     expect(decoded).to.have.length(0);
+  });
+});
+
+describe('signDelegation', () => {
+  const mockSigner = {
+    signTypedData: stub().resolves('mockSignature'),
+    account: { address: '0xSignerAccount' },
+    cacheTime: 0,
+    chain: {},
+    key: 'mockKey',
+    name: 'mockName',
+    transport: {},
+  };
+
+  const mockDelegation = {
+    delegate: mockDelegate,
+    delegator: mockDelegator,
+    authority: ROOT_AUTHORITY as `0x${string}`,
+    caveats: [mockCaveat],
+    salt: '0x123' as `0x${string}`,
+  };
+
+  const delegationManager = '0xDelegationManager' as `0x${string}`;
+  const chainId = 1;
+
+  beforeEach(() => {
+    mockSigner.signTypedData.resetHistory();
+  });
+
+  it('should sign a delegation successfully', async () => {
+    const signature = await signDelegation({
+      signer: mockSigner as any,
+      delegation: mockDelegation,
+      delegationManager,
+      chainId,
+    });
+
+    expect(signature).to.equal('mockSignature');
+    expect(mockSigner.signTypedData.calledOnce).to.be.true;
+  });
+
+  it('should throw an error if no caveats are provided and allowInsecureUnrestrictedDelegation is false', async () => {
+    const delegationWithoutCaveats = {
+      ...mockDelegation,
+      caveats: [],
+      salt: '0x123' as `0x${string}`,
+    };
+
+    await expect(
+      signDelegation({
+        signer: mockSigner as any,
+        delegation: delegationWithoutCaveats,
+        delegationManager,
+        chainId,
+      }),
+    ).to.be.rejectedWith(
+      'No caveats found. If you definitely want to sign a delegation without caveats, set `allowInsecureUnrestrictedDelegation` to `true`.',
+    );
+  });
+
+  it('should sign a delegation without caveats if allowInsecureUnrestrictedDelegation is true', async () => {
+    const delegationWithoutCaveats = {
+      ...mockDelegation,
+      caveats: [],
+      salt: '0x123' as `0x${string}`,
+    };
+
+    const signature = await signDelegation({
+      signer: mockSigner as any,
+      delegation: delegationWithoutCaveats,
+      delegationManager,
+      chainId,
+      allowInsecureUnrestrictedDelegation: true,
+    });
+
+    expect(signature).to.equal('mockSignature');
+    expect(mockSigner.signTypedData.calledOnce).to.equal(true);
   });
 });

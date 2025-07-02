@@ -146,7 +146,7 @@ test('Bob redelegates to Carol, who redeems the delegation to call increment() o
     from: bob.address,
     parentDelegation: signedDelegation,
     caveats: createCaveatBuilder(aliceSmartAccount.environment, {
-      allowEmptyCaveats: true,
+      allowInsecureUnrestrictedDelegation: true,
     }),
   });
 
