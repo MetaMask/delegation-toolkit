@@ -12,7 +12,8 @@ describe('limitedCallsBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithLimit = (limit: number) => {
-    return limitedCallsBuilder(environment, limit);
+    const config = { limit };
+    return limitedCallsBuilder(environment, config);
   };
 
   describe('validation', () => {

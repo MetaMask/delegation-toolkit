@@ -5,6 +5,14 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export const erc20Streaming = 'erc20Streaming';
 
+export type Erc20StreamingBuilderConfig = {
+  tokenAddress: Address;
+  initialAmount: bigint;
+  maxAmount: bigint;
+  amountPerSecond: bigint;
+  startTime: number;
+};
+
 /**
  * Builds a caveat for ERC20 token streaming with configurable parameters.
  *
@@ -24,12 +32,11 @@ export const erc20Streaming = 'erc20Streaming';
  */
 export const erc20StreamingBuilder = (
   environment: DeleGatorEnvironment,
-  tokenAddress: Address,
-  initialAmount: bigint,
-  maxAmount: bigint,
-  amountPerSecond: bigint,
-  startTime: number,
+  config: Erc20StreamingBuilderConfig,
 ): Caveat => {
+  const { tokenAddress, initialAmount, maxAmount, amountPerSecond, startTime } =
+    config;
+
   const terms = createERC20StreamingTerms({
     tokenAddress,
     initialAmount,

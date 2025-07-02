@@ -18,7 +18,8 @@ describe('deployedBuilder()', () => {
     salt: Hex,
     bytecode: Hex,
   ) => {
-    return deployedBuilder(environment, contractAddress, salt, bytecode);
+    const config = { contractAddress, salt, bytecode };
+    return deployedBuilder(environment, config);
   };
 
   const validContractAddress = randomAddress();

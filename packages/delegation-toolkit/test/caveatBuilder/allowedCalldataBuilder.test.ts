@@ -13,7 +13,8 @@ describe('allowedCalldataBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithParams = (dataStart: number, value: Hex) => {
-    return allowedCalldataBuilder(environment, dataStart, value);
+    const config = { startIndex: dataStart, value };
+    return allowedCalldataBuilder(environment, config);
   };
 
   describe('validation', () => {

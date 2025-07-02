@@ -5,6 +5,14 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const specificActionERC20TransferBatch =
   'specificActionERC20TransferBatch';
 
+export type SpecificActionErc20TransferBatchBuilderConfig = {
+  tokenAddress: Address;
+  recipient: Address;
+  amount: bigint;
+  firstTarget: Address;
+  firstCalldata: Hex;
+};
+
 /**
  * Builds a caveat struct for SpecificActionERC20TransferBatchEnforcer.
  * Enforces a batch of exactly 2 transactions: a specific action followed by an ERC20 transfer.
@@ -20,12 +28,11 @@ export const specificActionERC20TransferBatch =
  */
 export const specificActionERC20TransferBatchBuilder = (
   environment: DeleGatorEnvironment,
-  tokenAddress: Address,
-  recipient: Address,
-  amount: bigint,
-  firstTarget: Address,
-  firstCalldata: Hex,
+  config: SpecificActionErc20TransferBatchBuilderConfig,
 ): Caveat => {
+  const { tokenAddress, recipient, amount, firstTarget, firstCalldata } =
+    config;
+
   if (!isAddress(tokenAddress, { strict: false })) {
     throw new Error('Invalid tokenAddress: must be a valid address');
   }

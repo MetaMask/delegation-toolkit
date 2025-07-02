@@ -5,24 +5,27 @@ import { BalanceChangeType } from './types';
 
 export const erc20BalanceChange = 'erc20BalanceChange';
 
+export type Erc20BalanceChangeBuilderConfig = {
+  tokenAddress: Address;
+  recipient: Address;
+  balance: bigint;
+  changeType: BalanceChangeType;
+};
+
 /**
  * Builds a caveat struct for the ERC20BalanceChangeEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param tokenAddress - The tokenAddress of the ERC20 token.
- * @param recipient - The address of the recipient whose balance must change.
- * @param balance - The minimum balance amount required.
- * @param changeType - Whether the balance should increase or decrease.
+ * @param config - The configuration object for the ERC20 balance change.
  * @returns The Caveat.
  * @throws Error if the token address is invalid, the amount is not a positive number, or the change type is invalid.
  */
 export const erc20BalanceChangeBuilder = (
   environment: DeleGatorEnvironment,
-  tokenAddress: Address,
-  recipient: Address,
-  balance: bigint,
-  changeType: BalanceChangeType,
+  config: Erc20BalanceChangeBuilderConfig,
 ): Caveat => {
+  const { tokenAddress, recipient, balance, changeType } = config;
+
   if (!isAddress(tokenAddress, { strict: false })) {
     throw new Error('Invalid tokenAddress: must be a valid address');
   }

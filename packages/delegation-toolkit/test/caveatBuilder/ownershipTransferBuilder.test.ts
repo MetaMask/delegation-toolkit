@@ -13,7 +13,8 @@ describe('ownershipTransferBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithParams = (targetContract: Address) => {
-    return ownershipTransferBuilder(environment, targetContract);
+    const config = { targetContract };
+    return ownershipTransferBuilder(environment, config);
   };
 
   describe('builds a caveat', () => {

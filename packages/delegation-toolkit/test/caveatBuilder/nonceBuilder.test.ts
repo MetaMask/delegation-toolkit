@@ -12,8 +12,9 @@ describe('nonceBuilder()', () => {
     caveatEnforcers: { NonceEnforcer: randomAddress() },
   } as any as DeleGatorEnvironment;
 
-  const buildWithNonce = (nonce: Hex) => {
-    return nonceBuilder(environment, nonce);
+  const buildWithNonce = (nonceValue: Hex) => {
+    const config = { nonceValue };
+    return nonceBuilder(environment, config);
   };
 
   describe('validation', () => {

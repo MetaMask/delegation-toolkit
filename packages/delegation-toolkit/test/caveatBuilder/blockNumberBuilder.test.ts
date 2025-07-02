@@ -16,11 +16,11 @@ describe('blockNumberBuilder()', () => {
     blockAfterThreshold: bigint,
     blockBeforeThreshold: bigint,
   ) => {
-    return blockNumberBuilder(
-      environment,
+    const config = {
       blockAfterThreshold,
       blockBeforeThreshold,
-    );
+    };
+    return blockNumberBuilder(environment, config);
   };
 
   describe('validation', () => {

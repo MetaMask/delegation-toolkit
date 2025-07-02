@@ -11,8 +11,9 @@ describe('idBuilder()', () => {
     caveatEnforcers: { IdEnforcer: randomAddress() },
   } as any as DeleGatorEnvironment;
 
-  const buildWithId = (id: bigint | number) => {
-    return idBuilder(environment, id);
+  const buildWithId = (idValue: bigint | number) => {
+    const config = { idValue };
+    return idBuilder(environment, config);
   };
 
   describe('validation', () => {
@@ -26,7 +27,7 @@ describe('idBuilder()', () => {
     it('should fail with an invalid id (negative)', () => {
       const invalidId = -1n;
       expect(() => buildWithId(invalidId)).to.throw(
-        'Invalid id: must be positive',
+        'Invalid id: must be a non-negative number',
       );
     });
 

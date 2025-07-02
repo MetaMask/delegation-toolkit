@@ -5,6 +5,13 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const erc20PeriodTransfer = 'erc20PeriodTransfer';
 
+export type Erc20PeriodTransferBuilderConfig = {
+  tokenAddress: Address;
+  periodAmount: bigint;
+  periodDuration: number;
+  startDate: number;
+};
+
 /**
  * Builds a caveat struct for ERC20PeriodTransferEnforcer.
  * This enforcer validates that ERC20 token transfers do not exceed a specified amount
@@ -21,11 +28,10 @@ export const erc20PeriodTransfer = 'erc20PeriodTransfer';
  */
 export const erc20PeriodTransferBuilder = (
   environment: DeleGatorEnvironment,
-  tokenAddress: Address,
-  periodAmount: bigint,
-  periodDuration: number,
-  startDate: number,
+  config: Erc20PeriodTransferBuilderConfig,
 ): Caveat => {
+  const { tokenAddress, periodAmount, periodDuration, startDate } = config;
+
   const terms = createERC20TokenPeriodTransferTerms({
     tokenAddress,
     periodAmount,

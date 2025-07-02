@@ -4,20 +4,25 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export const blockNumber = 'blockNumber';
 
+export type BlockNumberBuilderConfig = {
+  blockAfterThreshold: bigint;
+  blockBeforeThreshold: bigint;
+};
+
 /**
  * Builds a caveat struct for the BlockNumberEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param blockAfterThreshold - The earliest block number after which the delegation can be used.
- * @param blockBeforeThreshold - The latest block number before which the delegation can be used.
+ * @param config - The configuration object for the BlockNumberEnforcer.
  * @returns The Caveat.
  * @throws Error if both thresholds are zero, if blockAfterThreshold is greater than or equal to blockBeforeThreshold, or if BlockNumberEnforcer is not available in the environment.
  */
 export const blockNumberBuilder = (
   environment: DeleGatorEnvironment,
-  blockAfterThreshold: bigint,
-  blockBeforeThreshold: bigint,
+  config: BlockNumberBuilderConfig,
 ): Caveat => {
+  const { blockAfterThreshold, blockBeforeThreshold } = config;
+
   if (blockAfterThreshold === 0n && blockBeforeThreshold === 0n) {
     throw new Error(
       'Invalid thresholds: At least one of blockAfterThreshold or blockBeforeThreshold must be specified',

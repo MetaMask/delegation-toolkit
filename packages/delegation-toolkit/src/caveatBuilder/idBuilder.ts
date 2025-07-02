@@ -2,20 +2,26 @@ import { maxUint256, toHex } from 'viem';
 
 import type { DeleGatorEnvironment, Caveat } from '../types';
 
+export type IdBuilderConfig = {
+  idValue: bigint | number;
+};
+
 export const id = 'id';
 
 /**
  * Builds a caveat struct for the IdEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param idValue - The id to use in the caveat.
+ * @param config - The configuration object containing the id to use in the caveat.
  * @returns The Caveat.
  * @throws Error if the provided id is not a number, not an integer, or is not 32 bytes or fewer in length.
  */
-export function idBuilder(
+export const idBuilder = (
   environment: DeleGatorEnvironment,
-  idValue: bigint | number,
-): Caveat {
+  config: IdBuilderConfig,
+): Caveat => {
+  const { idValue } = config;
+
   let idValueBigInt: bigint;
 
   if (typeof idValue === 'number') {
@@ -31,7 +37,7 @@ export function idBuilder(
   }
 
   if (idValueBigInt < 0n) {
-    throw new Error('Invalid id: must be positive');
+    throw new Error('Invalid id: must be a non-negative number');
   }
 
   if (idValueBigInt > maxUint256) {
@@ -53,4 +59,4 @@ export function idBuilder(
     terms,
     args: '0x',
   };
-}
+};
