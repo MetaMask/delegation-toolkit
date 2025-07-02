@@ -9,13 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0]
 
-### Uncategorized
+### Changed
 
-- Fix constraints issues in delegation-core. ([#19](https://github.com/MetaMask/delegation-toolkit/pull/19))
-- Add `createERC20TokenPeriodTransferTerms` for @metamask/delegation-core ([#15](https://github.com/MetaMask/delegation-toolkit/pull/15))
-- Add `hashDelegation` function to @metamask/delegation-core ([#13](https://github.com/MetaMask/delegation-toolkit/pull/13))
-- Add license file at root of monorepo ([#11](https://github.com/MetaMask/delegation-toolkit/pull/11))
-- Add @metamask/delegation-core package ([#9](https://github.com/MetaMask/delegation-toolkit/pull/9))
+- Add @metamask/delegation-core package, providing utility types, delegation hashing, and terms encoding for a limited set of caveat enforcers.
 
-[Unreleased]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-core@0.1.0...HEAD
-[0.1.0]: https://github.com/MetaMask/delegation-toolkit/releases/tag/@metamask/delegation-core@0.1.0
+[Unreleased]: https://github.com/metamask/delegation-toolkit/compare/@metamask/delegation-core@0.1.0...HEAD
+[0.1.0]: https://github.com/metamask/delegation-toolkit/releases/tag/@metamask/delegation-core@0.1.0
