@@ -1,8 +1,9 @@
 import { expect } from 'chai';
+
 import { createOwnershipTransferCaveatBuilder } from '../../src/caveatBuilder/ownershipUnitOfAuthority';
 import type { OwnershipUnitOfAuthorityConfig } from '../../src/caveatBuilder/ownershipUnitOfAuthority';
 import { randomAddress } from '../utils';
-import { DeleGatorEnvironment } from 'src';
+import type { DeleGatorEnvironment } from 'src';
 
 describe('createOwnershipTransferCaveatBuilder', () => {
   const environment = {

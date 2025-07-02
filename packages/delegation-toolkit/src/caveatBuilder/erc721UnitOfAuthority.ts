@@ -6,11 +6,14 @@ import type { UnitOfAuthorityBaseConfig } from './types';
 export type Erc721UnitOfAuthorityConfig = UnitOfAuthorityBaseConfig &
   Erc721TransferBuilderConfig;
 
+const isErc721TransferConfig = (
+  config: Erc721UnitOfAuthorityConfig,
+): config is Erc721UnitOfAuthorityConfig => {
+  return 'permittedContract' in config && 'permittedTokenId' in config;
+};
+
 /**
  * Creates a caveat builder configured for ERC721 unit of authority.
- *
- * This function creates a caveat builder that includes:
- * - ERC721 transfer caveat
  *
  * @param config - Configuration object containing permitted contract and token ID.
  * @param config.environment - The DeleGator environment.
@@ -31,9 +34,3 @@ export function createErc721CaveatBuilder(
 
   return caveatBuilder;
 }
-
-const isErc721TransferConfig = (
-  config: Erc721UnitOfAuthorityConfig,
-): config is Erc721UnitOfAuthorityConfig => {
-  return 'permittedContract' in config && 'permittedTokenId' in config;
-};

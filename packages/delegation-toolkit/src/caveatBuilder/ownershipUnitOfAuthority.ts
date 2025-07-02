@@ -5,12 +5,16 @@ import type { OwnershipTransferBuilderConfig } from './ownershipTransferBuilder'
 
 export type OwnershipUnitOfAuthorityConfig = OwnershipTransferBuilderConfig;
 
+const isOwnershipTransferConfig = (
+  config: OwnershipUnitOfAuthorityConfig,
+): config is OwnershipTransferBuilderConfig => {
+  return 'targetContract' in config;
+};
+
 /**
  * Creates a caveat builder configured for ownership transfer unit of authority.
  *
- * This function creates a caveat builder that includes:
- * - Ownership transfer caveat
- *
+ * @param environment - The DeleGator environment.
  * @param config - Configuration object containing the target contract.
  * @param config.environment - The DeleGator environment.
  * @returns A configured caveat builder with the specified caveats.
@@ -31,9 +35,3 @@ export function createOwnershipTransferCaveatBuilder(
 
   return caveatBuilder;
 }
-
-const isOwnershipTransferConfig = (
-  config: OwnershipUnitOfAuthorityConfig,
-): config is OwnershipTransferBuilderConfig => {
-  return 'targetContract' in config;
-};

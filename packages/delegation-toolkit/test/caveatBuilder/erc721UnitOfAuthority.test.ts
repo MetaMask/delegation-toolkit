@@ -1,9 +1,10 @@
 import { expect } from 'chai';
+import { concat, toHex } from 'viem';
+
 import { createErc721CaveatBuilder } from '../../src/caveatBuilder/erc721UnitOfAuthority';
 import type { Erc721UnitOfAuthorityConfig } from '../../src/caveatBuilder/erc721UnitOfAuthority';
-import { DeleGatorEnvironment } from 'src';
 import { randomAddress } from '../utils';
-import { concat, toHex } from 'viem';
+import type { DeleGatorEnvironment } from 'src';
 
 describe('createErc721CaveatBuilder', () => {
   const environment = {

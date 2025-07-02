@@ -1,9 +1,9 @@
-import type { UnitOfAuthorityBaseConfig } from './types';
 import { createCaveatBuilder } from './coreCaveatBuilder';
 import type { CoreCaveatBuilder } from './coreCaveatBuilder';
-import { NativeTokenPeriodTransferBuilderConfig } from './nativeTokenPeriodTransferBuilder';
-import { NativeTokenStreamingBuilderConfig } from './nativeTokenStreamingBuilder';
-import { NativeTokenTransferAmountBuilderConfig } from './nativeTokenTransferAmountBuilder';
+import type { NativeTokenPeriodTransferBuilderConfig } from './nativeTokenPeriodTransferBuilder';
+import type { NativeTokenStreamingBuilderConfig } from './nativeTokenStreamingBuilder';
+import type { NativeTokenTransferAmountBuilderConfig } from './nativeTokenTransferAmountBuilder';
+import type { UnitOfAuthorityBaseConfig } from './types';
 
 export type NativeTokenUnitOfAuthorityConfig = UnitOfAuthorityBaseConfig &
   (
@@ -12,12 +12,37 @@ export type NativeTokenUnitOfAuthorityConfig = UnitOfAuthorityBaseConfig &
     | NativeTokenPeriodTransferBuilderConfig
   );
 
+const isNativeTokenStreamingConfig = (
+  config: NativeTokenUnitOfAuthorityConfig,
+): config is NativeTokenStreamingBuilderConfig & UnitOfAuthorityBaseConfig => {
+  return (
+    'initialAmount' in config &&
+    'maxAmount' in config &&
+    'amountPerSecond' in config &&
+    'startTime' in config
+  );
+};
+
+const isNativeTokenTransferAmountConfig = (
+  config: NativeTokenUnitOfAuthorityConfig,
+): config is NativeTokenTransferAmountBuilderConfig &
+  UnitOfAuthorityBaseConfig => {
+  return 'maxAmount' in config;
+};
+
+const isNativeTokenPeriodTransferConfig = (
+  config: NativeTokenUnitOfAuthorityConfig,
+): config is NativeTokenPeriodTransferBuilderConfig &
+  UnitOfAuthorityBaseConfig => {
+  return (
+    'periodAmount' in config &&
+    'periodDuration' in config &&
+    'startDate' in config
+  );
+};
+
 /**
  * Creates a caveat builder configured for native token streaming with value limits.
- *
- * This function creates a caveat builder that includes:
- * - A native token streaming caveat with the specified token parameters
- * - A value limit caveat that restricts the total value to 0 (preventing native token transfers)
  *
  * @param config - Configuration object containing environment and native token streaming parameters.
  * @param config.environment - The DeleGator environment.
@@ -54,32 +79,3 @@ export function createNativeTokenCaveatBuilder(
 
   return caveatBuilder;
 }
-
-const isNativeTokenStreamingConfig = (
-  config: NativeTokenUnitOfAuthorityConfig,
-): config is NativeTokenStreamingBuilderConfig & UnitOfAuthorityBaseConfig => {
-  return (
-    'initialAmount' in config &&
-    'maxAmount' in config &&
-    'amountPerSecond' in config &&
-    'startTime' in config
-  );
-};
-
-const isNativeTokenTransferAmountConfig = (
-  config: NativeTokenUnitOfAuthorityConfig,
-): config is NativeTokenTransferAmountBuilderConfig &
-  UnitOfAuthorityBaseConfig => {
-  return 'maxAmount' in config;
-};
-
-const isNativeTokenPeriodTransferConfig = (
-  config: NativeTokenUnitOfAuthorityConfig,
-): config is NativeTokenPeriodTransferBuilderConfig &
-  UnitOfAuthorityBaseConfig => {
-  return (
-    'periodAmount' in config &&
-    'periodDuration' in config &&
-    'startDate' in config
-  );
-};

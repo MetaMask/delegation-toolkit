@@ -1,9 +1,11 @@
 import { expect } from 'chai';
+import type { Hex } from 'viem';
+import { concat, toHex } from 'viem';
+
 import { createFunctionCallCaveatBuilder } from '../../src/caveatBuilder/functionCallUnitOfAuthority';
 import type { FunctionCallUnitOfAuthorityConfig } from '../../src/caveatBuilder/functionCallUnitOfAuthority';
 import { randomAddress } from '../utils';
-import { DeleGatorEnvironment } from 'src';
-import { concat, Hex, toHex } from 'viem';
+import type { DeleGatorEnvironment } from 'src';
 
 describe('createFunctionCallCaveatBuilder', () => {
   const environment = {

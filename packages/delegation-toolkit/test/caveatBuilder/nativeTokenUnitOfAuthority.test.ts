@@ -1,9 +1,10 @@
 import { expect } from 'chai';
+import { concat, toHex } from 'viem';
+
 import { createNativeTokenCaveatBuilder } from '../../src/caveatBuilder/nativeTokenUnitOfAuthority';
 import type { NativeTokenUnitOfAuthorityConfig } from '../../src/caveatBuilder/nativeTokenUnitOfAuthority';
-import { DeleGatorEnvironment } from 'src';
 import { randomAddress } from '../utils';
-import { concat, toHex } from 'viem';
+import type { DeleGatorEnvironment } from 'src';
 
 describe('createNativeTokenCaveatBuilder', () => {
   const environment = {

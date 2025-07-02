@@ -19,10 +19,11 @@ export type Erc20PeriodTransferBuilderConfig = {
  * and any unused tokens are forfeited once the period ends.
  *
  * @param environment - The DeleGator environment.
- * @param tokenAddress - The address of the ERC20 token contract.
- * @param periodAmount - The maximum amount of tokens that can be transferred per period.
- * @param periodDuration - The duration of each period in seconds.
- * @param startDate - The timestamp when the first period begins.
+ * @param config - The configuration object containing the token address, period amount, period duration, and start date.
+ * @param config.tokenAddress - The address of the ERC20 token contract.
+ * @param config.periodAmount - The maximum amount of tokens that can be transferred per period.
+ * @param config.periodDuration - The duration of each period in seconds.
+ * @param config.startDate - The timestamp when the first period begins.
  * @returns The Caveat.
  * @throws Error if the token address is invalid or if any of the numeric parameters are invalid.
  */

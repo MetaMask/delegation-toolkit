@@ -14,9 +14,10 @@ export type DeployedBuilderConfig = {
  * Builds a caveat struct for a DeployedEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param contractAddress - The address of the contract that must be deployed.
- * @param salt - The address of the factory contract.
- * @param bytecode - The bytecode of the contract to be deployed.
+ * @param config - The configuration object containing the contract address, salt, and bytecode.
+ * @param config.contractAddress - The address of the contract that must be deployed.
+ * @param config.salt - The address of the factory contract.
+ * @param config.bytecode - The bytecode of the contract to be deployed.
  * @returns The Caveat.
  * @throws Error if the contract address, factory address, or bytecode is invalid.
  */

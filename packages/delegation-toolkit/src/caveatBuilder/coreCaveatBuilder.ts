@@ -72,6 +72,10 @@ import {
   nativeTokenTransferAmountBuilder,
 } from './nativeTokenTransferAmountBuilder';
 import { nonce, nonceBuilder } from './nonceBuilder';
+import {
+  ownershipTransfer,
+  ownershipTransferBuilder,
+} from './ownershipTransferBuilder';
 import { redeemer, redeemerBuilder } from './redeemerBuilder';
 import {
   specificActionERC20TransferBatch,
@@ -79,10 +83,6 @@ import {
 } from './specificActionERC20TransferBatchBuilder';
 import { timestamp, timestampBuilder } from './timestampBuilder';
 import { valueLte, valueLteBuilder } from './valueLteBuilder';
-import {
-  ownershipTransfer,
-  ownershipTransferBuilder,
-} from './ownershipTransferBuilder';
 
 export const createCaveatBuilder = (
   environment: DeleGatorEnvironment,

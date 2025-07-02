@@ -12,6 +12,8 @@ const INSECURE_UNRESTRICTED_DELEGATION_ERROR_MESSAGE =
 /**
  * Resolves the array of Caveat from a Caveats argument.
  * @param caveats - The caveats to be resolved, which can be either a CaveatBuilder or an array of Caveat.
+ * @param caveats.caveats - The caveats to be resolved, which can be either a CaveatBuilder or an array of Caveat.
+ * @param caveats.allowInsecureUnrestrictedDelegation - Whether to allow insecure unrestricted delegation.
  * @returns The resolved array of caveats.
  */
 export const resolveCaveats = ({

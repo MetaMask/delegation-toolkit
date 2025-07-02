@@ -1,10 +1,10 @@
+import type { AllowedCalldataBuilderConfig } from './allowedCalldataBuilder';
+import type { AllowedMethodsBuilderConfig } from './allowedMethodsBuilder';
+import type { AllowedTargetsBuilderConfig } from './allowedTargetsBuilder';
 import { createCaveatBuilder } from './coreCaveatBuilder';
 import type { CoreCaveatBuilder } from './coreCaveatBuilder';
-import type { AllowedTargetsBuilderConfig } from './allowedTargetsBuilder';
-import type { AllowedMethodsBuilderConfig } from './allowedMethodsBuilder';
-import type { AllowedCalldataBuilderConfig } from './allowedCalldataBuilder';
 import type { ExactCalldataBuilderConfig } from './exactCalldataBuilder';
-import { UnitOfAuthorityBaseConfig } from './types';
+import type { UnitOfAuthorityBaseConfig } from './types';
 
 export type FunctionCallUnitOfAuthorityConfig = UnitOfAuthorityBaseConfig &
   AllowedTargetsBuilderConfig &
@@ -13,13 +13,14 @@ export type FunctionCallUnitOfAuthorityConfig = UnitOfAuthorityBaseConfig &
     exactCalldata?: ExactCalldataBuilderConfig;
   };
 
+const isFunctionCallConfig = (
+  config: FunctionCallUnitOfAuthorityConfig,
+): config is FunctionCallUnitOfAuthorityConfig => {
+  return 'targets' in config && 'selectors' in config;
+};
+
 /**
  * Creates a caveat builder configured for function call unit of authority.
- *
- * This function creates a caveat builder that includes:
- * - Allowed targets caveat
- * - Allowed methods caveat
- * - Optionally, allowed calldata caveat
  *
  * @param config - Configuration object containing allowed targets, methods, and optionally calldata.
  * @param config.environment - The DeleGator environment.
@@ -51,9 +52,3 @@ export function createFunctionCallCaveatBuilder(
 
   return caveatBuilder;
 }
-
-const isFunctionCallConfig = (
-  config: FunctionCallUnitOfAuthorityConfig,
-): config is FunctionCallUnitOfAuthorityConfig => {
-  return 'targets' in config && 'selectors' in config;
-};

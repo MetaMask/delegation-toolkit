@@ -18,11 +18,12 @@ export type SpecificActionErc20TransferBatchBuilderConfig = {
  * Enforces a batch of exactly 2 transactions: a specific action followed by an ERC20 transfer.
  *
  * @param environment - The DeleGator environment.
- * @param tokenAddress - The address of the ERC20 token contract.
- * @param recipient - The address that will receive the tokens.
- * @param amount - The amount of tokens to transfer.
- * @param firstTarget - The target address for the first transaction.
- * @param firstCalldata - The calldata for the first transaction.
+ * @param config - The configuration object containing the token address, recipient, amount, first target, and first calldata.
+ * @param config.tokenAddress - The address of the ERC20 token contract.
+ * @param config.recipient - The address that will receive the tokens.
+ * @param config.amount - The amount of tokens to transfer.
+ * @param config.firstTarget - The target address for the first transaction.
+ * @param config.firstCalldata - The calldata for the first transaction.
  * @returns The Caveat.
  * @throws Error if any of the addresses are invalid or if the amount is not a positive number.
  */
