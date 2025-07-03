@@ -271,10 +271,10 @@ const runTest_expectFailure = async (
       calls: [call],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 };
 
-test('Bob redeems the delegation within period limit', async () => {
+test('maincase: Bob redeems the delegation within period limit', async () => {
   const recipient = randomAddress();
 
   const configs = [

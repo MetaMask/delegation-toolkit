@@ -306,7 +306,7 @@ const runTest_expectFailure = async (
   ).rejects;
 
   if (expectedError) {
-    await rejects.toThrow(expectedError);
+    await rejects.toThrow(Buffer.from(expectedError).toString('hex'));
   } else {
     await rejects.toThrow();
   }

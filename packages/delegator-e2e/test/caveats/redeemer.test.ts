@@ -222,7 +222,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 
   const countAfter = await publicClient.readContract({
     address: aliceCounterAddress,

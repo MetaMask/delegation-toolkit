@@ -196,7 +196,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 };
 
 test('maincase: Bob redeems the delegation with transfers within period limit', async () => {
@@ -324,6 +324,9 @@ test('Bob attempts to redeem with invalid terms length', async () => {
     ],
   });
 
+  const expectedError =
+    'NativeTokenPeriodTransferEnforcer:invalid-terms-length';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -335,7 +338,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('NativeTokenPeriodTransferEnforcer:invalid-terms-length');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 test('Bob attempts to redeem with zero start date', async () => {
@@ -388,6 +391,9 @@ test('Bob attempts to redeem with zero start date', async () => {
     ],
   });
 
+  const expectedError =
+    'NativeTokenPeriodTransferEnforcer:invalid-zero-start-date';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -399,9 +405,7 @@ test('Bob attempts to redeem with zero start date', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(
-    'NativeTokenPeriodTransferEnforcer:invalid-zero-start-date',
-  );
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 test('Bob attempts to redeem with zero period amount', async () => {
@@ -454,6 +458,9 @@ test('Bob attempts to redeem with zero period amount', async () => {
     ],
   });
 
+  const expectedError =
+    'NativeTokenPeriodTransferEnforcer:invalid-zero-period-amount';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -465,9 +472,7 @@ test('Bob attempts to redeem with zero period amount', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(
-    'NativeTokenPeriodTransferEnforcer:invalid-zero-period-amount',
-  );
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 test('Bob attempts to redeem with zero period duration', async () => {
@@ -520,6 +525,9 @@ test('Bob attempts to redeem with zero period duration', async () => {
     ],
   });
 
+  const expectedError =
+    'NativeTokenPeriodTransferEnforcer:invalid-zero-period-duration';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -531,9 +539,7 @@ test('Bob attempts to redeem with zero period duration', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(
-    'NativeTokenPeriodTransferEnforcer:invalid-zero-period-duration',
-  );
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });
 
 test('Bob attempts to redeem before start date', async () => {
@@ -579,6 +585,9 @@ test('Bob attempts to redeem before start date', async () => {
     ],
   });
 
+  const expectedError =
+    'NativeTokenPeriodTransferEnforcer:transfer-not-started';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -590,5 +599,5 @@ test('Bob attempts to redeem before start date', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('NativeTokenPeriodTransferEnforcer:transfer-not-started');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 });

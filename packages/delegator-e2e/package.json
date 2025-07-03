@@ -20,6 +20,6 @@
     "teardown": "docker compose down"
   },
   "peerDependencies": {
-    "viem": ">=2.18.2 <3.0.0"
+    "viem": "^2.31.4"
   }
 }

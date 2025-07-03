@@ -169,6 +169,8 @@ test('Bob attempts to increment the counter without a delegation', async () => {
     functionName: 'increment',
   });
 
+  const expectedError = 'Ownable: caller is not the owner';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -181,7 +183,7 @@ test('Bob attempts to increment the counter without a delegation', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('Ownable: caller is not the owner');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 
   const countAfter = await counterContract.read.count();
   expect(countAfter, 'Expected final count to be 0n').toEqual(0n);
@@ -230,6 +232,8 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
     ],
   });
 
+  const expectedError = 'AllowedMethodsEnforcer:method-not-allowed';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -242,7 +246,7 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('AllowedMethodsEnforcer:method-not-allowed');
+  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
 
   const countAfter = await counterContract.read.count();
   expect(countAfter, 'Expected final count to be 0n').toEqual(0n);
