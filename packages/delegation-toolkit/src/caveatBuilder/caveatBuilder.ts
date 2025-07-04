@@ -1,7 +1,4 @@
 import type { Caveat, DeleGatorEnvironment } from '../types';
-import { createCaveatBuilderFromScope, type ScopeConfig } from './scope';
-
-export type Caveats = CaveatBuilder | Caveat[];
 
 type CaveatWithOptionalArgs = Omit<Caveat, 'args'> & {
   args?: Caveat['args'];
@@ -9,32 +6,6 @@ type CaveatWithOptionalArgs = Omit<Caveat, 'args'> & {
 
 const INSECURE_UNRESTRICTED_DELEGATION_ERROR_MESSAGE =
   'No caveats found. If you definitely want to create an empty caveat collection, set `allowInsecureUnrestrictedDelegation` to `true`.';
-
-/**
- * Resolves the array of Caveat from a Caveats argument.
- * @param config - The configuration for the caveat builder.
- * @param config.environment - The environment to be used for the caveat builder.
- * @param config.scope - The scope to be used for the caveat builder.
- * @param config.caveats - The caveats to be resolved, which can be either a CaveatBuilder or an array of Caveat.
- * @returns The resolved array of caveats.
- */
-export const resolveCaveats = ({
-  environment,
-  scope,
-  caveats,
-}: {
-  environment: DeleGatorEnvironment;
-  scope: ScopeConfig;
-  caveats: Caveats;
-}) => {
-  const scopeCaveatBuilder = createCaveatBuilderFromScope(environment, scope);
-
-  const additionalCaveats = Array.isArray(caveats) ? caveats : caveats.build();
-
-  additionalCaveats.forEach((caveat) => scopeCaveatBuilder.addCaveat(caveat));
-
-  return scopeCaveatBuilder.build();
-};
 
 type CaveatBuilderMap = {
   [key: string]: (

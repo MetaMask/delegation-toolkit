@@ -3,7 +3,11 @@ import {
   allowedCalldata,
   allowedCalldataBuilder,
 } from './allowedCalldataBuilder';
-import { allowedMethods, allowedMethodsBuilder } from './allowedMethodsBuilder';
+import {
+  allowedMethods,
+  allowedMethodsBuilder,
+  AllowedMethodsBuilderConfig,
+} from './allowedMethodsBuilder';
 import { allowedTargets, allowedTargetsBuilder } from './allowedTargetsBuilder';
 import {
   argsEqualityCheck,
@@ -84,10 +88,85 @@ import {
 import { timestamp, timestampBuilder } from './timestampBuilder';
 import { valueLte, valueLteBuilder } from './valueLteBuilder';
 
+// While we could derive CoreCaveatMap from the createCaveatBuilder function,
+// doing so would significantly complicate type resolution. By explicitly
+// declaring the return type of createCaveatBuilder, we ensure the caveat
+// map remains synchronized with the actual implementation.
+type CoreCaveatMap = {
+  allowedMethods: typeof allowedMethodsBuilder;
+  allowedTargets: typeof allowedTargetsBuilder;
+  deployed: typeof deployedBuilder;
+  allowedCalldata: typeof allowedCalldataBuilder;
+  erc20BalanceChange: typeof erc20BalanceChangeBuilder;
+  erc721BalanceChange: typeof erc721BalanceChangeBuilder;
+  erc1155BalanceChange: typeof erc1155BalanceChangeBuilder;
+  valueLte: typeof valueLteBuilder;
+  limitedCalls: typeof limitedCallsBuilder;
+  id: typeof idBuilder;
+  nonce: typeof nonceBuilder;
+  timestamp: typeof timestampBuilder;
+  blockNumber: typeof blockNumberBuilder;
+  erc20TransferAmount: typeof erc20TransferAmountBuilder;
+  erc20Streaming: typeof erc20StreamingBuilder;
+  nativeTokenStreaming: typeof nativeTokenStreamingBuilder;
+  erc721Transfer: typeof erc721TransferBuilder;
+  nativeTokenTransferAmount: typeof nativeTokenTransferAmountBuilder;
+  nativeBalanceChange: typeof nativeBalanceChangeBuilder;
+  redeemer: typeof redeemerBuilder;
+  nativeTokenPayment: typeof nativeTokenPaymentBuilder;
+  argsEqualityCheck: typeof argsEqualityCheckBuilder;
+  specificActionERC20TransferBatch: typeof specificActionERC20TransferBatchBuilder;
+  erc20PeriodTransfer: typeof erc20PeriodTransferBuilder;
+  nativeTokenPeriodTransfer: typeof nativeTokenPeriodTransferBuilder;
+  exactCalldataBatch: typeof exactCalldataBatchBuilder;
+  exactCalldata: typeof exactCalldataBuilder;
+  exactExecution: typeof exactExecutionBuilder;
+  exactExecutionBatch: typeof exactExecutionBatchBuilder;
+  multiTokenPeriod: typeof multiTokenPeriodBuilder;
+  ownershipTransfer: typeof ownershipTransferBuilder;
+};
+
+/**
+ * A caveat builder type that includes all core caveat types pre-configured.
+ * This type represents a fully configured caveat builder with all the standard
+ * caveat builders available for use.
+ */
+export type CoreCaveatBuilder = CaveatBuilder<CoreCaveatMap>;
+
+type ExtractCaveatMapType<T> = T extends CaveatBuilder<infer U> ? U : never;
+type ExtractedCoreMap = ExtractCaveatMapType<CoreCaveatBuilder>;
+
+export type CaveatConfigurations = {
+  [K in keyof ExtractedCoreMap]: {
+    type: K;
+  } & Parameters<ExtractedCoreMap[K]>[1];
+}[keyof ExtractedCoreMap];
+
+export type CaveatConfiguration<
+  T extends CaveatBuilder<any>,
+  CaveatMap = ExtractCaveatMapType<T>,
+> =
+  CaveatMap extends Record<string, (...args: any[]) => any>
+    ? {
+        [K in keyof CaveatMap]: {
+          type: K;
+        } & Parameters<CaveatMap[K]>[1];
+      }[keyof CaveatMap]
+    : never;
+
+export type CoreCaveatConfiguration = CaveatConfiguration<CoreCaveatBuilder>;
+
+/**
+ * Creates a caveat builder with all core caveat types pre-configured.
+ *
+ * @param environment - The DeleGator environment configuration
+ * @param config - Optional configuration for the caveat builder
+ * @returns A fully configured CoreCaveatBuilder instance with all core caveat types
+ */
 export const createCaveatBuilder = (
   environment: DeleGatorEnvironment,
   config?: CaveatBuilderConfig,
-) => {
+): CoreCaveatBuilder => {
   const caveatBuilder = new CaveatBuilder(environment, config)
     .extend(allowedMethods, allowedMethodsBuilder)
     .extend(allowedTargets, allowedTargetsBuilder)
@@ -126,5 +205,3 @@ export const createCaveatBuilder = (
 
   return caveatBuilder;
 };
-
-export type CoreCaveatBuilder = ReturnType<typeof createCaveatBuilder>;

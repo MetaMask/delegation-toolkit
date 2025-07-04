@@ -255,6 +255,25 @@ describe('createDelegation', () => {
       signature: '0x',
     });
   });
+
+  it('should create a delegation with no additional caveats', () => {
+    const result = createDelegation({
+      environment: delegatorEnvironment,
+      to: mockDelegate,
+      from: mockDelegator,
+      scope: erc20Scope,
+      caveats: [],
+    });
+
+    expect(result).to.deep.equal({
+      delegate: mockDelegate,
+      delegator: mockDelegator,
+      authority: ROOT_AUTHORITY,
+      caveats: [...erc20ScopeCaveats],
+      salt: '0x',
+      signature: '0x',
+    });
+  });
 });
 
 describe('createOpenDelegation', () => {
