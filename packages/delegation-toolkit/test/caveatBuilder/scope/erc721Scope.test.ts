@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import { concat, toHex } from 'viem';
 
-import { createErc721CaveatBuilder } from '../../src/caveatBuilder/erc721UnitOfAuthority';
-import type { Erc721UnitOfAuthorityConfig } from '../../src/caveatBuilder/erc721UnitOfAuthority';
-import { randomAddress } from '../utils';
-import type { DeleGatorEnvironment } from 'src';
+import { createErc721CaveatBuilder } from '../../../src/caveatBuilder/scope/erc721Scope';
+import type { Erc721ScopeConfig } from '../../../src/caveatBuilder/scope/erc721Scope';
+import type { DeleGatorEnvironment } from '../../../src/types';
+import { randomAddress } from '../../utils';
 
 describe('createErc721CaveatBuilder', () => {
   const environment = {
@@ -14,13 +14,13 @@ describe('createErc721CaveatBuilder', () => {
   } as unknown as DeleGatorEnvironment;
 
   it('creates an ERC721 transfer CaveatBuilder', () => {
-    const config: Erc721UnitOfAuthorityConfig = {
-      environment,
+    const config: Erc721ScopeConfig = {
+      type: 'erc721',
       permittedContract: randomAddress(),
       permittedTokenId: 1n,
     };
 
-    const caveatBuilder = createErc721CaveatBuilder(config);
+    const caveatBuilder = createErc721CaveatBuilder(environment, config);
 
     const caveats = caveatBuilder.build();
 
@@ -37,9 +37,9 @@ describe('createErc721CaveatBuilder', () => {
   });
 
   it('throws an error for invalid configuration', () => {
-    const config = { environment } as any;
+    const config = { type: 'erc721' } as unknown as Erc721ScopeConfig;
 
-    expect(() => createErc721CaveatBuilder(config)).to.throw(
+    expect(() => createErc721CaveatBuilder(environment, config)).to.throw(
       'Invalid ERC721 configuration',
     );
   });

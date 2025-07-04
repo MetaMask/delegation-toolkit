@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 
-import { createOwnershipTransferCaveatBuilder } from '../../src/caveatBuilder/ownershipUnitOfAuthority';
-import type { OwnershipUnitOfAuthorityConfig } from '../../src/caveatBuilder/ownershipUnitOfAuthority';
-import { randomAddress } from '../utils';
-import type { DeleGatorEnvironment } from 'src';
+import { createOwnershipCaveatBuilder } from '../../../src/caveatBuilder/scope/ownershipScope';
+import type { OwnershipScopeConfig } from '../../../src/caveatBuilder/scope/ownershipScope';
+import type { DeleGatorEnvironment } from '../../../src/types';
+import { randomAddress } from '../../utils';
 
 describe('createOwnershipTransferCaveatBuilder', () => {
   const environment = {
@@ -13,14 +13,12 @@ describe('createOwnershipTransferCaveatBuilder', () => {
   } as unknown as DeleGatorEnvironment;
 
   it('creates an Ownership Transfer CaveatBuilder', () => {
-    const config: OwnershipUnitOfAuthorityConfig = {
+    const config: OwnershipScopeConfig = {
+      type: 'ownership',
       targetContract: randomAddress(),
     };
 
-    const caveatBuilder = createOwnershipTransferCaveatBuilder(
-      environment,
-      config,
-    );
+    const caveatBuilder = createOwnershipCaveatBuilder(environment, config);
 
     const caveats = caveatBuilder.build();
 
@@ -34,10 +32,10 @@ describe('createOwnershipTransferCaveatBuilder', () => {
   });
 
   it('throws an error for invalid configuration', () => {
-    const config: any = {};
+    const config = { type: 'ownership' } as unknown as OwnershipScopeConfig;
 
-    expect(() =>
-      createOwnershipTransferCaveatBuilder(environment, config),
-    ).to.throw('Invalid ownership transfer configuration');
+    expect(() => createOwnershipCaveatBuilder(environment, config)).to.throw(
+      'Invalid ownership transfer configuration',
+    );
   });
 });

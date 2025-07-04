@@ -1,4 +1,5 @@
 import type { Caveat, DeleGatorEnvironment } from '../types';
+import { createCaveatBuilderFromScope, type ScopeConfig } from './scope';
 
 export type Caveats = CaveatBuilder | Caveat[];
 
@@ -11,25 +12,28 @@ const INSECURE_UNRESTRICTED_DELEGATION_ERROR_MESSAGE =
 
 /**
  * Resolves the array of Caveat from a Caveats argument.
- * @param caveats - The caveats to be resolved, which can be either a CaveatBuilder or an array of Caveat.
- * @param caveats.caveats - The caveats to be resolved, which can be either a CaveatBuilder or an array of Caveat.
- * @param caveats.allowInsecureUnrestrictedDelegation - Whether to allow insecure unrestricted delegation.
+ * @param config - The configuration for the caveat builder.
+ * @param config.environment - The environment to be used for the caveat builder.
+ * @param config.scope - The scope to be used for the caveat builder.
+ * @param config.caveats - The caveats to be resolved, which can be either a CaveatBuilder or an array of Caveat.
  * @returns The resolved array of caveats.
  */
 export const resolveCaveats = ({
+  environment,
+  scope,
   caveats,
-  allowInsecureUnrestrictedDelegation = false,
 }: {
+  environment: DeleGatorEnvironment;
+  scope: ScopeConfig;
   caveats: Caveats;
-  allowInsecureUnrestrictedDelegation?: boolean;
 }) => {
-  if (Array.isArray(caveats)) {
-    if (caveats.length === 0 && !allowInsecureUnrestrictedDelegation) {
-      throw new Error(INSECURE_UNRESTRICTED_DELEGATION_ERROR_MESSAGE);
-    }
-    return caveats;
-  }
-  return caveats.build();
+  const scopeCaveatBuilder = createCaveatBuilderFromScope(environment, scope);
+
+  const additionalCaveats = Array.isArray(caveats) ? caveats : caveats.build();
+
+  additionalCaveats.forEach((caveat) => scopeCaveatBuilder.addCaveat(caveat));
+
+  return scopeCaveatBuilder.build();
 };
 
 type RemoveFirst<TypeArray extends any[]> = TypeArray extends [

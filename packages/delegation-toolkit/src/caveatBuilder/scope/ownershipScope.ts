@@ -1,13 +1,18 @@
-import type { DeleGatorEnvironment } from '../types';
-import { createCaveatBuilder } from './coreCaveatBuilder';
-import type { CoreCaveatBuilder } from './coreCaveatBuilder';
-import type { OwnershipTransferBuilderConfig } from './ownershipTransferBuilder';
+import type { DeleGatorEnvironment } from '../../types';
+import { createCaveatBuilder } from '../coreCaveatBuilder';
+import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
+import type { OwnershipTransferBuilderConfig } from '../ownershipTransferBuilder';
 
-export type OwnershipUnitOfAuthorityConfig = OwnershipTransferBuilderConfig;
+type OwnershipScopeBaseConfig = {
+  type: 'ownership';
+};
+
+export type OwnershipScopeConfig = OwnershipScopeBaseConfig &
+  OwnershipTransferBuilderConfig;
 
 const isOwnershipTransferConfig = (
-  config: OwnershipUnitOfAuthorityConfig,
-): config is OwnershipTransferBuilderConfig => {
+  config: OwnershipScopeConfig,
+): config is OwnershipTransferBuilderConfig & OwnershipScopeBaseConfig => {
   return 'targetContract' in config;
 };
 
@@ -16,13 +21,12 @@ const isOwnershipTransferConfig = (
  *
  * @param environment - The DeleGator environment.
  * @param config - Configuration object containing the target contract.
- * @param config.environment - The DeleGator environment.
  * @returns A configured caveat builder with the specified caveats.
  * @throws Error if any of the required parameters are invalid.
  */
-export function createOwnershipTransferCaveatBuilder(
+export function createOwnershipCaveatBuilder(
   environment: DeleGatorEnvironment,
-  config: OwnershipUnitOfAuthorityConfig,
+  config: OwnershipScopeConfig,
 ): CoreCaveatBuilder {
   if (!isOwnershipTransferConfig(config)) {
     throw new Error('Invalid ownership transfer configuration');

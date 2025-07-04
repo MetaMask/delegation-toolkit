@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import { concat, toHex } from 'viem';
 
-import { createErc20CaveatBuilder } from '../../src/caveatBuilder/erc20UnitOfAuthority';
-import type { Erc20UnitOfAuthorityConfig } from '../../src/caveatBuilder/erc20UnitOfAuthority';
-import { randomAddress } from '../utils';
-import type { DeleGatorEnvironment } from 'src';
+import { createErc20CaveatBuilder } from '../../../src/caveatBuilder/scope/erc20Scope';
+import type { Erc20ScopeConfig } from '../../../src/caveatBuilder/scope/erc20Scope';
+import type { DeleGatorEnvironment } from '../../../src/types';
+import { randomAddress } from '../../utils';
 
 describe('createErc20CaveatBuilder', () => {
   const environment = {
@@ -18,8 +18,8 @@ describe('createErc20CaveatBuilder', () => {
   } as unknown as DeleGatorEnvironment;
 
   it('creates an ERC20 streaming CaveatBuilder', () => {
-    const config: Erc20UnitOfAuthorityConfig = {
-      environment,
+    const config: Erc20ScopeConfig = {
+      type: 'erc20',
       tokenAddress: randomAddress(),
       initialAmount: 1000n,
       maxAmount: 10000n,
@@ -27,7 +27,7 @@ describe('createErc20CaveatBuilder', () => {
       startTime: Math.floor(Date.now() / 1000),
     };
 
-    const caveatBuilder = createErc20CaveatBuilder(config);
+    const caveatBuilder = createErc20CaveatBuilder(environment, config);
 
     const caveats = caveatBuilder.build();
 
@@ -53,15 +53,15 @@ describe('createErc20CaveatBuilder', () => {
   });
 
   it('creates an ERC20 period transfer CaveatBuilder', () => {
-    const config: Erc20UnitOfAuthorityConfig = {
-      environment,
+    const config: Erc20ScopeConfig = {
+      type: 'erc20',
       tokenAddress: randomAddress(),
       periodAmount: 1000n,
       periodDuration: 1000,
       startDate: Math.floor(Date.now() / 1000),
     };
 
-    const caveatBuilder = createErc20CaveatBuilder(config);
+    const caveatBuilder = createErc20CaveatBuilder(environment, config);
 
     const caveats = caveatBuilder.build();
 
@@ -86,13 +86,13 @@ describe('createErc20CaveatBuilder', () => {
   });
 
   it('creates an ERC20 transfer amount CaveatBuilder', () => {
-    const config: Erc20UnitOfAuthorityConfig = {
-      environment,
+    const config: Erc20ScopeConfig = {
+      type: 'erc20',
       tokenAddress: randomAddress(),
       maxAmount: 1000n,
     };
 
-    const caveatBuilder = createErc20CaveatBuilder(config);
+    const caveatBuilder = createErc20CaveatBuilder(environment, config);
 
     const caveats = caveatBuilder.build();
 
@@ -115,8 +115,8 @@ describe('createErc20CaveatBuilder', () => {
   });
 
   it('creates a specific action ERC20 transfer batch CaveatBuilder', () => {
-    const config: Erc20UnitOfAuthorityConfig = {
-      environment,
+    const config: Erc20ScopeConfig = {
+      type: 'erc20',
       tokenAddress: randomAddress(),
       recipient: randomAddress(),
       amount: 1000n,
@@ -124,7 +124,7 @@ describe('createErc20CaveatBuilder', () => {
       firstCalldata: '0x',
     };
 
-    const caveatBuilder = createErc20CaveatBuilder(config);
+    const caveatBuilder = createErc20CaveatBuilder(environment, config);
 
     const caveats = caveatBuilder.build();
 
@@ -151,9 +151,9 @@ describe('createErc20CaveatBuilder', () => {
   });
 
   it('throws an error for invalid configuration', () => {
-    const config = { environment } as any;
+    const config = { type: 'erc20' } as unknown as Erc20ScopeConfig;
 
-    expect(() => createErc20CaveatBuilder(config)).to.throw(
+    expect(() => createErc20CaveatBuilder(environment, config)).to.throw(
       'Invalid ERC20 configuration',
     );
   });

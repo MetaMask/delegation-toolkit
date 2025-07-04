@@ -42,22 +42,7 @@ export { createExecution } from './executions';
 
 export type { ExecutionStruct, CreateExecutionArgs } from './executions';
 
-export type {
-  Caveats,
-  Erc20UnitOfAuthorityConfig,
-  Erc721UnitOfAuthorityConfig,
-  NativeTokenUnitOfAuthorityConfig,
-  OwnershipUnitOfAuthorityConfig,
-  FunctionCallUnitOfAuthorityConfig,
-} from './caveatBuilder';
-
-export {
-  createErc20CaveatBuilder,
-  createErc721CaveatBuilder,
-  createNativeTokenCaveatBuilder,
-  createOwnershipTransferCaveatBuilder,
-  createFunctionCallCaveatBuilder,
-} from './caveatBuilder';
+export type { Caveats } from './caveatBuilder';
 
 export { createCaveat } from './caveats';
 

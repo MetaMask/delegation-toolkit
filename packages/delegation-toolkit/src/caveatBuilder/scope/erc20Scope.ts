@@ -1,14 +1,18 @@
-import { createCaveatBuilder } from './coreCaveatBuilder';
-import type { CoreCaveatBuilder } from './coreCaveatBuilder';
-import type { Erc20PeriodTransferBuilderConfig } from './erc20PeriodTransferBuilder';
-import type { Erc20StreamingBuilderConfig } from './erc20StreamingBuilder';
-import type { Erc20TransferAmountBuilderConfig } from './erc20TransferAmountBuilder';
-import type { SpecificActionErc20TransferBatchBuilderConfig } from './specificActionERC20TransferBatchBuilder';
-import type { UnitOfAuthorityBaseConfig } from './types';
+import { createCaveatBuilder } from '../coreCaveatBuilder';
+import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
+import type { Erc20PeriodTransferBuilderConfig } from '../erc20PeriodTransferBuilder';
+import type { Erc20StreamingBuilderConfig } from '../erc20StreamingBuilder';
+import type { Erc20TransferAmountBuilderConfig } from '../erc20TransferAmountBuilder';
+import type { SpecificActionErc20TransferBatchBuilderConfig } from '../specificActionERC20TransferBatchBuilder';
+import type { DeleGatorEnvironment } from 'src/types';
+
+type Erc20ScopeBaseConfig = {
+  type: 'erc20';
+};
 
 const isErc20StreamingConfig = (
-  config: Erc20UnitOfAuthorityConfig,
-): config is Erc20StreamingBuilderConfig & UnitOfAuthorityBaseConfig => {
+  config: Erc20ScopeBaseConfig,
+): config is Erc20StreamingBuilderConfig & Erc20ScopeBaseConfig => {
   return (
     'initialAmount' in config &&
     'maxAmount' in config &&
@@ -18,14 +22,14 @@ const isErc20StreamingConfig = (
 };
 
 const isErc20TransferAmountConfig = (
-  config: Erc20UnitOfAuthorityConfig,
-): config is Erc20TransferAmountBuilderConfig & UnitOfAuthorityBaseConfig => {
+  config: Erc20ScopeBaseConfig,
+): config is Erc20TransferAmountBuilderConfig & Erc20ScopeBaseConfig => {
   return 'tokenAddress' in config && 'maxAmount' in config;
 };
 
 const isErc20PeriodTransferConfig = (
-  config: Erc20UnitOfAuthorityConfig,
-): config is Erc20PeriodTransferBuilderConfig & UnitOfAuthorityBaseConfig => {
+  config: Erc20ScopeBaseConfig,
+): config is Erc20PeriodTransferBuilderConfig & Erc20ScopeBaseConfig => {
   return (
     'tokenAddress' in config &&
     'periodAmount' in config &&
@@ -35,9 +39,9 @@ const isErc20PeriodTransferConfig = (
 };
 
 const isSpecificActionErc20TransferBatchConfig = (
-  config: Erc20UnitOfAuthorityConfig,
+  config: Erc20ScopeBaseConfig,
 ): config is SpecificActionErc20TransferBatchBuilderConfig &
-  UnitOfAuthorityBaseConfig => {
+  Erc20ScopeBaseConfig => {
   return (
     'tokenAddress' in config &&
     'recipient' in config &&
@@ -47,7 +51,7 @@ const isSpecificActionErc20TransferBatchConfig = (
   );
 };
 
-export type Erc20UnitOfAuthorityConfig = UnitOfAuthorityBaseConfig &
+export type Erc20ScopeConfig = Erc20ScopeBaseConfig &
   (
     | Erc20StreamingBuilderConfig
     | Erc20TransferAmountBuilderConfig
@@ -58,22 +62,16 @@ export type Erc20UnitOfAuthorityConfig = UnitOfAuthorityBaseConfig &
 /**
  * Creates a caveat builder configured for ERC20 token streaming with value limits.
  *
- * @param config - Configuration object containing environment and ERC20 streaming parameters.
- * @param config.environment - The DeleGator environment.
- * @param config.tokenAddress - The address of the ERC20 token to stream.
- * @param config.initialAmount - The initial amount of tokens available immediately.
- * @param config.maxAmount - The maximum total amount of tokens that can be streamed.
- * @param config.amountPerSecond - The rate at which allowance increases per second.
- * @param config.startTime - The Unix timestamp when streaming begins.
+ * @param environment - The DeleGator environment.
+ * @param config - Configuration object containing ERC20 streaming parameters.
  * @returns A configured caveat builder with ERC20 streaming and value limit caveats.
  * @throws Error if any of the ERC20 streaming parameters are invalid.
  * @throws Error if the environment is not properly configured.
  */
 export function createErc20CaveatBuilder(
-  config: Erc20UnitOfAuthorityConfig,
+  environment: DeleGatorEnvironment,
+  config: Erc20ScopeConfig,
 ): CoreCaveatBuilder {
-  const { environment } = config;
-
   const caveatBuilder = createCaveatBuilder(environment).addCaveat('valueLte', {
     maxValue: 0n,
   });

@@ -2,10 +2,10 @@ import { expect } from 'chai';
 import type { Hex } from 'viem';
 import { concat, toHex } from 'viem';
 
-import { createFunctionCallCaveatBuilder } from '../../src/caveatBuilder/functionCallUnitOfAuthority';
-import type { FunctionCallUnitOfAuthorityConfig } from '../../src/caveatBuilder/functionCallUnitOfAuthority';
-import { randomAddress } from '../utils';
-import type { DeleGatorEnvironment } from 'src';
+import { createFunctionCallCaveatBuilder } from '../../../src/caveatBuilder/scope/functionCallScope';
+import type { FunctionCallScopeConfig } from '../../../src/caveatBuilder/scope/functionCallScope';
+import type { DeleGatorEnvironment } from '../../../src/types';
+import { randomAddress } from '../../utils';
 
 describe('createFunctionCallCaveatBuilder', () => {
   const environment = {
@@ -18,13 +18,13 @@ describe('createFunctionCallCaveatBuilder', () => {
   } as unknown as DeleGatorEnvironment;
 
   it('creates a Function Call CaveatBuilder', () => {
-    const config: FunctionCallUnitOfAuthorityConfig = {
-      environment,
+    const config: FunctionCallScopeConfig = {
+      type: 'functionCall',
       targets: [randomAddress()],
       selectors: ['0x12345678'],
     };
 
-    const caveatBuilder = createFunctionCallCaveatBuilder(config);
+    const caveatBuilder = createFunctionCallCaveatBuilder(environment, config);
 
     const caveats = caveatBuilder.build();
 
@@ -44,14 +44,14 @@ describe('createFunctionCallCaveatBuilder', () => {
 
   it('creates a Function Call CaveatBuilder with allowed calldata', () => {
     const allowedCalldata = { value: '0x12345678', startIndex: 0 } as const;
-    const config: FunctionCallUnitOfAuthorityConfig = {
-      environment,
+    const config: FunctionCallScopeConfig = {
+      type: 'functionCall',
       targets: [randomAddress()],
       selectors: ['0x12345678'],
       allowedCalldata: [allowedCalldata],
     };
 
-    const caveatBuilder = createFunctionCallCaveatBuilder(config);
+    const caveatBuilder = createFunctionCallCaveatBuilder(environment, config);
 
     const caveats = caveatBuilder.build();
 
@@ -79,14 +79,14 @@ describe('createFunctionCallCaveatBuilder', () => {
 
   it('creates a Function Call CaveatBuilder with exact calldata', () => {
     const exactCalldata = { calldata: '0x12345678' } as const;
-    const config: FunctionCallUnitOfAuthorityConfig = {
-      environment,
+    const config: FunctionCallScopeConfig = {
+      type: 'functionCall',
       targets: [randomAddress()],
       selectors: ['0x12345678'],
       exactCalldata,
     };
 
-    const caveatBuilder = createFunctionCallCaveatBuilder(config);
+    const caveatBuilder = createFunctionCallCaveatBuilder(environment, config);
 
     const caveats = caveatBuilder.build();
 
@@ -110,9 +110,11 @@ describe('createFunctionCallCaveatBuilder', () => {
   });
 
   it('throws an error for invalid configuration', () => {
-    const config = { environment } as any;
+    const config = {
+      type: 'functionCall',
+    } as unknown as FunctionCallScopeConfig;
 
-    expect(() => createFunctionCallCaveatBuilder(config)).to.throw(
+    expect(() => createFunctionCallCaveatBuilder(environment, config)).to.throw(
       'Invalid Function Call configuration',
     );
   });

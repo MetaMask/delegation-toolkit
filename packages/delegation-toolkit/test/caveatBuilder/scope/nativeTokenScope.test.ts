@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import { concat, toHex } from 'viem';
 
-import { createNativeTokenCaveatBuilder } from '../../src/caveatBuilder/nativeTokenUnitOfAuthority';
-import type { NativeTokenUnitOfAuthorityConfig } from '../../src/caveatBuilder/nativeTokenUnitOfAuthority';
-import { randomAddress } from '../utils';
-import type { DeleGatorEnvironment } from 'src';
+import { createNativeTokenCaveatBuilder } from '../../../src/caveatBuilder/scope/nativeTokenScope';
+import type { NativeTokenScopeConfig } from '../../../src/caveatBuilder/scope/nativeTokenScope';
+import type { DeleGatorEnvironment } from '../../../src/types';
+import { randomAddress } from '../../utils';
 
 describe('createNativeTokenCaveatBuilder', () => {
   const environment = {
@@ -17,15 +17,15 @@ describe('createNativeTokenCaveatBuilder', () => {
   } as unknown as DeleGatorEnvironment;
 
   it('creates a Native Token Streaming CaveatBuilder', () => {
-    const config: NativeTokenUnitOfAuthorityConfig = {
-      environment,
+    const config: NativeTokenScopeConfig = {
+      type: 'nativeToken',
       initialAmount: 1000n,
       maxAmount: 10000n,
       amountPerSecond: 1n,
       startTime: Math.floor(Date.now() / 1000),
     };
 
-    const caveatBuilder = createNativeTokenCaveatBuilder(config);
+    const caveatBuilder = createNativeTokenCaveatBuilder(environment, config);
 
     const caveats = caveatBuilder.build();
 
@@ -49,14 +49,14 @@ describe('createNativeTokenCaveatBuilder', () => {
   });
 
   it('creates a Native Token Period Transfer CaveatBuilder', () => {
-    const config: NativeTokenUnitOfAuthorityConfig = {
-      environment,
+    const config: NativeTokenScopeConfig = {
+      type: 'nativeToken',
       periodAmount: 1000n,
       periodDuration: 1000,
       startDate: Math.floor(Date.now() / 1000),
     };
 
-    const caveatBuilder = createNativeTokenCaveatBuilder(config);
+    const caveatBuilder = createNativeTokenCaveatBuilder(environment, config);
 
     const caveats = caveatBuilder.build();
 
@@ -79,12 +79,12 @@ describe('createNativeTokenCaveatBuilder', () => {
   });
 
   it('creates a Native Token Transfer Amount CaveatBuilder', () => {
-    const config: NativeTokenUnitOfAuthorityConfig = {
-      environment,
+    const config: NativeTokenScopeConfig = {
+      type: 'nativeToken',
       maxAmount: 10000n,
     };
 
-    const caveatBuilder = createNativeTokenCaveatBuilder(config);
+    const caveatBuilder = createNativeTokenCaveatBuilder(environment, config);
 
     const caveats = caveatBuilder.build();
 
@@ -103,9 +103,9 @@ describe('createNativeTokenCaveatBuilder', () => {
   });
 
   it('throws an error for invalid configuration', () => {
-    const config = { environment } as any;
+    const config = { type: 'nativeToken' } as unknown as NativeTokenScopeConfig;
 
-    expect(() => createNativeTokenCaveatBuilder(config)).to.throw(
+    expect(() => createNativeTokenCaveatBuilder(environment, config)).to.throw(
       'Invalid native token configuration',
     );
   });
