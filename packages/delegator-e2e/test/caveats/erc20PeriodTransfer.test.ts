@@ -5,13 +5,14 @@ import {
   SINGLE_DEFAULT_MODE,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createDelegation,
-  createCaveatBuilder,
   createExecution,
+  Delegation,
   Implementation,
+  ROOT_AUTHORITY,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
+import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 import {
   transport,
   gasPrice,
@@ -103,17 +104,21 @@ const runTest_expectSuccess = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
-      periodAmount,
-      periodDuration,
-      startDate,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('erc20PeriodTransfer', {
+        tokenAddress: erc20TokenAddress,
+        periodAmount,
+        periodDuration,
+        startDate,
+      })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -184,17 +189,21 @@ const runTest_expectFailure = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
-      periodAmount,
-      periodDuration,
-      startDate,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate,
+    delegator: delegator.address,
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('erc20PeriodTransfer', {
+        tokenAddress: erc20TokenAddress,
+        periodAmount,
+        periodDuration,
+        startDate,
+      })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -332,23 +341,25 @@ test('Bob attempts to redeem with invalid terms length', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
   // Create invalid terms length by appending an empty byte
   caveats[0].terms = concat([caveats[0].terms, '0x00']);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -400,20 +411,22 @@ test('Bob attempts to redeem with invalid execution length', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -470,20 +483,22 @@ test('Bob attempts to redeem with invalid contract', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress, // valid token address
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -536,20 +551,22 @@ test('Bob attempts to redeem with invalid method', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -602,13 +619,12 @@ test('Bob attempts to redeem with zero start date', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
-      currentTime, // valid start date
-    )
+      startDate: currentTime,
+    })
     .build();
 
   // Modify the terms to encode zero start date
@@ -619,11 +635,14 @@ test('Bob attempts to redeem with zero start date', async () => {
     `0x${startDate.toString(16).padStart(64, '0')}`, // zero start date
   ]);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -675,13 +694,12 @@ test('Bob attempts to redeem with zero period amount', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
-      1n, // valid period amount
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
+      periodAmount: 1n,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
   // Modify the terms to encode zero period amount
@@ -692,11 +710,14 @@ test('Bob attempts to redeem with zero period amount', async () => {
     `0x${startDate.toString(16).padStart(64, '0')}`, // startDate
   ]);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -748,13 +769,12 @@ test('Bob attempts to redeem with zero period duration', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
-      3600, // valid period duration
+      periodDuration,
       startDate,
-    )
+    })
     .build();
 
   // Modify the terms to encode zero period duration
@@ -765,11 +785,14 @@ test('Bob attempts to redeem with zero period duration', async () => {
     `0x${startDate.toString(16).padStart(64, '0')}`, // startDate
   ]);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -821,20 +844,22 @@ test('Bob attempts to redeem before start date', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,

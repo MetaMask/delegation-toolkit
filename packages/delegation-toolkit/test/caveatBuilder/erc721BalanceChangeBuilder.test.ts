@@ -15,16 +15,11 @@ describe('erc721BalanceChangeBuilder()', () => {
   const buildWithParams = (
     tokenAddress: Address,
     recipient: Address,
-    balance: bigint,
+    amount: bigint,
     changeType: BalanceChangeType,
   ) => {
-    return erc721BalanceChangeBuilder(
-      environment,
-      tokenAddress,
-      recipient,
-      balance,
-      changeType,
-    );
+    const config = { tokenAddress, recipient, amount, changeType };
+    return erc721BalanceChangeBuilder(environment, config);
   };
 
   describe('validation', () => {

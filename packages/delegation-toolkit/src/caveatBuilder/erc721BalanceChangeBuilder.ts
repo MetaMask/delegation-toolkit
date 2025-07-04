@@ -5,24 +5,27 @@ import { BalanceChangeType } from './types';
 
 export const erc721BalanceChange = 'erc721BalanceChange';
 
+export type Erc721BalanceChangeBuilderConfig = {
+  tokenAddress: Address;
+  recipient: Address;
+  amount: bigint;
+  changeType: BalanceChangeType;
+};
+
 /**
  * Builds a caveat struct for the ERC721BalanceChangeEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param tokenAddress - The tokenAddress of the ERC721 token.
- * @param recipient - The address of the recipient whose balance must change.
- * @param amount - The amount by which the recipient's balance must change.
- * @param changeType - The type of balance change (increase or decrease).
+ * @param config - The configuration object for the ERC721 balance change.
  * @returns The Caveat.
  * @throws Error if the token address is invalid, the recipient address is invalid, or the amount is not a positive number.
  */
 export const erc721BalanceChangeBuilder = (
   environment: DeleGatorEnvironment,
-  tokenAddress: Address,
-  recipient: Address,
-  amount: bigint,
-  changeType: BalanceChangeType,
+  config: Erc721BalanceChangeBuilderConfig,
 ): Caveat => {
+  const { tokenAddress, recipient, amount, changeType } = config;
+
   if (!isAddress(tokenAddress, { strict: false })) {
     throw new Error('Invalid tokenAddress: must be a valid address');
   }

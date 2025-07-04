@@ -3,13 +3,14 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createDelegation,
-  createCaveatBuilder,
   Implementation,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
+  ROOT_AUTHORITY,
+  type Delegation,
 } from '@metamask/delegation-toolkit';
 
 import {
@@ -85,16 +86,20 @@ const runTest_expectSuccess = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'nativeTokenPeriodTransfer',
-      periodAmount,
-      periodDuration,
-      startDate,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('nativeTokenPeriodTransfer', {
+        periodAmount,
+        periodDuration,
+        startDate,
+      })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -155,16 +160,20 @@ const runTest_expectFailure = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'nativeTokenPeriodTransfer',
-      periodAmount,
-      periodDuration,
-      startDate,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('nativeTokenPeriodTransfer', {
+        periodAmount,
+        periodDuration,
+        startDate,
+      })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -288,22 +297,24 @@ test('Bob attempts to redeem with invalid terms length', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenPeriodTransfer',
+    .addCaveat('nativeTokenPeriodTransfer', {
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
   // Create invalid terms length by appending an empty byte
   caveats[0].terms = concat([caveats[0].terms, '0x00']);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -348,12 +359,11 @@ test('Bob attempts to redeem with zero start date', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenPeriodTransfer',
+    .addCaveat('nativeTokenPeriodTransfer', {
       periodAmount,
       periodDuration,
-      currentTime, // valid start date
-    )
+      startDate: currentTime, // valid start date
+    })
     .build();
 
   // Modify the terms to encode zero start date
@@ -363,11 +373,14 @@ test('Bob attempts to redeem with zero start date', async () => {
     `0x${startDate.toString(16).padStart(64, '0')}`, // zero start date
   ]);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -414,12 +427,11 @@ test('Bob attempts to redeem with zero period amount', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenPeriodTransfer',
-      1n, // valid period amount
+    .addCaveat('nativeTokenPeriodTransfer', {
+      periodAmount: 1n, // valid period amount
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
   // Modify the terms to encode zero period amount
@@ -429,11 +441,14 @@ test('Bob attempts to redeem with zero period amount', async () => {
     `0x${startDate.toString(16).padStart(64, '0')}`, // startDate
   ]);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -480,12 +495,11 @@ test('Bob attempts to redeem with zero period duration', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenPeriodTransfer',
+    .addCaveat('nativeTokenPeriodTransfer', {
       periodAmount,
-      3600, // valid period duration
+      periodDuration: 3600, // valid period duration
       startDate,
-    )
+    })
     .build();
 
   // Modify the terms to encode zero period duration
@@ -495,11 +509,14 @@ test('Bob attempts to redeem with zero period duration', async () => {
     `0x${startDate.toString(16).padStart(64, '0')}`, // startDate
   ]);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -546,19 +563,21 @@ test('Bob attempts to redeem before start date', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenPeriodTransfer',
+    .addCaveat('nativeTokenPeriodTransfer', {
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

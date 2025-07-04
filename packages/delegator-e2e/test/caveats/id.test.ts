@@ -5,13 +5,14 @@ import {
   SINGLE_DEFAULT_MODE,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
-  createDelegation,
   createExecution,
+  Delegation,
   Implementation,
+  ROOT_AUTHORITY,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
+import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 
 import {
   transport,
@@ -104,17 +105,19 @@ test('Bob attempts to redeem a second delegation with the same id', async () => 
   await runTest_expectFailure(id, 'IdEnforcer:id-already-used');
 });
 
-const runTest_expectSuccess = async (id: number) => {
+const runTest_expectSuccess = async (idValue: number) => {
   const newCount = hexToBigInt(randomBytes(32));
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'id',
-      id,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('id', { idValue })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -170,17 +173,22 @@ const runTest_expectSuccess = async (id: number) => {
   expect(countAfter).toEqual(newCount);
 };
 
-const runTest_expectFailure = async (id: number, expectedError: string) => {
+const runTest_expectFailure = async (
+  idValue: number,
+  expectedError: string,
+) => {
   const newCount = hexToBigInt(randomBytes(32));
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'id',
-      id,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('id', { idValue })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

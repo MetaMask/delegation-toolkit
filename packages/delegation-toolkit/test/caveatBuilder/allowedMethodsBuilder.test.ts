@@ -15,7 +15,8 @@ describe('allowedMethodsBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithSelectors = (selectors: MethodSelector[]) => {
-    return allowedMethodsBuilder(environment, selectors);
+    const config = { selectors };
+    return allowedMethodsBuilder(environment, config);
   };
 
   describe('validation', () => {

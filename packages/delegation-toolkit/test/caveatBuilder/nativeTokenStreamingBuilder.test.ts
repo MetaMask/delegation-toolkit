@@ -21,13 +21,8 @@ describe('nativeTokenStreamingBuilder()', () => {
     amountPerSecond: bigint,
     startTime: number,
   ) => {
-    return nativeTokenStreamingBuilder(
-      environment,
-      initialAmount,
-      maxAmount,
-      amountPerSecond,
-      startTime,
-    );
+    const config = { initialAmount, maxAmount, amountPerSecond, startTime };
+    return nativeTokenStreamingBuilder(environment, config);
   };
 
   describe('validation', () => {

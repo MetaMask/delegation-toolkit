@@ -4,6 +4,12 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const nativeTokenPeriodTransfer = 'nativeTokenPeriodTransfer';
 
+export type NativeTokenPeriodTransferBuilderConfig = {
+  periodAmount: bigint;
+  periodDuration: number;
+  startDate: number;
+};
+
 /**
  * Builds a caveat struct for NativeTokenPeriodTransferEnforcer.
  * This enforcer validates that native token (ETH) transfers do not exceed a specified amount
@@ -11,18 +17,16 @@ export const nativeTokenPeriodTransfer = 'nativeTokenPeriodTransfer';
  * and any unused ETH is forfeited once the period ends.
  *
  * @param environment - The DeleGator environment.
- * @param periodAmount - The maximum amount of ETH (in wei) that can be transferred per period.
- * @param periodDuration - The duration of each period in seconds.
- * @param startDate - The timestamp when the first period begins.
+ * @param config - The configuration object containing periodAmount, periodDuration, and startDate.
  * @returns The Caveat.
  * @throws Error if any of the parameters are invalid.
  */
 export const nativeTokenPeriodTransferBuilder = (
   environment: DeleGatorEnvironment,
-  periodAmount: bigint,
-  periodDuration: number,
-  startDate: number,
+  config: NativeTokenPeriodTransferBuilderConfig,
 ): Caveat => {
+  const { periodAmount, periodDuration, startDate } = config;
+
   const terms = createNativeTokenPeriodTransferTerms({
     periodAmount,
     periodDuration,

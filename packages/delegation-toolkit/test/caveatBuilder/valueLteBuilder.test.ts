@@ -13,7 +13,8 @@ describe('valueLteEnforcerBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithMaxValue = (maxValue: bigint) => {
-    return valueLteBuilder(environment, maxValue);
+    const config = { maxValue };
+    return valueLteBuilder(environment, config);
   };
 
   describe('validation', () => {

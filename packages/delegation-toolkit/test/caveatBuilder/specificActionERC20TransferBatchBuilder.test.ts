@@ -21,14 +21,14 @@ describe('specificActionERC20TransferBatchBuilder()', () => {
     firstTarget: Address,
     firstCalldata: `0x${string}`,
   ) => {
-    return specificActionERC20TransferBatchBuilder(
-      environment,
+    const config = {
       tokenAddress,
       recipient,
       amount,
       firstTarget,
       firstCalldata,
-    );
+    };
+    return specificActionERC20TransferBatchBuilder(environment, config);
   };
 
   describe('validation', () => {

@@ -20,13 +20,8 @@ describe('erc20PeriodTransferBuilder()', () => {
     periodDuration: number,
     startDate: number,
   ) => {
-    return erc20PeriodTransferBuilder(
-      environment,
-      tokenAddress,
-      periodAmount,
-      periodDuration,
-      startDate,
-    );
+    const config = { tokenAddress, periodAmount, periodDuration, startDate };
+    return erc20PeriodTransferBuilder(environment, config);
   };
 
   describe('validation', () => {

@@ -20,14 +20,8 @@ describe('erc1155BalanceChangeBuilder', () => {
     balance: bigint,
     changeType: BalanceChangeType,
   ) => {
-    return erc1155BalanceChangeBuilder(
-      environment,
-      tokenAddress,
-      recipient,
-      tokenId,
-      balance,
-      changeType,
-    );
+    const config = { tokenAddress, recipient, tokenId, balance, changeType };
+    return erc1155BalanceChangeBuilder(environment, config);
   };
 
   describe('validation', () => {

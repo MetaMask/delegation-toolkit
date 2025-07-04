@@ -5,20 +5,27 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const erc20TransferAmount = 'erc20TransferAmount';
 
+export type Erc20TransferAmountBuilderConfig = {
+  tokenAddress: Address;
+  maxAmount: bigint;
+};
+
 /**
  * Builds a caveat struct for ERC20TransferAmountEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param tokenAddress - The address of the ERC20 token contract.
- * @param maxAmount - The maximum amount of tokens that can be transferred.
+ * @param config - The configuration object containing the token address and max amount.
+ * @param config.tokenAddress - The address of the ERC20 token contract.
+ * @param config.maxAmount - The maximum amount of tokens that can be transferred.
  * @returns The Caveat.
  * @throws Error if the token address is invalid or if the max amount is not a positive number.
  */
 export const erc20TransferAmountBuilder = (
   environment: DeleGatorEnvironment,
-  tokenAddress: Address,
-  maxAmount: bigint,
+  config: Erc20TransferAmountBuilderConfig,
 ): Caveat => {
+  const { tokenAddress, maxAmount } = config;
+
   if (!isAddress(tokenAddress, { strict: false })) {
     throw new Error('Invalid tokenAddress: must be a valid address');
   }

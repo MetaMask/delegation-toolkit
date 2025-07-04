@@ -1,23 +1,28 @@
-import { type Hex, encodePacked, isAddress } from 'viem';
+import { type Address, encodePacked, isAddress } from 'viem';
 
 import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const nativeTokenPayment = 'nativeTokenPayment';
 
+export type NativeTokenPaymentBuilderConfig = {
+  recipient: Address;
+  amount: bigint;
+};
+
 /**
  * Builds a caveat struct for the NativeTokenPaymentEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param recipient - The address of the recipient of the payment.
- * @param amount - The amount of native tokens required for the payment.
+ * @param config - The configuration object for the NativeTokenPaymentEnforcer.
  * @returns The Caveat.
  * @throws Error if the amount is invalid or the recipient address is invalid.
  */
 export const nativeTokenPaymentBuilder = (
   environment: DeleGatorEnvironment,
-  recipient: Hex,
-  amount: bigint,
+  config: NativeTokenPaymentBuilderConfig,
 ): Caveat => {
+  const { recipient, amount } = config;
+
   if (amount <= 0n) {
     throw new Error('Invalid amount: must be positive');
   }

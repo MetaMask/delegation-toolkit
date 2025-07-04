@@ -10,18 +10,24 @@ export type MethodSelector = Hex | string | AbiFunction;
 // length of function selector in chars, _including_ 0x prefix
 const FUNCTION_SELECTOR_STRING_LENGTH = 10;
 
+export type AllowedMethodsBuilderConfig = {
+  selectors: MethodSelector[];
+};
+
 /**
  * Builds a caveat struct for the AllowedMethodsEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param selectors - The allowed function selectors.
+ * @param config - The configuration object containing the allowed function selectors.
  * @returns The Caveat.
  * @throws Error if no selectors are provided or if any selector is invalid.
  */
 export const allowedMethodsBuilder = (
   environment: DeleGatorEnvironment,
-  selectors: MethodSelector[],
+  config: AllowedMethodsBuilderConfig,
 ): Caveat => {
+  const { selectors } = config;
+
   if (selectors.length === 0) {
     throw new Error('Invalid selectors: must provide at least one selector');
   }

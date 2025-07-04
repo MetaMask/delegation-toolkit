@@ -1,13 +1,14 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  createCaveatBuilder,
-  createDelegation,
   createExecution,
   BalanceChangeType,
+  Delegation,
   Implementation,
+  ROOT_AUTHORITY,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
+import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
@@ -124,22 +125,24 @@ test('Bob attempts to redeem with invalid terms length', async () => {
   const { environment } = aliceSmartAccount;
 
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeBalanceChange',
+    .addCaveat('nativeBalanceChange', {
       recipient,
-      requiredIncrease,
-      BalanceChangeType.Increase,
-    )
+      balance: requiredIncrease,
+      changeType: BalanceChangeType.Increase,
+    })
     .build();
 
   // Create invalid terms length by appending an empty byte
   caveats[0].terms = concat([caveats[0].terms, '0x00']);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -191,16 +194,20 @@ const testRun_expectSuccess = async (
       ? recipient
       : aliceSmartAccount.address;
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'nativeBalanceChange',
-      target,
-      requiredChange,
-      changeType,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('nativeBalanceChange', {
+        recipient: target,
+        balance: requiredChange,
+        changeType,
+      })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -277,20 +284,20 @@ const testRun_expectFailure = async (
       ? recipient
       : aliceSmartAccount.address;
 
-  const balanceBefore = await publicClient.getBalance({
-    address: target,
-  });
-
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'nativeBalanceChange',
-      target,
-      requiredChange,
-      changeType,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('nativeBalanceChange', {
+        recipient: target,
+        balance: requiredChange,
+        changeType,
+      })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

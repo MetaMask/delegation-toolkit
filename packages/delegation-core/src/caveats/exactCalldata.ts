@@ -13,7 +13,7 @@ import type { Hex } from '../types';
  */
 export type ExactCalldataTerms = {
   /** The expected calldata to match against. */
-  callData: BytesLike;
+  calldata: BytesLike;
 };
 
 /**
@@ -45,12 +45,12 @@ export function createExactCalldataTerms(
   terms: ExactCalldataTerms,
   encodingOptions: EncodingOptions<ResultValue> = defaultOptions,
 ): Hex | Uint8Array {
-  const { callData } = terms;
+  const { calldata } = terms;
 
-  if (typeof callData === 'string' && !callData.startsWith('0x')) {
-    throw new Error('Invalid callData: must be a hex string starting with 0x');
+  if (typeof calldata === 'string' && !calldata.startsWith('0x')) {
+    throw new Error('Invalid calldata: must be a hex string starting with 0x');
   }
 
   // For exact calldata, the terms are simply the expected calldata
-  return prepareResult(callData, encodingOptions);
+  return prepareResult(calldata, encodingOptions);
 }

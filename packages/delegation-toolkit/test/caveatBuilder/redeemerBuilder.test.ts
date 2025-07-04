@@ -17,7 +17,8 @@ describe('redeemerBuilder()', () => {
   });
 
   const buildWithRedeemerAddresses = (redeemers: Address[]) => {
-    return redeemerBuilder(environment, redeemers);
+    const config = { redeemers };
+    return redeemerBuilder(environment, config);
   };
 
   describe('validation', () => {

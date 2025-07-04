@@ -4,18 +4,24 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const valueLte = 'valueLte';
 
+export type ValueLteBuilderConfig = {
+  maxValue: bigint;
+};
+
 /**
  * Builds a caveat struct for ValueLteEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param maxValue - The maximum value allowed for the transaction.
+ * @param config - The configuration object containing the maximum value allowed for the transaction.
  * @returns The Caveat.
  * @throws Error if any of the parameters are invalid.
  */
 export const valueLteBuilder = (
   environment: DeleGatorEnvironment,
-  maxValue: bigint,
+  config: ValueLteBuilderConfig,
 ): Caveat => {
+  const { maxValue } = config;
+
   const terms = createValueLteTerms({ maxValue });
 
   const {

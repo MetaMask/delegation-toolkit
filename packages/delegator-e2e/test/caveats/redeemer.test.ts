@@ -5,13 +5,14 @@ import {
   SINGLE_DEFAULT_MODE,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
-  createDelegation,
   createExecution,
+  Delegation,
   Implementation,
+  ROOT_AUTHORITY,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
+import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 
 import {
   transport,
@@ -92,14 +93,16 @@ const runTest_expectSuccess = async (
   const bobAddress = bobSmartAccount.address;
   const aliceAddress = aliceSmartAccount.address;
 
-  const delegation = createDelegation({
-    to: bobAddress,
-    from: aliceAddress,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'redeemer',
-      allowedRedeemers,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: bobAddress,
+    delegator: aliceAddress,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('redeemer', { redeemers: allowedRedeemers })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -169,14 +172,16 @@ const runTest_expectFailure = async (
   const bobAddress = bobSmartAccount.address;
   const aliceAddress = aliceSmartAccount.address;
 
-  const delegation = createDelegation({
-    to: bobAddress,
-    from: aliceAddress,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'redeemer',
-      allowedRedeemers,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: bobAddress,
+    delegator: aliceAddress,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('redeemer', { redeemers: allowedRedeemers })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

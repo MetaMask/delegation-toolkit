@@ -1,29 +1,11 @@
 import type { Caveat, DeleGatorEnvironment } from '../types';
 
-export type Caveats = CaveatBuilder | Caveat[];
-
 type CaveatWithOptionalArgs = Omit<Caveat, 'args'> & {
   args?: Caveat['args'];
 };
 
-/**
- * Resolves the array of Caveat from a Caveats argument.
- * @param caveats - The caveats to be resolved, which can be either a CaveatBuilder or an array of Caveat.
- * @returns The resolved array of caveats.
- */
-export const resolveCaveats = (caveats: Caveats) => {
-  if (Array.isArray(caveats)) {
-    return caveats;
-  }
-  return caveats.build();
-};
-
-type RemoveFirst<TypeArray extends any[]> = TypeArray extends [
-  any,
-  ...infer Rest,
-]
-  ? Rest
-  : never;
+const INSECURE_UNRESTRICTED_DELEGATION_ERROR_MESSAGE =
+  'No caveats found. If you definitely want to create an empty caveat collection, set `allowInsecureUnrestrictedDelegation` to `true`.';
 
 type CaveatBuilderMap = {
   [key: string]: (
@@ -33,7 +15,7 @@ type CaveatBuilderMap = {
 };
 
 export type CaveatBuilderConfig = {
-  allowEmptyCaveats?: boolean;
+  allowInsecureUnrestrictedDelegation?: boolean;
 };
 
 /**
@@ -77,7 +59,7 @@ export class CaveatBuilder<
     TEnforcerName extends string,
     TFunction extends (
       environment: DeleGatorEnvironment,
-      ...args: [...any]
+      config: any,
     ) => Caveat,
   >(
     name: TEnforcerName,
@@ -103,19 +85,17 @@ export class CaveatBuilder<
   /**
    * Adds a caveat using a named enforcer function.
    * @param name - The name of the enforcer function to use.
-   * @param args - The arguments to pass to the enforcer function.
+   * @param config - The configuration to pass to the enforcer function.
    * @returns The CaveatBuilder instance for chaining.
    */
   addCaveat<TEnforcerName extends keyof TCaveatBuilderMap>(
     name: TEnforcerName,
-    ...args: RemoveFirst<Parameters<TCaveatBuilderMap[TEnforcerName]>>
+    config: Parameters<TCaveatBuilderMap[TEnforcerName]>[1],
   ): CaveatBuilder<TCaveatBuilderMap>;
 
   addCaveat<TEnforcerName extends keyof TCaveatBuilderMap>(
     nameOrCaveat: TEnforcerName | CaveatWithOptionalArgs,
-    ...args: typeof nameOrCaveat extends CaveatWithOptionalArgs
-      ? []
-      : RemoveFirst<Parameters<TCaveatBuilderMap[TEnforcerName]>>
+    config?: Parameters<TCaveatBuilderMap[TEnforcerName]>[1],
   ): CaveatBuilder<TCaveatBuilderMap> {
     if (typeof nameOrCaveat === 'object') {
       const caveat = {
@@ -131,7 +111,7 @@ export class CaveatBuilder<
 
     const func = this.#enforcerBuilders[name];
     if (typeof func === 'function') {
-      const result = func(this.#environment, ...args);
+      const result = func(this.#environment, config);
 
       this.#results = [...this.#results, result];
 
@@ -150,10 +130,11 @@ export class CaveatBuilder<
       throw new Error('This CaveatBuilder has already been built.');
     }
 
-    if (this.#results.length === 0 && !this.#config.allowEmptyCaveats) {
-      throw new Error(
-        'No caveats found. If you definitely want to create an empty caveat collection, set `allowEmptyCaveats`.',
-      );
+    if (
+      this.#results.length === 0 &&
+      !this.#config.allowInsecureUnrestrictedDelegation
+    ) {
+      throw new Error(INSECURE_UNRESTRICTED_DELEGATION_ERROR_MESSAGE);
     }
 
     this.#hasBeenBuilt = true;

@@ -13,7 +13,8 @@ describe('nativeTokenPaymentBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithAmountAndRecipient = (recipient: Hex, amount: bigint) => {
-    return nativeTokenPaymentBuilder(environment, recipient, amount);
+    const config = { recipient, amount };
+    return nativeTokenPaymentBuilder(environment, config);
   };
 
   describe('validation', () => {
@@ -36,7 +37,7 @@ describe('nativeTokenPaymentBuilder()', () => {
   describe('builds a caveat', () => {
     it('should build a caveat with valid amount and recipient', () => {
       const amount = 1000000000000000000n; // 1 ETH
-      const recipient = randomAddress(true); // lowerCase because abi encoding lowercases addresses
+      const recipient = randomAddress('lowercase'); // lowerCase because abi encoding lowercases addresses
       const caveat = buildWithAmountAndRecipient(recipient, amount);
 
       const amountHex = toHex(amount, { size: 32 });
@@ -51,7 +52,7 @@ describe('nativeTokenPaymentBuilder()', () => {
 
     it('should build a caveat with minimum possible amount', () => {
       const amount = 1n;
-      const recipient = randomAddress(true); // lowerCase because abi encoding lowercases addressesç
+      const recipient = randomAddress('lowercase'); // lowerCase because abi encoding lowercases addressesç
 
       const caveat = buildWithAmountAndRecipient(recipient, amount);
 
@@ -68,7 +69,7 @@ describe('nativeTokenPaymentBuilder()', () => {
 
   it('should create a caveat with terms length matching number of targets', () => {
     const amount = 1000000000000000000n; // 1 ETH
-    const recipient = randomAddress(true); // lowerCase because abi encoding lowercases addresses
+    const recipient = randomAddress('lowercase'); // lowerCase because abi encoding lowercases addresses
 
     const caveat = buildWithAmountAndRecipient(recipient, amount);
 

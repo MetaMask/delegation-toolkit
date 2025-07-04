@@ -13,10 +13,11 @@ describe('timestampBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithTimestamps = (
-    afterThreshold: number,
-    beforeThreshold: number,
+    timestampAfterThreshold: number,
+    timestampBeforeThreshold: number,
   ) => {
-    return timestampBuilder(environment, afterThreshold, beforeThreshold);
+    const config = { timestampAfterThreshold, timestampBeforeThreshold };
+    return timestampBuilder(environment, config);
   };
 
   describe('validation', () => {

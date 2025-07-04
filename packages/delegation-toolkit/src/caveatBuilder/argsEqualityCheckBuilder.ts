@@ -4,23 +4,26 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export const argsEqualityCheck = 'argsEqualityCheck';
 
+export type ArgsEqualityCheckBuilderConfig = {
+  expectedArgs: Hex;
+};
+
 /**
  * Builds a caveat struct for the ArgsEqualityCheckEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param args - The expected value for args.
+ * @param config - The configuration object for the builder.
  * @returns The Caveat.
- * @throws Error if the args is invalid.
+ * @throws Error if the config is invalid.
  */
 export const argsEqualityCheckBuilder = (
   environment: DeleGatorEnvironment,
-  args: Hex,
+  config: ArgsEqualityCheckBuilderConfig,
 ): Caveat => {
-  if (!isHex(args)) {
-    throw new Error('Invalid args: must be a valid hex string');
+  const { expectedArgs } = config;
+  if (!isHex(expectedArgs)) {
+    throw new Error('Invalid config: expectedArgs must be a valid hex string');
   }
-
-  const terms = args;
 
   const {
     caveatEnforcers: { ArgsEqualityCheckEnforcer },
@@ -32,7 +35,7 @@ export const argsEqualityCheckBuilder = (
 
   return {
     enforcer: ArgsEqualityCheckEnforcer,
-    terms,
+    terms: expectedArgs,
     args: '0x',
   };
 };

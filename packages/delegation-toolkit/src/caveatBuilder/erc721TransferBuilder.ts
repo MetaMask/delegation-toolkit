@@ -4,20 +4,25 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export const erc721Transfer = 'erc721Transfer';
 
+export type Erc721TransferBuilderConfig = {
+  permittedContract: Address;
+  permittedTokenId: bigint;
+};
+
 /**
  * Builds a caveat struct for the ERC721TransferEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param permittedContract - The permitted contract address for the ERC721 token.
- * @param permittedTokenId - The permitted token ID as a bigint.
+ * @param config - The configuration object for the ERC721 transfer builder.
  * @returns The Caveat representing the caveat for ERC721 transfer.
  * @throws Error if the permitted contract address is invalid.
  */
 export const erc721TransferBuilder = (
   environment: DeleGatorEnvironment,
-  permittedContract: Address,
-  permittedTokenId: bigint,
+  config: Erc721TransferBuilderConfig,
 ): Caveat => {
+  const { permittedContract, permittedTokenId } = config;
+
   if (!isAddress(permittedContract, { strict: false })) {
     throw new Error('Invalid tokenAddress: must be a valid address');
   }

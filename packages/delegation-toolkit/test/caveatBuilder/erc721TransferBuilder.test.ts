@@ -17,11 +17,8 @@ describe('erc721TransferBuilder()', () => {
     permittedContract: Address,
     permittedTokenId: bigint,
   ) => {
-    return erc721TransferBuilder(
-      environment,
-      permittedContract,
-      permittedTokenId,
-    );
+    const config = { permittedContract, permittedTokenId };
+    return erc721TransferBuilder(environment, config);
   };
 
   describe('validation', () => {

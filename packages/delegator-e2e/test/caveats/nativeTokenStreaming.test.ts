@@ -3,14 +3,15 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createExecution,
-  createDelegation,
+  ROOT_AUTHORITY,
   Implementation,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
+  Delegation,
 } from '@metamask/delegation-toolkit';
 
 import {
@@ -315,23 +316,25 @@ test('Bob attempts to redeem with invalid terms length', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenStreaming',
+    .addCaveat('nativeTokenStreaming', {
       initialAmount,
       maxAmount,
       amountPerSecond,
       startTime,
-    )
+    })
     .build();
 
   // Create invalid terms length by appending an empty byte
   caveats[0].terms = concat([caveats[0].terms, '0x00']);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -380,13 +383,12 @@ test('Bob attempts to redeem with invalid max amount', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenStreaming',
+    .addCaveat('nativeTokenStreaming', {
       initialAmount,
-      parseEther('20'), // valid maxAmount
+      maxAmount: parseEther('20'), // valid maxAmount
       amountPerSecond,
       startTime,
-    )
+    })
     .build();
 
   caveats[0].terms = concat([
@@ -396,11 +398,14 @@ test('Bob attempts to redeem with invalid max amount', async () => {
     `0x${startTime.toString(16).padStart(64, '0')}`, // zero start time
   ]);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -449,13 +454,12 @@ test('Bob attempts to redeem with zero start time', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenStreaming',
+    .addCaveat('nativeTokenStreaming', {
       initialAmount,
       maxAmount,
       amountPerSecond,
-      currentTime, // valid start time
-    )
+      startTime: currentTime, // valid start time
+    })
     .build();
 
   // Modify the terms to encode zero start time
@@ -466,11 +470,14 @@ test('Bob attempts to redeem with zero start time', async () => {
     `0x${startTime.toString(16).padStart(64, '0')}`, // zero start time
   ]);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
     caveats,
-  });
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -520,17 +527,21 @@ const runTest_expectSuccess = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'nativeTokenStreaming',
-      initialAmount,
-      maxAmount,
-      amountPerSecond,
-      startTime,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate,
+    delegator: delegator.address,
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('nativeTokenStreaming', {
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime,
+      })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -598,17 +609,21 @@ const runTest_expectFailure = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'nativeTokenStreaming',
-      initialAmount,
-      maxAmount,
-      amountPerSecond,
-      startTime,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate,
+    delegator: delegator.address,
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('nativeTokenStreaming', {
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime,
+      })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   const signedDelegation = {
     ...delegation,

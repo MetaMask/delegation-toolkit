@@ -5,22 +5,26 @@ import { BalanceChangeType } from './types';
 
 export const nativeBalanceChange = 'nativeBalanceChange';
 
+export type NativeBalanceChangeBuilderConfig = {
+  recipient: Address;
+  balance: bigint;
+  changeType: BalanceChangeType;
+};
+
 /**
  * Builds a caveat struct for the NativeBalanceChangeEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param recipient - The address that should receive the balance change.
- * @param balance - The minimum balance amount required.
- * @param changeType - Whether the balance should increase or decrease.
+ * @param config - The configuration object for the NativeBalanceChangeEnforcer.
  * @returns The Caveat.
  * @throws Error if the recipient address is invalid or the amount is not a positive number.
  */
 export const nativeBalanceChangeBuilder = (
   environment: DeleGatorEnvironment,
-  recipient: Address,
-  balance: bigint,
-  changeType: BalanceChangeType,
+  config: NativeBalanceChangeBuilderConfig,
 ): Caveat => {
+  const { recipient, balance, changeType } = config;
+
   if (!isAddress(recipient)) {
     throw new Error('Invalid recipient: must be a valid Address');
   }

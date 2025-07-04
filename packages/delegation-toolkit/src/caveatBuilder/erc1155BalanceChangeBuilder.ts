@@ -5,26 +5,28 @@ import { BalanceChangeType } from './types';
 
 export const erc1155BalanceChange = 'erc1155BalanceChange';
 
+export type Erc1155BalanceChangeBuilderConfig = {
+  tokenAddress: Address;
+  recipient: Address;
+  tokenId: bigint;
+  balance: bigint;
+  changeType: BalanceChangeType;
+};
+
 /**
  * Builds a caveat struct for the ERC1155BalanceChangeEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param tokenAddress - The tokenAddress of the ERC1155 token.
- * @param recipient - The address of the recipient whose balance must change.
- * @param tokenId - The ID of the ERC1155 token.
- * @param balance - The amount by which the recipient's balance must change.
- * @param changeType - The type of balance change (increase or decrease).
+ * @param config - The configuration object for the ERC1155 balance change.
  * @returns The Caveat.
  * @throws Error if the token address is invalid, the recipient address is invalid, or the amount is not a positive number.
  */
 export const erc1155BalanceChangeBuilder = (
   environment: DeleGatorEnvironment,
-  tokenAddress: Address,
-  recipient: Address,
-  tokenId: bigint,
-  balance: bigint,
-  changeType: BalanceChangeType,
+  config: Erc1155BalanceChangeBuilderConfig,
 ): Caveat => {
+  const { tokenAddress, recipient, tokenId, balance, changeType } = config;
+
   if (!isAddress(tokenAddress, { strict: false })) {
     throw new Error('Invalid tokenAddress: must be a valid address');
   }

@@ -19,13 +19,8 @@ describe('erc20BalanceChangeBuilder', () => {
     balance: bigint,
     changeType: BalanceChangeType,
   ) => {
-    return erc20BalanceChangeBuilder(
-      environment,
-      token,
-      recipient,
-      balance,
-      changeType,
-    );
+    const config = { tokenAddress: token, recipient, balance, changeType };
+    return erc20BalanceChangeBuilder(environment, config);
   };
 
   describe('validation', () => {

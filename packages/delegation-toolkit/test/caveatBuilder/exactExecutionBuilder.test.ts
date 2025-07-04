@@ -16,50 +16,63 @@ describe('exactExecutionBuilder()', () => {
     value: bigint;
     callData: `0x${string}`;
   }) => {
-    return exactExecutionBuilder(environment, execution);
+    const config = { execution };
+    return exactExecutionBuilder(environment, config);
   };
 
   describe('validation', () => {
     it('should fail with an invalid target address', () => {
       const invalidAddress = 'invalid-address' as Address;
-      expect(() =>
-        buildWithParams({
-          target: invalidAddress,
-          value: 0n,
-          callData: '0x',
-        }),
-      ).to.throw('Invalid target: must be a valid address');
+      expect(() => {
+        const config = {
+          execution: {
+            target: invalidAddress,
+            value: 0n,
+            callData: '0x' as `0x${string}`,
+          },
+        };
+        buildWithParams(config.execution);
+      }).to.throw('Invalid target: must be a valid address');
     });
 
     it('should fail with a negative value', () => {
-      expect(() =>
-        buildWithParams({
-          target: randomAddress(),
-          value: -1n,
-          callData: '0x',
-        }),
-      ).to.throw('Invalid value: must be a non-negative number');
+      expect(() => {
+        const config = {
+          execution: {
+            target: randomAddress(),
+            value: -1n,
+            callData: '0x' as `0x${string}`,
+          },
+        };
+        buildWithParams(config.execution);
+      }).to.throw('Invalid value: must be a non-negative number');
     });
 
     it('should fail with invalid callData format', () => {
-      expect(() =>
-        buildWithParams({
-          target: randomAddress(),
-          value: 0n,
-          callData: 'invalid' as `0x${string}`,
-        }),
-      ).to.throw('Invalid callData: must be a hex string starting with 0x');
+      expect(() => {
+        const config = {
+          execution: {
+            target: randomAddress(),
+            value: 0n,
+            callData: 'invalid' as `0x${string}`,
+          },
+        };
+        buildWithParams(config.execution);
+      }).to.throw('Invalid calldata: must be a hex string starting with 0x');
     });
 
     it('should allow valid addresses that are not checksummed', () => {
       const nonChecksummedAddress = randomAddress().toLowerCase() as Address;
-      expect(() =>
-        buildWithParams({
-          target: nonChecksummedAddress,
-          value: 0n,
-          callData: '0x',
-        }),
-      ).to.not.throw();
+      expect(() => {
+        const config = {
+          execution: {
+            target: nonChecksummedAddress,
+            value: 0n,
+            callData: '0x' as `0x${string}`,
+          },
+        };
+        buildWithParams(config.execution);
+      }).to.not.throw();
     });
   });
 
@@ -68,10 +81,10 @@ describe('exactExecutionBuilder()', () => {
       const execution = {
         target: randomAddress(),
         value: 1000000000000000000n, // 1 ETH
-        callData: '0x12345678' as const,
+        callData: '0x12345678' as `0x${string}`,
       };
-
-      const caveat = buildWithParams(execution);
+      const config = { execution };
+      const caveat = buildWithParams(config.execution);
 
       expect(caveat.enforcer).to.equal(
         environment.caveatEnforcers.ExactExecutionEnforcer,
