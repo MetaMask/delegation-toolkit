@@ -36,13 +36,6 @@ export const resolveCaveats = ({
   return scopeCaveatBuilder.build();
 };
 
-type RemoveFirst<TypeArray extends any[]> = TypeArray extends [
-  any,
-  ...infer Rest,
-]
-  ? Rest
-  : never;
-
 type CaveatBuilderMap = {
   [key: string]: (
     environment: DeleGatorEnvironment,
@@ -95,7 +88,7 @@ export class CaveatBuilder<
     TEnforcerName extends string,
     TFunction extends (
       environment: DeleGatorEnvironment,
-      ...args: [...any]
+      config: any,
     ) => Caveat,
   >(
     name: TEnforcerName,
@@ -121,19 +114,17 @@ export class CaveatBuilder<
   /**
    * Adds a caveat using a named enforcer function.
    * @param name - The name of the enforcer function to use.
-   * @param args - The arguments to pass to the enforcer function.
+   * @param config - The configuration to pass to the enforcer function.
    * @returns The CaveatBuilder instance for chaining.
    */
   addCaveat<TEnforcerName extends keyof TCaveatBuilderMap>(
     name: TEnforcerName,
-    ...args: RemoveFirst<Parameters<TCaveatBuilderMap[TEnforcerName]>>
+    config: Parameters<TCaveatBuilderMap[TEnforcerName]>[1],
   ): CaveatBuilder<TCaveatBuilderMap>;
 
   addCaveat<TEnforcerName extends keyof TCaveatBuilderMap>(
     nameOrCaveat: TEnforcerName | CaveatWithOptionalArgs,
-    ...args: typeof nameOrCaveat extends CaveatWithOptionalArgs
-      ? []
-      : RemoveFirst<Parameters<TCaveatBuilderMap[TEnforcerName]>>
+    config?: Parameters<TCaveatBuilderMap[TEnforcerName]>[1],
   ): CaveatBuilder<TCaveatBuilderMap> {
     if (typeof nameOrCaveat === 'object') {
       const caveat = {
@@ -149,7 +140,7 @@ export class CaveatBuilder<
 
     const func = this.#enforcerBuilders[name];
     if (typeof func === 'function') {
-      const result = func(this.#environment, ...args);
+      const result = func(this.#environment, config);
 
       this.#results = [...this.#results, result];
 
