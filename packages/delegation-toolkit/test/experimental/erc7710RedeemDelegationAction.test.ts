@@ -24,7 +24,7 @@ import { overrideDeployedEnvironment } from '../../src/delegatorEnvironment';
 import {
   createExecution,
   encodeExecutionCalldatas,
-  SINGLE_DEFAULT_MODE,
+  ExecutionMode,
 } from '../../src/executions';
 import {
   erc7710BundlerActions,
@@ -301,7 +301,7 @@ describe('erc7710RedeemDelegationAction', () => {
         functionName: 'redeemDelegations',
         args: [
           [args.permissionsContext],
-          [SINGLE_DEFAULT_MODE],
+          [ExecutionMode.SingleDefault],
           encodeExecutionCalldatas([
             [
               createExecution({

@@ -7,9 +7,8 @@ import {
   executeWithMode,
 } from './DelegationFramework/DeleGatorCore/encode';
 import {
-  BATCH_DEFAULT_MODE,
+  ExecutionMode,
   createExecution,
-  SINGLE_DEFAULT_MODE,
   encodeExecutionCalldatas,
 } from './executions';
 import type { DelegatedCall } from './experimental/erc7710RedeemDelegationAction';
@@ -54,7 +53,7 @@ const processDelegatedCall = (call: DelegatedCall) => {
     functionName: 'redeemDelegations',
     args: [
       [permissionsContext],
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[callAsExecution]]),
     ],
   });
@@ -92,7 +91,10 @@ export const encodeCalls = (calls: readonly Call[]) => {
     return createExecution({ target, value, callData });
   });
 
-  const mode = calls.length === 1 ? SINGLE_DEFAULT_MODE : BATCH_DEFAULT_MODE;
+  const mode =
+    calls.length === 1
+      ? ExecutionMode.SingleDefault
+      : ExecutionMode.BatchDefault;
   return executeWithMode({ mode, executions });
 };
 
@@ -105,7 +107,7 @@ export const encodeCalls = (calls: readonly Call[]) => {
  * @description
  * - If there's a single call directly to the delegator, it returns the call data directly.
  * - For multiple calls or calls to other addresses, it creates executions and encodes them for the DeleGator's execute function.
- * - The execution mode is set to SINGLE_DEFAULT_MODE for a single call, or BATCH_DEFAULT_MODE for multiple calls.
+ * - The execution mode is set to ExecutionMode.SingleDefault for a single call, or ExecutionMode.BatchDefault for multiple calls.
  *
  * todo: This doesn't fully expose the flexibility of the DeleGator's execute function, but it's a start.
  * maybe we add a mechanism where individual calls passed to this function can be encoded batches.

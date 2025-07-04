@@ -1,6 +1,5 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  BATCH_DEFAULT_MODE,
   encodeExecutionCalldatas,
   encodePermissionContexts,
 } from '@metamask/delegation-toolkit/utils';
@@ -9,6 +8,7 @@ import {
   createCaveatBuilder,
   Implementation,
   toMetaMaskSmartAccount,
+  ExecutionMode,
   type ExecutionStruct,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
@@ -118,7 +118,7 @@ const runTest_expectSuccess = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [BATCH_DEFAULT_MODE],
+      [ExecutionMode.BatchDefault],
       encodeExecutionCalldatas([executions]),
     ],
   });
@@ -187,7 +187,7 @@ const runTest_expectFailure = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [BATCH_DEFAULT_MODE],
+      [ExecutionMode.BatchDefault],
       encodeExecutionCalldatas([executions]),
     ],
   });

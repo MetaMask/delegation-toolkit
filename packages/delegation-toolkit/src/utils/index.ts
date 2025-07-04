@@ -20,12 +20,9 @@ export {
   encodeExecutionCalldatas,
   encodeSingleExecution,
   encodeBatchExecution,
-  SINGLE_DEFAULT_MODE,
-  SINGLE_TRY_MODE,
-  BATCH_DEFAULT_MODE,
 } from '../executions';
 
-export type { ExecutionMode, ExecutionStruct } from '../executions';
+export type { ExecutionStruct } from '../executions';
 
 export type { AuthenticatorFlags } from '../webAuthn';
 
