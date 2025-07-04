@@ -15,10 +15,10 @@ import {
   Implementation,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
-  createCaveatBuilder,
-  createDelegation,
+  ROOT_AUTHORITY,
   type Delegation,
 } from '@metamask/delegation-toolkit';
+import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 import { erc7710BundlerActions } from '@metamask/delegation-toolkit/experimental';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import {
@@ -66,15 +66,18 @@ beforeEach(async () => {
   aliceCounterContractAddress = aliceCounter.address;
 
   const caveats = createCaveatBuilder(aliceSmartAccount.environment)
-    .addCaveat('allowedTargets', [aliceCounterContractAddress])
-    .addCaveat('allowedMethods', ['increment()'])
-    .addCaveat('valueLte', 0n);
+    .addCaveat('allowedTargets', { targets: [aliceCounterContractAddress] })
+    .addCaveat('allowedMethods', { selectors: ['increment()'] })
+    .addCaveat('valueLte', { maxValue: 0n });
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats,
-  });
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    caveats: caveats.build(),
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   signedDelegation = {
     ...delegation,

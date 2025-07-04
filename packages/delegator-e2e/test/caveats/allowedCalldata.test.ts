@@ -1,12 +1,13 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  createCaveatBuilder,
-  createDelegation,
   createExecution,
+  Delegation,
   Implementation,
+  ROOT_AUTHORITY,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
+import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
@@ -139,14 +140,22 @@ const runTest_expectSuccess = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: caveats.reduce((builder, caveat) => {
-      builder.addCaveat('allowedCalldata', caveat.from, caveat.calldata);
-      return builder;
-    }, createCaveatBuilder(environment)),
-  });
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    caveats: caveats
+      .reduce((builder, caveat) => {
+        builder.addCaveat('allowedCalldata', {
+          startIndex: caveat.from,
+          value: caveat.calldata,
+        });
+        return builder;
+      }, createCaveatBuilder(environment))
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -207,14 +216,22 @@ const runTest_expectFailure = async (
   caveats: { from: number; calldata: Hex }[],
   expectedError: string,
 ) => {
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: caveats.reduce((builder, caveat) => {
-      builder.addCaveat('allowedCalldata', caveat.from, caveat.calldata);
-      return builder;
-    }, createCaveatBuilder(aliceSmartAccount.environment)),
-  });
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    caveats: caveats
+      .reduce((builder, caveat) => {
+        builder.addCaveat('allowedCalldata', {
+          startIndex: caveat.from,
+          value: caveat.calldata,
+        });
+        return builder;
+      }, createCaveatBuilder(aliceSmartAccount.environment))
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

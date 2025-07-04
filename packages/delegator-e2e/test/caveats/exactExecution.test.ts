@@ -5,13 +5,14 @@ import {
   SINGLE_DEFAULT_MODE,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createDelegation,
-  createCaveatBuilder,
+  Delegation,
   Implementation,
+  ROOT_AUTHORITY,
   toMetaMaskSmartAccount,
   type ExecutionStruct,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
+import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 
 import {
   transport,
@@ -74,14 +75,16 @@ const runTest_expectSuccess = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'exactExecution',
-      execution,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('exactExecution', { execution })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -127,14 +130,16 @@ const runTest_expectFailure = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'exactExecution',
-      expectedExecution,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('exactExecution', { execution: expectedExecution })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

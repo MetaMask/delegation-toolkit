@@ -1,12 +1,13 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  createCaveatBuilder,
   createExecution,
-  createDelegation,
+  Delegation,
   Implementation,
+  ROOT_AUTHORITY,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
+import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
@@ -153,15 +154,19 @@ const runTest_expectSuccess = async (
   const bobAddress = bobSmartAccount.address;
   const aliceAddress = aliceSmartAccount.address;
 
-  const delegation = createDelegation({
-    to: bobAddress,
-    from: aliceAddress,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'timestamp',
-      afterThreshold,
-      beforeThreshold,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: bobAddress,
+    delegator: aliceAddress,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('timestamp', {
+        timestampAfterThreshold: afterThreshold,
+        timestampBeforeThreshold: beforeThreshold,
+      })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -232,15 +237,19 @@ const runTest_expectFailure = async (
   const bobAddress = bobSmartAccount.address;
   const aliceAddress = aliceSmartAccount.address;
 
-  const delegation = createDelegation({
-    to: bobAddress,
-    from: aliceAddress,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'timestamp',
-      afterThreshold,
-      beforeThreshold,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: bobAddress,
+    delegator: aliceAddress,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('timestamp', {
+        timestampAfterThreshold: afterThreshold,
+        timestampBeforeThreshold: beforeThreshold,
+      })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

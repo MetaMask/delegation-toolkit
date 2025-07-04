@@ -1,12 +1,13 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  createCaveatBuilder,
   createExecution,
-  createDelegation,
+  Delegation,
   Implementation,
+  ROOT_AUTHORITY,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
+import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 import {
   encodePermissionContexts,
   encodeExecutionCalldatas,
@@ -81,14 +82,16 @@ const runTest_expectSuccess = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'exactCalldata',
-      calldata,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('exactCalldata', { calldata })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -139,14 +142,16 @@ const runTest_expectFailure = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'exactCalldata',
-      expectedCalldata,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('exactCalldata', { calldata: expectedCalldata })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

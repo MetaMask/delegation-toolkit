@@ -1,13 +1,11 @@
 import { expect } from 'chai';
 
-import { resolveCaveats } from '../../src/caveatBuilder/resolveCaveats';
 import { CaveatBuilder } from '../../src/caveatBuilder/caveatBuilder';
-import {
-  CoreCaveatConfiguration,
-  createCaveatBuilder,
-} from '../../src/caveatBuilder/coreCaveatBuilder';
-import type { Caveat, DeleGatorEnvironment } from '../../src/types';
+import type { CoreCaveatConfiguration } from '../../src/caveatBuilder/coreCaveatBuilder';
+import { createCaveatBuilder } from '../../src/caveatBuilder/coreCaveatBuilder';
+import { resolveCaveats } from '../../src/caveatBuilder/resolveCaveats';
 import type { ScopeConfig } from '../../src/caveatBuilder/scope';
+import type { Caveat, DeleGatorEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('resolveCaveats', () => {

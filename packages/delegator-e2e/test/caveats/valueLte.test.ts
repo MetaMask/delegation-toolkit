@@ -5,13 +5,14 @@ import {
   SINGLE_DEFAULT_MODE,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
-  createDelegation,
   createExecution,
+  Delegation,
   Implementation,
+  ROOT_AUTHORITY,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
+import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 
 import {
   fundAddress,
@@ -117,14 +118,16 @@ const submitUserOperationForTest = async (
   const bobAddress = bobSmartAccount.address;
   const aliceAddress = aliceSmartAccount.address;
 
-  const delegation = createDelegation({
-    to: bobAddress,
-    from: aliceAddress,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'valueLte',
-      maxValue,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: bobAddress,
+    delegator: aliceAddress,
+    authority: ROOT_AUTHORITY,
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('valueLte', { maxValue })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

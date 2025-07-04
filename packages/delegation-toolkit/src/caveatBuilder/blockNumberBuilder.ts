@@ -61,5 +61,3 @@ export const blockNumberBuilder = (
     args: '0x',
   };
 };
-
-type A = { type: 'a' } | { type: 'b' };

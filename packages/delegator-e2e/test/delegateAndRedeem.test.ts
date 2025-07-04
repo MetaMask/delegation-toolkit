@@ -10,16 +10,17 @@ import {
 import { expectCodeAt, expectUserOperationToSucceed } from './utils/assertions';
 
 import {
-  createCaveatBuilder,
   createExecution,
-  createDelegation,
+  Delegation,
   Implementation,
+  ROOT_AUTHORITY,
   toMetaMaskSmartAccount,
   signDelegation,
   aggregateSignature,
   type MetaMaskSmartAccount,
   type PartialSignature,
 } from '@metamask/delegation-toolkit';
+import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 import {
   encodePermissionContexts,
   encodeExecutionCalldatas,
@@ -93,13 +94,17 @@ test('maincase: Bob increments the counter with a delegation from Alice', async 
 
   expect(countBefore, 'Expected initial count to be 0n').toEqual(0n);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
     caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', [aliceCounterContractAddress])
-      .addCaveat('allowedMethods', ['increment()']),
-  });
+      .addCaveat('allowedTargets', { targets: [aliceCounterContractAddress] })
+      .addCaveat('allowedMethods', { selectors: ['increment()'] })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -197,13 +202,17 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
   const countBefore = await counterContract.read.count();
   expect(countBefore, 'Expected initial count to be 0n').toEqual(0n);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
     caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', [aliceCounterContractAddress])
-      .addCaveat('allowedMethods', ['notTheRightFunction()']),
-  });
+      .addCaveat('allowedTargets', { targets: [aliceCounterContractAddress] })
+      .addCaveat('allowedMethods', { selectors: ['notTheRightFunction()'] })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -275,13 +284,17 @@ test('Bob increments the counter with a delegation from a multisig account', asy
   const countBefore = await counterContract.read.count();
   expect(countBefore, 'Expected initial count to be 0n').toEqual(0n);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: multisigSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: multisigSmartAccount.address,
+    authority: ROOT_AUTHORITY,
     caveats: createCaveatBuilder(multisigSmartAccount.environment)
-      .addCaveat('allowedTargets', [counterContract.address])
-      .addCaveat('allowedMethods', ['increment()']),
-  });
+      .addCaveat('allowedTargets', { targets: [counterContract.address] })
+      .addCaveat('allowedMethods', { selectors: ['increment()'] })
+      .build(),
+    salt: '0x',
+    signature: '0x',
+  };
 
   // Get signatures from each signer
   const signatures: PartialSignature[] = await Promise.all(

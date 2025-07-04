@@ -3,11 +3,7 @@ import {
   allowedCalldata,
   allowedCalldataBuilder,
 } from './allowedCalldataBuilder';
-import {
-  allowedMethods,
-  allowedMethodsBuilder,
-  AllowedMethodsBuilderConfig,
-} from './allowedMethodsBuilder';
+import { allowedMethods, allowedMethodsBuilder } from './allowedMethodsBuilder';
 import { allowedTargets, allowedTargetsBuilder } from './allowedTargetsBuilder';
 import {
   argsEqualityCheck,
@@ -133,24 +129,25 @@ type CoreCaveatMap = {
  */
 export type CoreCaveatBuilder = CaveatBuilder<CoreCaveatMap>;
 
-type ExtractCaveatMapType<T> = T extends CaveatBuilder<infer U> ? U : never;
+type ExtractCaveatMapType<TCaveatBuilder extends CaveatBuilder<any>> =
+  TCaveatBuilder extends CaveatBuilder<infer TCaveatMap> ? TCaveatMap : never;
 type ExtractedCoreMap = ExtractCaveatMapType<CoreCaveatBuilder>;
 
 export type CaveatConfigurations = {
-  [K in keyof ExtractedCoreMap]: {
-    type: K;
-  } & Parameters<ExtractedCoreMap[K]>[1];
+  [TType in keyof ExtractedCoreMap]: {
+    type: TType;
+  } & Parameters<ExtractedCoreMap[TType]>[1];
 }[keyof ExtractedCoreMap];
 
 export type CaveatConfiguration<
-  T extends CaveatBuilder<any>,
-  CaveatMap = ExtractCaveatMapType<T>,
+  TCaveatBuilder extends CaveatBuilder<any>,
+  CaveatMap = ExtractCaveatMapType<TCaveatBuilder>,
 > =
   CaveatMap extends Record<string, (...args: any[]) => any>
     ? {
-        [K in keyof CaveatMap]: {
-          type: K;
-        } & Parameters<CaveatMap[K]>[1];
+        [TType in keyof CaveatMap]: {
+          type: TType;
+        } & Parameters<CaveatMap[TType]>[1];
       }[keyof CaveatMap]
     : never;
 
@@ -159,9 +156,9 @@ export type CoreCaveatConfiguration = CaveatConfiguration<CoreCaveatBuilder>;
 /**
  * Creates a caveat builder with all core caveat types pre-configured.
  *
- * @param environment - The DeleGator environment configuration
- * @param config - Optional configuration for the caveat builder
- * @returns A fully configured CoreCaveatBuilder instance with all core caveat types
+ * @param environment - The DeleGator environment configuration.
+ * @param config - Optional configuration for the caveat builder.
+ * @returns A fully configured CoreCaveatBuilder instance with all core caveat types.
  */
 export const createCaveatBuilder = (
   environment: DeleGatorEnvironment,

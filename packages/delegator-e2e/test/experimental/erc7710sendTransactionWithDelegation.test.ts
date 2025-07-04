@@ -11,12 +11,15 @@ import { chain } from '../../src/config';
 import {
   Implementation,
   toMetaMaskSmartAccount,
-  createCaveatBuilder,
-  createDelegation,
   signDelegation,
   type MetaMaskSmartAccount,
   type Delegation,
+  ROOT_AUTHORITY,
 } from '@metamask/delegation-toolkit';
+import {
+  createCaveatBuilder,
+  getDelegationHashOffchain,
+} from '@metamask/delegation-toolkit/utils';
 import { erc7710WalletActions } from '@metamask/delegation-toolkit/experimental';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import {
@@ -31,6 +34,7 @@ import {
 import { encodeDelegations } from '@metamask/delegation-toolkit/utils';
 
 import CounterMetadata from '../utils/counter/metadata.json';
+import { hashDelegation } from '@metamask/delegation-core';
 
 let aliceSmartAccount: MetaMaskSmartAccount<Implementation.Hybrid>;
 let bob: Account;
@@ -57,15 +61,18 @@ beforeEach(async () => {
   aliceCounterContractAddress = aliceCounter.address;
 
   const caveats = createCaveatBuilder(aliceSmartAccount.environment)
-    .addCaveat('allowedTargets', [aliceCounterContractAddress])
-    .addCaveat('allowedMethods', ['increment()'])
-    .addCaveat('valueLte', 0n);
+    .addCaveat('allowedTargets', { targets: [aliceCounterContractAddress] })
+    .addCaveat('allowedMethods', { selectors: ['increment()'] })
+    .addCaveat('valueLte', { maxValue: 0n });
 
-  const delegation = createDelegation({
-    to: bob.address,
-    from: aliceSmartAccount.address,
-    caveats,
-  });
+  const delegation: Delegation = {
+    delegate: bob.address,
+    delegator: aliceSmartAccount.address,
+    caveats: caveats.build(),
+    salt: '0x',
+    signature: '0x',
+    authority: ROOT_AUTHORITY,
+  };
 
   signedDelegation = {
     ...delegation,
@@ -141,14 +148,14 @@ test('Bob redelegates to Carol, who redeems the delegation to call increment() o
   const { DelegationManager: delegationManager } =
     aliceSmartAccount.environment;
 
-  const redelegation = createDelegation({
-    to: carol.address,
-    from: bob.address,
-    parentDelegation: signedDelegation,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment, {
-      allowInsecureUnrestrictedDelegation: true,
-    }),
-  });
+  const redelegation: Delegation = {
+    delegate: carol.address,
+    delegator: bob.address,
+    authority: getDelegationHashOffchain(signedDelegation),
+    caveats: [],
+    salt: '0x',
+    signature: '0x',
+  };
 
   const signedRedelegation: Delegation = {
     ...redelegation,

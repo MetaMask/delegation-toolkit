@@ -1,8 +1,7 @@
-import { createCaveatBuilderFromScope, type ScopeConfig } from './scope';
-
-import type { CoreCaveatConfiguration } from './coreCaveatBuilder';
 import type { CaveatBuilder } from './caveatBuilder';
-import { Caveat, DeleGatorEnvironment } from '../types';
+import type { CoreCaveatConfiguration } from './coreCaveatBuilder';
+import { createCaveatBuilderFromScope, type ScopeConfig } from './scope';
+import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export type Caveats = CaveatBuilder | (Caveat | CoreCaveatConfiguration)[];
 
@@ -33,13 +32,13 @@ export const resolveCaveats = ({
     caveats.forEach((caveat) => {
       try {
         if ('type' in caveat) {
-          const { type, ...config } = caveat as CoreCaveatConfiguration;
+          const { type, ...config } = caveat;
           scopeCaveatBuilder.addCaveat(type, config);
         } else {
-          scopeCaveatBuilder.addCaveat(caveat as Caveat);
+          scopeCaveatBuilder.addCaveat(caveat);
         }
       } catch (error) {
-        throw new Error(`Invalid caveat: ${error}`);
+        throw new Error(`Invalid caveat: ${(error as Error).message}`);
       }
     });
   }
