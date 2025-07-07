@@ -13,7 +13,7 @@ import type { Hex } from '../types';
  */
 export type ExactCalldataTerms = {
   /** The expected calldata to match against. */
-  callData: BytesLike;
+  calldata: BytesLike;
 };
 
 /**
@@ -23,7 +23,7 @@ export type ExactCalldataTerms = {
  * @param terms - The terms for the ExactCalldata caveat.
  * @param encodingOptions - The encoding options for the result.
  * @returns The terms as the calldata itself.
- * @throws Error if the `callData` is invalid.
+ * @throws Error if the `calldata` is invalid.
  */
 export function createExactCalldataTerms(
   terms: ExactCalldataTerms,
@@ -39,18 +39,18 @@ export function createExactCalldataTerms(
  * @param terms - The terms for the ExactCalldata caveat.
  * @param encodingOptions - The encoding options for the result.
  * @returns The terms as the calldata itself.
- * @throws Error if the `callData` is invalid.
+ * @throws Error if the `calldata` is invalid.
  */
 export function createExactCalldataTerms(
   terms: ExactCalldataTerms,
   encodingOptions: EncodingOptions<ResultValue> = defaultOptions,
 ): Hex | Uint8Array {
-  const { callData } = terms;
+  const { calldata } = terms;
 
-  if (typeof callData === 'string' && !callData.startsWith('0x')) {
-    throw new Error('Invalid callData: must be a hex string starting with 0x');
+  if (typeof calldata === 'string' && !calldata.startsWith('0x')) {
+    throw new Error('Invalid calldata: must be a hex string starting with 0x');
   }
 
   // For exact calldata, the terms are simply the expected calldata
-  return prepareResult(callData, encodingOptions);
+  return prepareResult(calldata, encodingOptions);
 }
