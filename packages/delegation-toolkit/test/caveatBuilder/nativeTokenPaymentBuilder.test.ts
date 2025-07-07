@@ -13,7 +13,8 @@ describe('nativeTokenPaymentBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithAmountAndRecipient = (recipient: Hex, amount: bigint) => {
-    return nativeTokenPaymentBuilder(environment, recipient, amount);
+    const config = { recipient, amount };
+    return nativeTokenPaymentBuilder(environment, config);
   };
 
   describe('validation', () => {

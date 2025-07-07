@@ -10,6 +10,8 @@ export type TokenPeriodConfig = {
   startDate: number;
 };
 
+export type MultiTokenPeriodBuilderConfig = TokenPeriodConfig[];
+
 export const multiTokenPeriod = 'multiTokenPeriod';
 
 /**
@@ -18,12 +20,12 @@ export const multiTokenPeriod = 'multiTokenPeriod';
  * Each token can have its own period amount, duration, and start date.
  *
  * @param environment - The DeleGator environment.
- * @param configs - Array of token period configurations.
+ * @param configs - The configurations for the MultiTokenPeriodBuilder.
  * @returns The caveat object for the MultiTokenPeriodEnforcer.
  */
 export const multiTokenPeriodBuilder = (
   environment: DeleGatorEnvironment,
-  configs: TokenPeriodConfig[],
+  configs: MultiTokenPeriodBuilderConfig,
 ): Caveat => {
   if (!configs || configs.length === 0) {
     throw new Error('MultiTokenPeriodBuilder: configs array cannot be empty');

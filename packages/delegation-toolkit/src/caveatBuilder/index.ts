@@ -72,6 +72,10 @@ import {
   nativeTokenTransferAmountBuilder,
 } from './nativeTokenTransferAmountBuilder';
 import { nonce, nonceBuilder } from './nonceBuilder';
+import {
+  ownershipTransfer,
+  ownershipTransferBuilder,
+} from './ownershipTransferBuilder';
 import { redeemer, redeemerBuilder } from './redeemerBuilder';
 import {
   specificActionERC20TransferBatch,
@@ -113,6 +117,7 @@ export const createCaveatBuilder = (
     .extend(redeemer, redeemerBuilder)
     .extend(nativeTokenPayment, nativeTokenPaymentBuilder)
     .extend(argsEqualityCheck, argsEqualityCheckBuilder)
+    .extend(ownershipTransfer, ownershipTransferBuilder)
     .extend(
       specificActionERC20TransferBatch,
       specificActionERC20TransferBatchBuilder,

@@ -16,7 +16,8 @@ describe('timestampBuilder()', () => {
     afterThreshold: number,
     beforeThreshold: number,
   ) => {
-    return timestampBuilder(environment, afterThreshold, beforeThreshold);
+    const config = { afterThreshold, beforeThreshold };
+    return timestampBuilder(environment, config);
   };
 
   describe('validation', () => {

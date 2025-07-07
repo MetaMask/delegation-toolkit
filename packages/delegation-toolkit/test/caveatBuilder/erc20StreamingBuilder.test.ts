@@ -21,14 +21,14 @@ describe('erc20StreamingBuilder()', () => {
     amountPerSecond: bigint,
     startTime: number,
   ) => {
-    return erc20StreamingBuilder(
-      environment,
+    const config = {
       tokenAddress,
       initialAmount,
       maxAmount,
       amountPerSecond,
       startTime,
-    );
+    };
+    return erc20StreamingBuilder(environment, config);
   };
 
   describe('validation', () => {

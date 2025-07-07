@@ -42,4 +42,6 @@ export {
   deployDeleGatorEnvironment,
 } from '../delegatorEnvironment';
 
-export type { CoreCaveatBuilder } from '../caveatBuilder';
+export type { CoreCaveatBuilder, CaveatBuilderConfig } from '../caveatBuilder';
+
+export { createCaveatBuilder, CaveatBuilder } from '../caveatBuilder';

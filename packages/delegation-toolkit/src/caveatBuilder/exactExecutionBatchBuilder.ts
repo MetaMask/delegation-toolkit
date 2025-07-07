@@ -1,9 +1,13 @@
-import { encodeAbiParameters, isAddress } from 'viem';
+import { encodeAbiParameters, isAddress, encodePacked } from 'viem';
 
 import type { ExecutionStruct } from '../executions';
 import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const exactExecutionBatch = 'exactExecutionBatch';
+
+export type ExactExecutionBatchBuilderConfig = {
+  executions: ExecutionStruct[];
+};
 
 /**
  * Builds a caveat struct for ExactExecutionBatchEnforcer.
@@ -11,14 +15,16 @@ export const exactExecutionBatch = 'exactExecutionBatch';
  * with the expected execution (target, value, and calldata).
  *
  * @param environment - The DeleGator environment.
- * @param executions - Array of expected executions to match against.
+ * @param config - Configuration object containing executions.
  * @returns The Caveat.
  * @throws Error if any of the execution parameters are invalid.
  */
 export const exactExecutionBatchBuilder = (
   environment: DeleGatorEnvironment,
-  executions: ExecutionStruct[],
+  config: ExactExecutionBatchBuilderConfig,
 ): Caveat => {
+  const { executions } = config;
+
   if (executions.length === 0) {
     throw new Error('Invalid executions: array cannot be empty');
   }
@@ -35,7 +41,7 @@ export const exactExecutionBatchBuilder = (
 
     if (!execution.callData.startsWith('0x')) {
       throw new Error(
-        'Invalid callData: must be a hex string starting with 0x',
+        'Invalid calldata: must be a hex string starting with 0x',
       );
     }
   }

@@ -4,6 +4,12 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const deployed = 'deployed';
 
+export type DeployedBuilderConfig = {
+  contractAddress: Address;
+  salt: Hex;
+  bytecode: Hex;
+};
+
 /**
  * Builds a caveat struct for a DeployedEnforcer.
  *
@@ -16,10 +22,10 @@ export const deployed = 'deployed';
  */
 export const deployedBuilder = (
   environment: DeleGatorEnvironment,
-  contractAddress: Address,
-  salt: Hex,
-  bytecode: Hex,
+  config: DeployedBuilderConfig,
 ): Caveat => {
+  const { contractAddress, salt, bytecode } = config;
+
   // we check that the addresses are valid, but don't need to be checksummed
   if (!isAddress(contractAddress, { strict: false })) {
     throw new Error(
