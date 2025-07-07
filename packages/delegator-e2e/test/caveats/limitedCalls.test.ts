@@ -3,9 +3,9 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createDelegation,
   createExecution,
   Implementation,
@@ -100,7 +100,7 @@ const runTest = async (limit: number, runs: number) => {
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'limitedCalls',
-      limit,
+      { limit },
     ),
   });
 

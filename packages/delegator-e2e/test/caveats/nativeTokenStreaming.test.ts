@@ -3,9 +3,9 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createExecution,
   createDelegation,
   Implementation,
@@ -315,13 +315,12 @@ test('Bob attempts to redeem with invalid terms length', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenStreaming',
+    .addCaveat('nativeTokenStreaming', {
       initialAmount,
       maxAmount,
       amountPerSecond,
       startTime,
-    )
+    })
     .build();
 
   // Create invalid terms length by appending an empty byte
@@ -380,13 +379,12 @@ test('Bob attempts to redeem with invalid max amount', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenStreaming',
+    .addCaveat('nativeTokenStreaming', {
       initialAmount,
-      parseEther('20'), // valid maxAmount
+      maxAmount: initialAmount + 1n, // we need a valid maxAmount
       amountPerSecond,
       startTime,
-    )
+    })
     .build();
 
   caveats[0].terms = concat([
@@ -449,13 +447,12 @@ test('Bob attempts to redeem with zero start time', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenStreaming',
+    .addCaveat('nativeTokenStreaming', {
       initialAmount,
       maxAmount,
       amountPerSecond,
-      currentTime, // valid start time
-    )
+      startTime: currentTime, // valid start time
+    })
     .build();
 
   // Modify the terms to encode zero start time
@@ -525,10 +522,12 @@ const runTest_expectSuccess = async (
     from: delegator.address,
     caveats: createCaveatBuilder(environment).addCaveat(
       'nativeTokenStreaming',
-      initialAmount,
-      maxAmount,
-      amountPerSecond,
-      startTime,
+      {
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime,
+      },
     ),
   });
 
@@ -603,10 +602,12 @@ const runTest_expectFailure = async (
     from: delegator.address,
     caveats: createCaveatBuilder(environment).addCaveat(
       'nativeTokenStreaming',
-      initialAmount,
-      maxAmount,
-      amountPerSecond,
-      startTime,
+      {
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime,
+      },
     ),
   });
 

@@ -15,7 +15,6 @@ import {
   Implementation,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
-  createCaveatBuilder,
   createDelegation,
   type Delegation,
 } from '@metamask/delegation-toolkit';
@@ -28,7 +27,10 @@ import {
   Hex,
   encodeFunctionData,
 } from 'viem';
-import { encodeDelegations } from '@metamask/delegation-toolkit/utils';
+import {
+  encodeDelegations,
+  createCaveatBuilder,
+} from '@metamask/delegation-toolkit/utils';
 import CounterMetadata from '../utils/counter/metadata.json';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 
@@ -66,9 +68,9 @@ beforeEach(async () => {
   aliceCounterContractAddress = aliceCounter.address;
 
   const caveats = createCaveatBuilder(aliceSmartAccount.environment)
-    .addCaveat('allowedTargets', [aliceCounterContractAddress])
-    .addCaveat('allowedMethods', ['increment()'])
-    .addCaveat('valueLte', 0n);
+    .addCaveat('allowedTargets', { targets: [aliceCounterContractAddress] })
+    .addCaveat('allowedMethods', { selectors: ['increment()'] })
+    .addCaveat('valueLte', { maxValue: 0n });
 
   const delegation = createDelegation({
     to: bobSmartAccount.address,

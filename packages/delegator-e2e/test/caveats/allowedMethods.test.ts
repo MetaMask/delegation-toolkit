@@ -3,9 +3,9 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createExecution,
   createDelegation,
   Implementation,
@@ -140,7 +140,7 @@ const runTest_expectSuccess = async (
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'allowedMethods',
-      allowedMethods,
+      { selectors: allowedMethods },
     ),
   });
 
@@ -206,7 +206,7 @@ const runTest_expectFailure = async (
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'allowedMethods',
-      allowedMethods,
+      { selectors: allowedMethods },
     ),
   });
 

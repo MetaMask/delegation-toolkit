@@ -11,7 +11,6 @@ import { chain } from '../../src/config';
 import {
   Implementation,
   toMetaMaskSmartAccount,
-  createCaveatBuilder,
   createDelegation,
   signDelegation,
   type MetaMaskSmartAccount,
@@ -28,7 +27,10 @@ import {
   encodeFunctionData,
   Hex,
 } from 'viem';
-import { encodeDelegations } from '@metamask/delegation-toolkit/utils';
+import {
+  encodeDelegations,
+  createCaveatBuilder,
+} from '@metamask/delegation-toolkit/utils';
 
 import CounterMetadata from '../utils/counter/metadata.json';
 
@@ -57,9 +59,9 @@ beforeEach(async () => {
   aliceCounterContractAddress = aliceCounter.address;
 
   const caveats = createCaveatBuilder(aliceSmartAccount.environment)
-    .addCaveat('allowedTargets', [aliceCounterContractAddress])
-    .addCaveat('allowedMethods', ['increment()'])
-    .addCaveat('valueLte', 0n);
+    .addCaveat('allowedTargets', { targets: [aliceCounterContractAddress] })
+    .addCaveat('allowedMethods', { selectors: ['increment()'] })
+    .addCaveat('valueLte', { maxValue: 0n });
 
   const delegation = createDelegation({
     to: bob.address,
@@ -161,6 +163,7 @@ test('Bob redelegates to Carol, who redeems the delegation to call increment() o
       delegation: redelegation,
       delegationManager,
       chainId: chain.id,
+      allowInsecureUnrestrictedDelegation: true,
     }),
   };
 

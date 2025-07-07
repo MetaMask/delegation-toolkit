@@ -10,7 +10,6 @@ import {
 import { expectCodeAt, expectUserOperationToSucceed } from './utils/assertions';
 
 import {
-  createCaveatBuilder,
   createExecution,
   createDelegation,
   Implementation,
@@ -21,6 +20,7 @@ import {
   type PartialSignature,
 } from '@metamask/delegation-toolkit';
 import {
+  createCaveatBuilder,
   encodePermissionContexts,
   encodeExecutionCalldatas,
   SINGLE_DEFAULT_MODE,
@@ -97,8 +97,10 @@ test('maincase: Bob increments the counter with a delegation from Alice', async 
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', [aliceCounterContractAddress])
-      .addCaveat('allowedMethods', ['increment()']),
+      .addCaveat('allowedTargets', {
+        targets: [aliceCounterContractAddress],
+      })
+      .addCaveat('allowedMethods', { selectors: ['increment()'] }),
   });
 
   const signedDelegation = {
@@ -201,8 +203,10 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', [aliceCounterContractAddress])
-      .addCaveat('allowedMethods', ['notTheRightFunction()']),
+      .addCaveat('allowedTargets', {
+        targets: [aliceCounterContractAddress],
+      })
+      .addCaveat('allowedMethods', { selectors: ['notTheRightFunction()'] }),
   });
 
   const signedDelegation = {
@@ -279,8 +283,10 @@ test('Bob increments the counter with a delegation from a multisig account', asy
     to: bobSmartAccount.address,
     from: multisigSmartAccount.address,
     caveats: createCaveatBuilder(multisigSmartAccount.environment)
-      .addCaveat('allowedTargets', [counterContract.address])
-      .addCaveat('allowedMethods', ['increment()']),
+      .addCaveat('allowedTargets', {
+        targets: [counterContract.address],
+      })
+      .addCaveat('allowedMethods', { selectors: ['increment()'] }),
   });
 
   // Get signatures from each signer
