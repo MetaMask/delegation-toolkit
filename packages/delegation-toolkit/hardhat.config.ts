@@ -5,6 +5,9 @@ import type { HardhatUserConfig } from 'hardhat/config';
 
 const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
+  gasReporter: {
+    enabled: false,
+  },
   solidity: {
     compilers: [
       {
