@@ -14,8 +14,7 @@ export type Erc20TransferAmountBuilderConfig = {
  * Builds a caveat struct for ERC20TransferAmountEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param tokenAddress - The address of the ERC20 token contract.
- * @param maxAmount - The maximum amount of tokens that can be transferred.
+ * @param config - The configuration for the ERC20 transfer amount builder.
  * @returns The Caveat.
  * @throws Error if the token address is invalid or if the max amount is not a positive number.
  */

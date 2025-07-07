@@ -1,4 +1,4 @@
-import { encodeAbiParameters, isAddress, encodePacked } from 'viem';
+import { encodeAbiParameters, isAddress } from 'viem';
 
 import type { ExecutionStruct } from '../executions';
 import type { Caveat, DeleGatorEnvironment } from '../types';

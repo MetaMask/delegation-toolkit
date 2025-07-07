@@ -1,6 +1,8 @@
 import { expect } from 'chai';
 import { stub } from 'sinon';
+import { getAddress } from 'viem';
 
+import { randomAddress } from './utils';
 import { resolveCaveats } from '../src/caveatBuilder';
 import {
   type DelegationStruct,
@@ -16,8 +18,6 @@ import {
   signDelegation,
 } from '../src/delegation';
 import type { Caveat, Delegation } from '../src/types';
-import { randomAddress } from './utils';
-import { getAddress } from 'viem';
 
 const mockDelegate = '0x1234567890123456789012345678901234567890' as const;
 const mockDelegator = '0x0987654321098765432109876543210987654321' as const;
@@ -645,7 +645,7 @@ describe('signDelegation', () => {
     });
 
     expect(signature).to.equal('mockSignature');
-    expect(mockSigner.signTypedData.calledOnce).to.be.true;
+    expect(mockSigner.signTypedData.calledOnce).to.equal(true);
   });
 
   it('should throw an error if no caveats are provided and allowInsecureUnrestrictedDelegation is false', async () => {

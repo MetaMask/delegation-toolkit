@@ -17,11 +17,7 @@ export type Erc20StreamingBuilderConfig = {
  * Builds a caveat for ERC20 token streaming with configurable parameters.
  *
  * @param environment - The DeleGator environment.
- * @param tokenAddress - The tokenAddress of the ERC20 token.
- * @param initialAmount - The initial amount of tokens to release at start time.
- * @param maxAmount - The maximum amount of tokens that can be released.
- * @param amountPerSecond - The rate at which the allowance increases per second.
- * @param startTime - The timestamp from which the allowance streaming begins.
+ * @param config - The configuration for the ERC20 streaming builder.
  * @returns The Caveat.
  * @throws Error if the token address is invalid.
  * @throws Error if the initial amount is a negative number.

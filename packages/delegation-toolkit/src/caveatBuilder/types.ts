@@ -1,4 +1,4 @@
-import { DeleGatorEnvironment } from 'src/types';
+import type { DeleGatorEnvironment } from 'src/types';
 
 export enum BalanceChangeType {
   Increase = 0x0,

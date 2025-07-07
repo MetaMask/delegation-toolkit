@@ -270,6 +270,7 @@ export const createOpenDelegation = (
  * @param params.chainId - The chain ID for the signature.
  * @param params.name - The name of the contract.
  * @param params.version - The version of the contract.
+ * @param params.allowInsecureUnrestrictedDelegation - Whether to allow insecure unrestricted delegation.
  * @returns The signed delegation.
  */
 export const signDelegation = async ({
