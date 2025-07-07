@@ -1276,7 +1276,7 @@ __metadata:
   resolution: "@metamask/delegation-abis@workspace:packages/delegation-abis"
   dependencies:
     "@metamask/auto-changelog": "npm:^3.4.4"
-    tsup: "npm:^8.3.5"
+    tsup: "npm:^8.5.0"
     typescript: "npm:5.0.4"
   languageName: unknown
   linkType: soft
@@ -1290,7 +1290,7 @@ __metadata:
     "@metamask/utils": "npm:^11.4.0"
     "@noble/hashes": "npm:^1.8.0"
     "@types/node": "npm:^20.10.6"
-    tsup: "npm:^8.3.5"
+    tsup: "npm:^8.5.0"
     typescript: "npm:5.0.4"
     vitest: "npm:^2.1.9"
   languageName: unknown
@@ -1302,7 +1302,7 @@ __metadata:
   dependencies:
     "@metamask/auto-changelog": "npm:^3.4.4"
     compare-versions: "npm:^6.1.1"
-    tsup: "npm:^8.3.5"
+    tsup: "npm:^8.5.0"
     typescript: "npm:5.0.4"
   languageName: unknown
   linkType: soft
@@ -1347,7 +1347,7 @@ __metadata:
     solidity-coverage: "npm:^0.8.1"
     ts-node: "npm:^10.9.2"
     tsconfig-paths: "npm:^4.2.0"
-    tsup: "npm:^8.3.5"
+    tsup: "npm:^8.5.0"
     typescript: "npm:5.0.4"
     viem: "npm:2.21.55"
     webauthn-p256: "npm:^0.0.10"
@@ -10320,7 +10320,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsup@npm:^8.3.5":
+"tsup@npm:^8.5.0":
   version: 8.5.0
   resolution: "tsup@npm:8.5.0"
   dependencies:
