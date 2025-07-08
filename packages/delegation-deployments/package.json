@@ -51,7 +51,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@metamask/auto-changelog": "^3.4.4",
+    "@metamask/auto-changelog": "^5.0.2",
     "compare-versions": "^6.1.1",
     "tsup": "^8.5.0",
     "typescript": "5.0.4"
