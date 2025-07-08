@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect, describe, it } from 'vitest';
 
 import { exactCalldataBuilder } from '../../src/caveatBuilder/exactCalldataBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';

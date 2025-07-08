@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { concat, size, toHex, type Hex } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { allowedCalldataBuilder } from '../../src/caveatBuilder/allowedCalldataBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';

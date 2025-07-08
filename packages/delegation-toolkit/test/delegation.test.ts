@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { stub } from 'sinon';
+import { describe, it, expect } from 'vitest';
 
 import { resolveCaveats } from '../src/caveatBuilder';
 import {

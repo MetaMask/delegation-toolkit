@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import { spy } from 'sinon';
 import { toHex } from 'viem';
+import { expect, describe, it, beforeEach } from 'vitest';
 
 import { CaveatBuilder } from '../../src/caveatBuilder/caveatBuilder';
 import type { Caveat, DeleGatorEnvironment } from '../../src/types';

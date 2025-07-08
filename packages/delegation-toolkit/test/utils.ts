@@ -1,9 +1,7 @@
-import hre from 'hardhat';
 import { bytesToHex } from 'viem';
 import type {
   Chain,
   Hex,
-  Transport,
   WalletClient,
   PublicClient,
   Account,
@@ -90,16 +88,6 @@ export async function setupDevelopmentEnvironment(
   chain: Chain,
 ) {
   return await deployDeleGatorEnvironment(walletClient, publicClient, chain);
-}
-
-/**
- * Creates a custom Hardhat provider transport for Viem.
- *
- * @returns A promise that resolves to a Transport object connected to the Hardhat network.
- */
-export async function createHardhatTransport(): Promise<Transport> {
-  const viem = await import('viem');
-  return viem.custom(hre.network.provider);
 }
 
 /**

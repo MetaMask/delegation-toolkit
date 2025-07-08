@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import { concat, size, toHex } from 'viem';
 import type { Address } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { specificActionERC20TransferBatchBuilder } from '../../src/caveatBuilder/specificActionERC20TransferBatchBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';
