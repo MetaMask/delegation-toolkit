@@ -186,7 +186,7 @@ describe('MetaMaskSmartAccount', () => {
       expect(recovered).to.equal(alice.address);
     });
 
-    it('signs a user operation for MultiSig implementation', async () => {
+    it('signs a user operation for Hybrid implementation', async () => {
       const smartAccount = await toMetaMaskSmartAccount({
         client,
         implementation: Implementation.Hybrid,
