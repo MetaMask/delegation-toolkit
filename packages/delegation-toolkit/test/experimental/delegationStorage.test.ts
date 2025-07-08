@@ -1,4 +1,5 @@
 import { stub } from 'sinon';
+import { zeroAddress } from 'viem';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import {
@@ -55,6 +56,30 @@ describe('DelegationStorageClient', () => {
       });
 
       expect(delegationStore).toBeInstanceOf(DelegationStorageClient);
+    });
+
+    it('accepts an apiUrl with a trailing slash', async () => {
+      mockFetch.resolves({
+        json: async () => Promise.resolve([]),
+      });
+
+      const delegationStore = new DelegationStorageClient({
+        ...mockConfig,
+        environment: {
+          apiUrl: `${mockApiUrl}/`,
+        },
+        fetcher: mockFetch,
+      });
+
+      await delegationStore.fetchDelegations(zeroAddress);
+
+      const calledUrl = mockFetch.getCall(0).args[0];
+
+      const expectedUrlPrefix = `${mockApiUrl}/api/v0/delegation`;
+
+      expect(calledUrl.slice(0, expectedUrlPrefix.length)).toStrictEqual(
+        expectedUrlPrefix,
+      );
     });
   });
 
