@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { size, type Address } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { ownershipTransferBuilder } from '../../src/caveatBuilder/ownershipTransferBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';

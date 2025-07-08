@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { describe, it, expect } from 'vitest';
 
 import type { PartialSignature } from '../src/signatures';
 import { aggregateSignature } from '../src/signatures';

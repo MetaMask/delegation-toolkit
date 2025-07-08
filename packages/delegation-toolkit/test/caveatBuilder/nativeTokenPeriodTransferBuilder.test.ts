@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { concat, size, toHex } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { nativeTokenPeriodTransferBuilder } from '../../src/caveatBuilder/nativeTokenPeriodTransferBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';

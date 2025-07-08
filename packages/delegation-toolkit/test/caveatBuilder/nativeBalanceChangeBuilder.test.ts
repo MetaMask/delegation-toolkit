@@ -1,5 +1,5 @@
-import { expect } from 'chai';
-import { type Address, encodePacked, size } from 'viem';
+import { encodePacked, size, type Address } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { nativeBalanceChangeBuilder } from '../../src/caveatBuilder/nativeBalanceChangeBuilder';
 import { BalanceChangeType } from '../../src/caveatBuilder/types';

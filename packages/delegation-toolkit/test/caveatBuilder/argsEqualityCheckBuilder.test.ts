@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { size, type Hex } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { argsEqualityCheckBuilder } from '../../src/caveatBuilder/argsEqualityCheckBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';
