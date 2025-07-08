@@ -1,6 +1,7 @@
 {
   "name": "@metamask/delegation-toolkit",
   "version": "0.12.0",
+  "type": "module",
   "description": "The Delegation Toolkit built on top of Viem - a library for interacting with DeleGator Smart Accounts",
   "license": "(MIT-0 OR Apache-2.0)",
   "keywords": [
@@ -25,51 +26,51 @@
     ".": {
       "require": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "default": "./dist/index.cjs"
       },
       "import": {
         "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
+        "default": "./dist/index.js"
       }
     },
     "./utils": {
       "require": {
         "types": "./dist/utils/index.d.ts",
-        "default": "./dist/utils/index.js"
+        "default": "./dist/utils/index.cjs"
       },
       "import": {
         "types": "./dist/utils/index.d.mts",
-        "default": "./dist/utils/index.mjs"
+        "default": "./dist/utils/index.js"
       }
     },
     "./contracts": {
       "require": {
         "types": "./dist/contracts/index.d.ts",
-        "default": "./dist/contracts/index.js"
+        "default": "./dist/contracts/index.cjs"
       },
       "import": {
         "types": "./dist/contracts/index.d.mts",
-        "default": "./dist/contracts/index.mjs"
+        "default": "./dist/contracts/index.js"
       }
     },
     "./actions": {
       "require": {
         "types": "./dist/actions/index.d.ts",
-        "default": "./dist/actions/index.js"
+        "default": "./dist/actions/index.cjs"
       },
       "import": {
         "types": "./dist/actions/index.d.mts",
-        "default": "./dist/actions/index.mjs"
+        "default": "./dist/actions/index.js"
       }
     },
     "./experimental": {
       "require": {
         "types": "./dist/experimental/index.d.ts",
-        "default": "./dist/experimental/index.js"
+        "default": "./dist/experimental/index.cjs"
       },
       "import": {
         "types": "./dist/experimental/index.d.mts",
-        "default": "./dist/experimental/index.mjs"
+        "default": "./dist/experimental/index.js"
       }
     },
     "./package.json": "./package.json"
