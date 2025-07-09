@@ -79,8 +79,15 @@ export async function sendTransactionWithDelegationAction<
     ],
   });
 
+  const {
+    value: _value,
+    permissionsContext: _permissionsContext,
+    delegationManager: _delegationManager,
+    ...rest
+  } = args;
+
   const hash = await client.sendTransaction({
-    ...args,
+    ...rest,
     to: args.delegationManager,
     data: calldata,
   } as unknown as SendTransactionParameters);
