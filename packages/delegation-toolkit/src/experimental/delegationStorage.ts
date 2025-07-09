@@ -53,13 +53,16 @@ export class DelegationStorageClient {
   #apiUrl: string;
 
   constructor(config: DelegationStorageConfig) {
-    let apiUrl = config.environment.apiUrl.replace(/\/+$/u, ''); // Remove trailing slashes
-    if (!apiUrl.endsWith(this.#apiVersionPrefix)) {
-      apiUrl = `${apiUrl}/${this.#apiVersionPrefix}`;
+    const { apiUrl } = config.environment;
+
+    if (apiUrl.endsWith(this.#apiVersionPrefix)) {
+      this.#apiUrl = apiUrl;
+    } else {
+      const separator = apiUrl.endsWith('/') ? '' : '/';
+      this.#apiUrl = `${apiUrl}${separator}${this.#apiVersionPrefix}`;
     }
     this.#fetcher = this.#initializeFetcher(config);
     this.#config = config;
-    this.#apiUrl = apiUrl;
   }
 
   /**
