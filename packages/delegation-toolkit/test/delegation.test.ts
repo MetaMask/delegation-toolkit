@@ -1,6 +1,6 @@
 import { stub } from 'sinon';
 import { getAddress } from 'viem';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 import { randomAddress } from './utils';
 import { resolveCaveats } from '../src/caveatBuilder';
@@ -662,7 +662,7 @@ describe('signDelegation', () => {
         delegationManager,
         chainId,
       }),
-    ).to.be.rejectedWith(
+    ).rejects.toThrow(
       'No caveats found. If you definitely want to sign a delegation without caveats, set `allowInsecureUnrestrictedDelegation` to `true`.',
     );
   });
