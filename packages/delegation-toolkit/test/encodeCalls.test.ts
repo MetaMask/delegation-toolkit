@@ -4,10 +4,7 @@ import { encodeFunctionData } from 'viem';
 import { describe, it, expect } from 'vitest';
 
 import { encodeCallsForCaller } from '../src/encodeCalls';
-import {
-  BATCH_DEFAULT_MODE,
-  encodeExecutionCalldatas,
-} from '../src/executions';
+import { ExecutionMode, encodeExecutionCalldatas } from '../src/executions';
 import type { ExecutionStruct } from '../src/executions';
 import { type Call } from '../src/types';
 
@@ -74,7 +71,7 @@ describe('encodeCallsForCaller', () => {
     const expectedEncodedCalls = encodeFunctionData({
       abi: DeleGatorCore.abi,
       functionName: 'execute',
-      args: [BATCH_DEFAULT_MODE, expectedExecutionCalldata],
+      args: [ExecutionMode.BatchDefault, expectedExecutionCalldata],
     });
 
     expect(encodedCalls).to.equal(expectedEncodedCalls);
@@ -118,7 +115,7 @@ describe('encodeCallsForCaller', () => {
     const expectedEncodedCalls = encodeFunctionData({
       abi: DeleGatorCore.abi,
       functionName: 'execute',
-      args: [BATCH_DEFAULT_MODE, expectedExecutionCalldata],
+      args: [ExecutionMode.BatchDefault, expectedExecutionCalldata],
     });
 
     expect(encodedCalls).to.equal(expectedEncodedCalls);
@@ -162,7 +159,7 @@ describe('encodeCallsForCaller', () => {
     const expectedEncodedCalls = encodeFunctionData({
       abi: DeleGatorCore.abi,
       functionName: 'execute',
-      args: [BATCH_DEFAULT_MODE, expectedExecutionCalldata],
+      args: [ExecutionMode.BatchDefault, expectedExecutionCalldata],
     });
 
     expect(encodedCalls).to.equal(expectedEncodedCalls);

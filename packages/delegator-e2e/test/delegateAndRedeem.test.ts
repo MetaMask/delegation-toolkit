@@ -12,6 +12,7 @@ import { expectCodeAt, expectUserOperationToSucceed } from './utils/assertions';
 import {
   createExecution,
   createDelegation,
+  ExecutionMode,
   Implementation,
   toMetaMaskSmartAccount,
   signDelegation,
@@ -23,7 +24,6 @@ import {
   createCaveatBuilder,
   encodePermissionContexts,
   encodeExecutionCalldatas,
-  SINGLE_DEFAULT_MODE,
 } from '@metamask/delegation-toolkit/utils';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import {
@@ -123,7 +123,7 @@ test('maincase: Bob increments the counter with a delegation from Alice', async 
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -229,7 +229,7 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -329,7 +329,7 @@ test('Bob increments the counter with a delegation from a multisig account', asy
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });

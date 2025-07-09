@@ -5,10 +5,10 @@ import {
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
   type ExecutionStruct,
+  ExecutionMode,
 } from '@metamask/delegation-toolkit';
 import {
   createCaveatBuilder,
-  BATCH_DEFAULT_MODE,
   encodeExecutionCalldatas,
   encodePermissionContexts,
 } from '@metamask/delegation-toolkit/utils';
@@ -98,7 +98,7 @@ const runTest_expectSuccess = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [BATCH_DEFAULT_MODE],
+      [ExecutionMode.BatchDefault],
       encodeExecutionCalldatas([actualExecutions]),
     ],
   });
@@ -150,7 +150,7 @@ const runTest_expectFailure = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [BATCH_DEFAULT_MODE],
+      [ExecutionMode.BatchDefault],
       encodeExecutionCalldatas([actualExecutions]),
     ],
   });
