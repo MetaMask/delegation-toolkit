@@ -10,5 +10,6 @@
 # those changes on build, release and publishing outcomes.
 
 /packages/delegation-abis           @MetaMask/delegation
+/packages/delegation-core           @MetaMask/delegation
 /packages/delegation-deployments    @MetaMask/delegation
 /packages/delegation-toolkit        @MetaMask/delegation

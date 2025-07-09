@@ -1,6 +1,6 @@
 {
   "name": "delegator-sdk-monorepo",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "license": "(MIT-0 OR Apache-2.0)",
   "private": true,
   "repository": {
@@ -32,14 +32,6 @@
     "@metamask/eslint-config": "^12.0.0",
     "@metamask/eslint-config-nodejs": "^12.0.0",
     "@metamask/eslint-config-typescript": "^12.0.0",
-    "@nomicfoundation/hardhat-ignition": "^0.15.1",
-    "@nomicfoundation/hardhat-ignition-viem": "^0.15.0",
-    "@nomicfoundation/hardhat-network-helpers": "^1.0.9",
-    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
-    "@nomicfoundation/hardhat-verify": "^2.0.0",
-    "@nomicfoundation/hardhat-viem": "^2.0.0",
-    "@nomicfoundation/ignition-core": "^0.15.1",
-    "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@types/keccak": "^3.0.4",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",

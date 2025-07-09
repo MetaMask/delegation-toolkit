@@ -1,6 +1,7 @@
 {
   "name": "@metamask/delegation-toolkit",
   "version": "0.12.0",
+  "type": "module",
   "description": "The Delegation Toolkit built on top of Viem - a library for interacting with DeleGator Smart Accounts",
   "license": "(MIT-0 OR Apache-2.0)",
   "keywords": [
@@ -25,51 +26,51 @@
     ".": {
       "require": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "default": "./dist/index.cjs"
       },
       "import": {
         "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
+        "default": "./dist/index.js"
       }
     },
     "./utils": {
       "require": {
         "types": "./dist/utils/index.d.ts",
-        "default": "./dist/utils/index.js"
+        "default": "./dist/utils/index.cjs"
       },
       "import": {
         "types": "./dist/utils/index.d.mts",
-        "default": "./dist/utils/index.mjs"
+        "default": "./dist/utils/index.js"
       }
     },
     "./contracts": {
       "require": {
         "types": "./dist/contracts/index.d.ts",
-        "default": "./dist/contracts/index.js"
+        "default": "./dist/contracts/index.cjs"
       },
       "import": {
         "types": "./dist/contracts/index.d.mts",
-        "default": "./dist/contracts/index.mjs"
+        "default": "./dist/contracts/index.js"
       }
     },
     "./actions": {
       "require": {
         "types": "./dist/actions/index.d.ts",
-        "default": "./dist/actions/index.js"
+        "default": "./dist/actions/index.cjs"
       },
       "import": {
         "types": "./dist/actions/index.d.mts",
-        "default": "./dist/actions/index.mjs"
+        "default": "./dist/actions/index.js"
       }
     },
     "./experimental": {
       "require": {
         "types": "./dist/experimental/index.d.ts",
-        "default": "./dist/experimental/index.js"
+        "default": "./dist/experimental/index.cjs"
       },
       "import": {
         "types": "./dist/experimental/index.d.mts",
-        "default": "./dist/experimental/index.mjs"
+        "default": "./dist/experimental/index.js"
       }
     },
     "./package.json": "./package.json"
@@ -84,8 +85,8 @@
     "changelog:update": "../../scripts/update-changelog.sh @metamask/delegation-toolkit",
     "changelog:validate": "../../scripts/validate-changelog.sh @metamask/delegation-toolkit",
     "clean": "rm -rf dist",
-    "test": "hardhat test --tsconfig hardhat.tsconfig.json",
-    "test:watch": "npx nodemon -e ts -w ./test -w ./src -x \"yarn test\"",
+    "test": "npx vitest run --coverage",
+    "test:watch": "npx vitest watch",
     "format": "prettier --write \"src/**/*.{ts,tsx}\" --ignore-path .prettierignore",
     "lint": "yarn lint:eslint",
     "lint:complete": "yarn lint:eslint && yarn lint:constraints && yarn lint:misc --check && yarn lint:dependencies --check && yarn lint:changelog",
@@ -104,20 +105,15 @@
     "allowScripts": {
       "@lavamoat/preinstall-always-fail": false,
       "tsup>esbuild": true,
-      "hardhat>@nomicfoundation/ethereumjs-blockchain>level>classic-level": false,
-      "hardhat>@nomicfoundation/ethereumjs-tx>ethereum-cryptography>secp256k1": false,
-      "hardhat>keccak": false,
       "viem>ws>bufferutil": false,
       "viem>ws>utf-8-validate": false,
-      "@nomicfoundation/hardhat-toolbox-viem>solidity-coverage>hardhat>@nomicfoundation/ethereumjs-tx>ethereum-cryptography>secp256k1": false,
-      "@nomicfoundation/hardhat-toolbox-viem>solidity-coverage>hardhat>keccak": false,
-      "@nomicfoundation/hardhat-ignition-viem>@nomicfoundation/hardhat-ignition>hardhat>@nomicfoundation/ethereumjs-tx>ethereum-cryptography>secp256k1": false,
-      "@nomicfoundation/hardhat-ignition-viem>@nomicfoundation/hardhat-ignition>hardhat>keccak": false
+      "vitest>vite>esbuild": false,
+      "vitest>vite>tsx>esbuild": false
     }
   },
   "dependencies": {
     "@metamask/delegation-abis": "^0.11.0",
-    "@metamask/delegation-core": "^0.0.1",
+    "@metamask/delegation-core": "^0.1.0",
     "@metamask/delegation-deployments": "^0.12.0",
     "buffer": "^6.0.3",
     "webauthn-p256": "^0.0.10"
@@ -129,35 +125,22 @@
     "@metamask/eslint-config": "^12.0.0",
     "@metamask/eslint-config-nodejs": "^12.0.0",
     "@metamask/eslint-config-typescript": "^12.0.0",
-    "@nomicfoundation/hardhat-ignition": "^0.15.1",
-    "@nomicfoundation/hardhat-ignition-viem": "^0.15.0",
-    "@nomicfoundation/hardhat-network-helpers": "^1.0.9",
-    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
-    "@nomicfoundation/hardhat-verify": "^2.0.0",
-    "@nomicfoundation/hardhat-viem": "^2.0.0",
-    "@nomicfoundation/ignition-core": "^0.15.1",
-    "@types/chai": "4",
-    "@types/chai-as-promised": "^7.1.8",
-    "@types/mocha": "10.0.2",
     "@types/node": "^20.10.6",
     "@types/sinon": "^17.0.3",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",
-    "chai": "4",
-    "chai-as-promised": "^7.1.1",
+    "@vitest/coverage-v8": "3.2.4",
     "dotenv": "^16.3.1",
     "eslint": "^8.56.0",
-    "hardhat": "^2.20.1",
-    "hardhat-gas-reporter": "^1.0.8",
     "import": "^0.0.6",
     "prettier": "^3.3.3",
     "sinon": "^18.0.0",
-    "solidity-coverage": "^0.8.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "tsup": "^7.2.0",
+    "tsup": "^8.5.0",
     "typescript": "5.0.4",
-    "viem": "2.21.55"
+    "viem": "2.21.55",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "viem": ">=2.18.2 <3.0.0"

@@ -42,9 +42,7 @@ export { createExecution, ExecutionMode } from './executions';
 
 export type { ExecutionStruct, CreateExecutionArgs } from './executions';
 
-export { createCaveatBuilder, CaveatBuilder } from './caveatBuilder';
-
-export type { Caveats, CaveatBuilderConfig } from './caveatBuilder';
+export type { Caveats } from './caveatBuilder';
 
 export { createCaveat } from './caveats';
 

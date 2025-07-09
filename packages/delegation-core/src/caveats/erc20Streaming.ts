@@ -71,18 +71,18 @@ export function createERC20StreamingTerms(
     throw new Error('Invalid tokenAddress: must be a valid address');
   }
 
-  let tokenAddressHex: string;
+  let prefixedTokenAddressHex: string;
 
   if (typeof tokenAddress === 'string') {
     if (!isHexString(tokenAddress) || tokenAddress.length !== 42) {
       throw new Error('Invalid tokenAddress: must be a valid address');
     }
-    tokenAddressHex = tokenAddress.slice(2);
+    prefixedTokenAddressHex = tokenAddress;
   } else {
     if (tokenAddress.length !== 20) {
       throw new Error('Invalid tokenAddress: must be a valid address');
     }
-    tokenAddressHex = bytesToHex(tokenAddress).slice(2);
+    prefixedTokenAddressHex = bytesToHex(tokenAddress);
   }
 
   if (initialAmount < 0n) {
@@ -116,7 +116,7 @@ export function createERC20StreamingTerms(
   const amountPerSecondHex = toHexString({ value: amountPerSecond, size: 32 });
   const startTimeHex = toHexString({ value: startTime, size: 32 });
 
-  const hexValue = `0x${tokenAddressHex}${initialAmountHex}${maxAmountHex}${amountPerSecondHex}${startTimeHex}`;
+  const hexValue = `${prefixedTokenAddressHex}${initialAmountHex}${maxAmountHex}${amountPerSecondHex}${startTimeHex}`;
 
   return prepareResult(hexValue, encodingOptions);
 }

@@ -1,25 +1,26 @@
 {
   "name": "@metamask/delegation-core",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Low level core functionality for interacting with the Delegation Framework",
   "license": "(MIT-0 OR Apache-2.0)",
+  "type": "module",
   "keywords": [
     "MetaMask",
     "Ethereum"
   ],
-  "homepage": "https://github.com/MetaMask/delegation-toolkit/tree/main/packages/delegation-core#readme",
+  "homepage": "https://github.com/metamask/delegation-toolkit/tree/main/packages/delegation-core#readme",
   "bugs": {
-    "url": "https://github.com/MetaMask/delegation-toolkit/issues"
+    "url": "https://github.com/metamask/delegation-toolkit/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MetaMask/delegation-toolkit.git"
+    "url": "https://github.com/metamask/delegation-toolkit.git"
   },
   "author": "MetaMask <hello@metamask.io>",
   "sideEffects": false,
   "contributors": [],
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist/**",
@@ -28,12 +29,12 @@
   "exports": {
     ".": {
       "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
       },
       "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       }
     },
     "./package.json": "./package.json"
@@ -46,8 +47,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "changelog:update": "../../scripts/update-changelog.sh @metamask/delegation-abis",
-    "changelog:validate": "../../scripts/validate-changelog.sh @metamask/delegation-abis",
+    "changelog:update": "../../scripts/update-changelog.sh @metamask/delegation-core",
+    "changelog:validate": "../../scripts/validate-changelog.sh @metamask/delegation-core",
     "clean": "rm -rf dist",
     "lint": "yarn lint:eslint",
     "lint:complete": "yarn lint:eslint && yarn lint:constraints && yarn lint:misc --check && yarn lint:dependencies --check && yarn lint:changelog",
@@ -65,9 +66,9 @@
   "devDependencies": {
     "@metamask/auto-changelog": "^3.4.4",
     "@types/node": "^20.10.6",
-    "tsup": "^7.2.0",
+    "tsup": "^8.5.0",
     "typescript": "5.0.4",
-    "vitest": "2.1.9"
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "@metamask/abi-utils": "^3.0.0",

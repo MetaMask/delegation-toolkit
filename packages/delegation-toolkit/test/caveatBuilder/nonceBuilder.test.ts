@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { pad, size, type Hex } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { nonceBuilder } from '../../src/caveatBuilder/nonceBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';
@@ -13,7 +13,8 @@ describe('nonceBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithNonce = (nonce: Hex) => {
-    return nonceBuilder(environment, nonce);
+    const config = { nonce };
+    return nonceBuilder(environment, config);
   };
 
   describe('validation', () => {

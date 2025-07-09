@@ -4,14 +4,14 @@ import {
   encodePermissionContexts,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createExecution,
   createDelegation,
   Implementation,
-  toMetaMaskSmartAccount,
   ExecutionMode,
   type MetaMaskSmartAccount,
+  toMetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
+import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 import {
   transport,
   gasPrice,
@@ -140,7 +140,7 @@ const runTest_expectSuccess = async (
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'allowedMethods',
-      allowedMethods,
+      { selectors: allowedMethods },
     ),
   });
 
@@ -206,7 +206,7 @@ const runTest_expectFailure = async (
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'allowedMethods',
-      allowedMethods,
+      { selectors: allowedMethods },
     ),
   });
 

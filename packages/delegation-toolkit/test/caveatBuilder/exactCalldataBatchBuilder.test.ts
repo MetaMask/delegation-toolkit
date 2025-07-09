@@ -1,6 +1,5 @@
-import { expect } from 'chai';
-import { encodeAbiParameters } from 'viem';
-import type { Address } from 'viem';
+import { encodeAbiParameters, type Address } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { exactCalldataBatchBuilder } from '../../src/caveatBuilder/exactCalldataBatchBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';
@@ -18,7 +17,8 @@ describe('exactCalldataBatchBuilder()', () => {
       callData: `0x${string}`;
     }[],
   ) => {
-    return exactCalldataBatchBuilder(environment, executions);
+    const config = { executions };
+    return exactCalldataBatchBuilder(environment, config);
   };
 
   describe('validation', () => {
@@ -62,7 +62,7 @@ describe('exactCalldataBatchBuilder()', () => {
             callData: 'invalid' as `0x${string}`,
           },
         ]),
-      ).to.throw('Invalid callData: must be a hex string starting with 0x');
+      ).to.throw('Invalid calldata: must be a hex string starting with 0x');
     });
 
     it('should allow valid addresses that are not checksummed', () => {

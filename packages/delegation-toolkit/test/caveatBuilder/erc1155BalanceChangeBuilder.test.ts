@@ -1,5 +1,5 @@
-import { expect } from 'chai';
-import { type Address, encodePacked, size } from 'viem';
+import { encodePacked, size, type Address } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { erc1155BalanceChangeBuilder } from '../../src/caveatBuilder/erc1155BalanceChangeBuilder';
 import { BalanceChangeType } from '../../src/caveatBuilder/types';
@@ -20,14 +20,8 @@ describe('erc1155BalanceChangeBuilder', () => {
     balance: bigint,
     changeType: BalanceChangeType,
   ) => {
-    return erc1155BalanceChangeBuilder(
-      environment,
-      tokenAddress,
-      recipient,
-      tokenId,
-      balance,
-      changeType,
-    );
+    const config = { tokenAddress, recipient, tokenId, balance, changeType };
+    return erc1155BalanceChangeBuilder(environment, config);
   };
 
   describe('validation', () => {

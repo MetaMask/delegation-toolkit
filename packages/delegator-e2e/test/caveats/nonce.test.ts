@@ -3,12 +3,12 @@ import { NonceEnforcer } from '@metamask/delegation-abis';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  ExecutionMode,
-  createCaveatBuilder,
   createDelegation,
   createExecution,
+  ExecutionMode,
   Implementation,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
@@ -121,7 +121,7 @@ const runTest_expectSuccess = async (newCount: bigint, nonce: bigint) => {
     from: aliceAddress,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'nonce',
-      toHex(nonce),
+      { nonce: toHex(nonce) },
     ),
   });
 
@@ -191,7 +191,7 @@ const runTest_expectFailure = async (
     from: aliceAddress,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'nonce',
-      toHex(nonce),
+      { nonce: toHex(nonce) },
     ),
   });
 

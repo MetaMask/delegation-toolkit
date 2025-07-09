@@ -1,6 +1,5 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  createCaveatBuilder,
   createDelegation,
   createExecution,
   Implementation,
@@ -9,6 +8,7 @@ import {
   ExecutionMode,
 } from '@metamask/delegation-toolkit';
 import {
+  createCaveatBuilder,
   encodeExecutionCalldatas,
   encodePermissionContexts,
 } from '@metamask/delegation-toolkit/utils';
@@ -143,7 +143,10 @@ const runTest_expectSuccess = async (
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
     caveats: caveats.reduce((builder, caveat) => {
-      builder.addCaveat('allowedCalldata', caveat.from, caveat.calldata);
+      builder.addCaveat('allowedCalldata', {
+        startIndex: caveat.from,
+        value: caveat.calldata,
+      });
       return builder;
     }, createCaveatBuilder(environment)),
   });
@@ -211,7 +214,10 @@ const runTest_expectFailure = async (
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
     caveats: caveats.reduce((builder, caveat) => {
-      builder.addCaveat('allowedCalldata', caveat.from, caveat.calldata);
+      builder.addCaveat('allowedCalldata', {
+        startIndex: caveat.from,
+        value: caveat.calldata,
+      });
       return builder;
     }, createCaveatBuilder(aliceSmartAccount.environment)),
   });

@@ -1,9 +1,7 @@
-import hre from 'hardhat';
-import { bytesToHex } from 'viem';
+import { bytesToHex, getAddress } from 'viem';
 import type {
   Chain,
   Hex,
-  Transport,
   WalletClient,
   PublicClient,
   Account,
@@ -29,13 +27,16 @@ export const PRIVATE_KEY_Y =
   3540107420755600117661092318610451508057836103782892212756062701855335759222n;
 export const THRESHOLD = 1;
 
-export const randomAddress = (lowerCase = false) => {
+export const randomAddress = (
+  mode: 'lowercase' | 'checksum' | 'none' = 'none',
+) => {
   const address = privateKeyToAddress(generatePrivateKey());
-  if (!lowerCase) {
-    return address;
+  if (mode === 'lowercase') {
+    return address.toLowerCase() as Hex;
+  } else if (mode === 'checksum') {
+    return getAddress(address);
   }
-
-  return address.toLowerCase() as Hex;
+  return address;
 };
 
 export const randomBytes = (byteLength: number): Hex => {
@@ -90,16 +91,6 @@ export async function setupDevelopmentEnvironment(
   chain: Chain,
 ) {
   return await deployDeleGatorEnvironment(walletClient, publicClient, chain);
-}
-
-/**
- * Creates a custom Hardhat provider transport for Viem.
- *
- * @returns A promise that resolves to a Transport object connected to the Hardhat network.
- */
-export async function createHardhatTransport(): Promise<Transport> {
-  const viem = await import('viem');
-  return viem.custom(hre.network.provider);
 }
 
 /**

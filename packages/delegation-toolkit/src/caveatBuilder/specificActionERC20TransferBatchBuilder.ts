@@ -5,27 +5,44 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const specificActionERC20TransferBatch =
   'specificActionERC20TransferBatch';
 
+export type SpecificActionErc20TransferBatchBuilderConfig = {
+  /**
+   * The address of the ERC-20 token contract.
+   */
+  tokenAddress: Address;
+  /**
+   * The address that will receive the tokens.
+   */
+  recipient: Address;
+  /**
+   * The amount of tokens to transfer.
+   */
+  amount: bigint;
+  /**
+   * The target address for the first transaction.
+   */
+  target: Address;
+  /**
+   * The calldata for the first transaction.
+   */
+  calldata: Hex;
+};
+
 /**
  * Builds a caveat struct for SpecificActionERC20TransferBatchEnforcer.
  * Enforces a batch of exactly 2 transactions: a specific action followed by an ERC20 transfer.
  *
  * @param environment - The DeleGator environment.
- * @param tokenAddress - The address of the ERC20 token contract.
- * @param recipient - The address that will receive the tokens.
- * @param amount - The amount of tokens to transfer.
- * @param firstTarget - The target address for the first transaction.
- * @param firstCalldata - The calldata for the first transaction.
+ * @param config - The configuration for the specific action ERC20 transfer batch builder.
  * @returns The Caveat.
  * @throws Error if any of the addresses are invalid or if the amount is not a positive number.
  */
 export const specificActionERC20TransferBatchBuilder = (
   environment: DeleGatorEnvironment,
-  tokenAddress: Address,
-  recipient: Address,
-  amount: bigint,
-  firstTarget: Address,
-  firstCalldata: Hex,
+  config: SpecificActionErc20TransferBatchBuilderConfig,
 ): Caveat => {
+  const { tokenAddress, recipient, amount, target, calldata } = config;
+
   if (!isAddress(tokenAddress, { strict: false })) {
     throw new Error('Invalid tokenAddress: must be a valid address');
   }
@@ -34,8 +51,8 @@ export const specificActionERC20TransferBatchBuilder = (
     throw new Error('Invalid recipient: must be a valid address');
   }
 
-  if (!isAddress(firstTarget, { strict: false })) {
-    throw new Error('Invalid firstTarget: must be a valid address');
+  if (!isAddress(target, { strict: false })) {
+    throw new Error('Invalid target: must be a valid address');
   }
 
   if (amount <= 0n) {
@@ -46,8 +63,8 @@ export const specificActionERC20TransferBatchBuilder = (
     tokenAddress,
     recipient,
     toHex(amount, { size: 32 }),
-    firstTarget,
-    firstCalldata,
+    target,
+    calldata,
   ]);
 
   const {

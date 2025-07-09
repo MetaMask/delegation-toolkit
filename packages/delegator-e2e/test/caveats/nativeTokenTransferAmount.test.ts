@@ -2,9 +2,9 @@ import { beforeEach, test, expect } from 'vitest';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createDelegation,
   createExecution,
   Implementation,
@@ -90,7 +90,7 @@ const runTest_expectSuccess = async (
     from: aliceAddress,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'nativeTokenTransferAmount',
-      allowance,
+      { maxAmount: allowance },
     ),
   });
 
@@ -160,7 +160,7 @@ const runTest_expectFailure = async (
     from: aliceAddress,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'nativeTokenTransferAmount',
-      allowance,
+      { maxAmount: allowance },
     ),
   });
 

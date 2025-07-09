@@ -2,10 +2,10 @@ import { beforeEach, test, expect } from 'vitest';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
   createDelegation,
-  createCaveatBuilder,
   Implementation,
   toMetaMaskSmartAccount,
   ExecutionMode,
@@ -87,8 +87,8 @@ const runTest_expectSuccess = async (
   tokenAddress: Hex,
   recipient: Hex,
   amount: bigint,
-  firstTarget: Hex,
-  firstCalldata: Hex,
+  target: Hex,
+  calldata: Hex,
   executions: ExecutionStruct[],
 ) => {
   const { environment } = aliceSmartAccount;
@@ -98,11 +98,13 @@ const runTest_expectSuccess = async (
     from: delegator.address,
     caveats: createCaveatBuilder(environment).addCaveat(
       'specificActionERC20TransferBatch',
-      tokenAddress,
-      recipient,
-      amount,
-      firstTarget,
-      firstCalldata,
+      {
+        tokenAddress,
+        recipient,
+        amount,
+        target,
+        calldata,
+      },
     ),
   });
 
@@ -151,8 +153,8 @@ const runTest_expectFailure = async (
   tokenAddress: Hex,
   recipient: Hex,
   amount: bigint,
-  firstTarget: Hex,
-  firstCalldata: Hex,
+  target: Hex,
+  calldata: Hex,
   executions: {
     target: Hex;
     value: bigint;
@@ -167,11 +169,13 @@ const runTest_expectFailure = async (
     from: delegator.address,
     caveats: createCaveatBuilder(environment).addCaveat(
       'specificActionERC20TransferBatch',
-      tokenAddress,
-      recipient,
-      amount,
-      firstTarget,
-      firstCalldata,
+      {
+        tokenAddress,
+        recipient,
+        amount,
+        target,
+        calldata,
+      },
     ),
   });
 

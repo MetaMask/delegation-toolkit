@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import { concat, size, toHex } from 'viem';
 import type { Address } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { erc20TransferAmountBuilder } from '../../src/caveatBuilder/erc20TransferAmountBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';
@@ -14,7 +14,8 @@ describe('erc20TransferAmountBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithParams = (tokenAddress: Address, maxAmount: bigint) => {
-    return erc20TransferAmountBuilder(environment, tokenAddress, maxAmount);
+    const config = { tokenAddress, maxAmount };
+    return erc20TransferAmountBuilder(environment, config);
   };
 
   describe('validation', () => {

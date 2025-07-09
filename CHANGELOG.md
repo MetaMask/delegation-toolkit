@@ -7,4 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/metamask/delegation-toolkit/
+## [7.0.0]
+
+[Unreleased]: https://github.com/MetaMask/delegation-toolkit/compare/delegator-sdk-monorepo@7.0.0...HEAD
+[7.0.0]: https://github.com/MetaMask/delegation-toolkit/releases/tag/delegator-sdk-monorepo@7.0.0

@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { concat, size, toHex } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { TIMESTAMP_UPPER_BOUND_SECONDS } from '../../src/caveatBuilder/shared';
 import { timestampBuilder } from '../../src/caveatBuilder/timestampBuilder';
@@ -16,7 +16,8 @@ describe('timestampBuilder()', () => {
     afterThreshold: number,
     beforeThreshold: number,
   ) => {
-    return timestampBuilder(environment, afterThreshold, beforeThreshold);
+    const config = { afterThreshold, beforeThreshold };
+    return timestampBuilder(environment, config);
   };
 
   describe('validation', () => {

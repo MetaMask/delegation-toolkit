@@ -4,23 +4,32 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export const ownershipTransfer = 'ownershipTransfer';
 
+export type OwnershipTransferBuilderConfig = {
+  /**
+   * The target contract address as a hex string for which ownership transfers are allowed.
+   */
+  contractAddress: Address;
+};
+
 /**
  * Builds a caveat struct for the OwnershipTransferEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param targetContract - The target contract address for the ownership transfer.
+ * @param config - The configuration object for the ownership transfer builder.
  * @returns The Caveat representing the caveat for ownership transfer.
  * @throws Error if the target contract address is invalid.
  */
 export const ownershipTransferBuilder = (
   environment: DeleGatorEnvironment,
-  targetContract: Address,
+  config: OwnershipTransferBuilderConfig,
 ): Caveat => {
-  if (!isAddress(targetContract, { strict: false })) {
-    throw new Error('Invalid targetContract: must be a valid address');
+  const { contractAddress } = config;
+
+  if (!isAddress(contractAddress, { strict: false })) {
+    throw new Error('Invalid contractAddress: must be a valid address');
   }
 
-  const terms = targetContract;
+  const terms = contractAddress;
 
   const {
     caveatEnforcers: { OwnershipTransferEnforcer },

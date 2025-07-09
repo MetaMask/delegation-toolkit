@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { concat, size, toHex } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { valueLteBuilder } from '../../src/caveatBuilder/valueLteBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';
@@ -13,7 +13,8 @@ describe('valueLteEnforcerBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithMaxValue = (maxValue: bigint) => {
-    return valueLteBuilder(environment, maxValue);
+    const config = { maxValue };
+    return valueLteBuilder(environment, config);
   };
 
   describe('validation', () => {

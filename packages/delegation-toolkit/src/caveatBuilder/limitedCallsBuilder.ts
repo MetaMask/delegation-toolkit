@@ -4,18 +4,27 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export const limitedCalls = 'limitedCalls';
 
+export type LimitedCallsBuilderConfig = {
+  /**
+   * The maximum number of times this delegation may be redeemed.
+   */
+  limit: number;
+};
+
 /**
  * Builds a caveat struct for the LimitedCallsEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param limit - The maximum number of calls allowed.
+ * @param config - The configuration object containing the limit.
  * @returns The Caveat.
  * @throws Error if the limit is not a positive integer.
  */
 export const limitedCallsBuilder = (
   environment: DeleGatorEnvironment,
-  limit: number,
+  config: LimitedCallsBuilderConfig,
 ): Caveat => {
+  const { limit } = config;
+
   if (!Number.isInteger(limit)) {
     throw new Error('Invalid limit: must be an integer');
   }

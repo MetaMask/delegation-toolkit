@@ -5,20 +5,30 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const exactExecution = 'exactExecution';
 
+export type ExactExecutionBuilderConfig = {
+  /**
+   * The execution that must be matched exactly.
+   * Specifies the target address, value, and calldata.
+   */
+  execution: ExecutionStruct;
+};
+
 /**
  * Builds a caveat struct for ExactExecutionEnforcer.
  * This enforcer ensures that the provided execution matches exactly
  * with the expected execution (target, value, and calldata).
  *
  * @param environment - The DeleGator environment.
- * @param execution - The expected execution to match against.
+ * @param config - The configuration object containing the execution.
  * @returns The Caveat.
  * @throws Error if any of the execution parameters are invalid.
  */
 export const exactExecutionBuilder = (
   environment: DeleGatorEnvironment,
-  execution: ExecutionStruct,
+  config: ExactExecutionBuilderConfig,
 ): Caveat => {
+  const { execution } = config;
+
   if (!isAddress(execution.target, { strict: false })) {
     throw new Error('Invalid target: must be a valid address');
   }
@@ -28,7 +38,7 @@ export const exactExecutionBuilder = (
   }
 
   if (!execution.callData.startsWith('0x')) {
-    throw new Error('Invalid callData: must be a hex string starting with 0x');
+    throw new Error('Invalid calldata: must be a hex string starting with 0x');
   }
 
   const terms = concat([

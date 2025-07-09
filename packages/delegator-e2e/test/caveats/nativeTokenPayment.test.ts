@@ -4,9 +4,9 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   getDelegationHashOffchain,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createDelegation,
   createExecution,
   Implementation,
@@ -87,8 +87,10 @@ test('maincase: Bob redeems the delegation with a permissions context allowing p
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'nativeTokenPayment',
-      recipient,
-      requiredValue,
+      {
+        recipient,
+        amount: requiredValue,
+      },
     ),
   });
 
@@ -103,7 +105,9 @@ test('maincase: Bob redeems the delegation with a permissions context allowing p
     from: bobSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'argsEqualityCheck',
-      args,
+      {
+        args,
+      },
     ),
   });
 
@@ -133,8 +137,10 @@ test('Bob attempts to redeem the delegation without an argsEqualityCheckEnforcer
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'nativeTokenPayment',
-      recipient,
-      requiredValue,
+      {
+        recipient,
+        amount: requiredValue,
+      },
     ),
   });
 
@@ -142,7 +148,7 @@ test('Bob attempts to redeem the delegation without an argsEqualityCheckEnforcer
     to: bobSmartAccount.environment.caveatEnforcers.NativeTokenPaymentEnforcer!,
     from: bobSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment, {
-      allowEmptyCaveats: true,
+      allowInsecureUnrestrictedDelegation: true,
     }),
   });
 
@@ -172,18 +178,20 @@ test('Bob attempts to redeem the delegation without providing a valid permission
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'nativeTokenPayment',
-      recipient,
-      requiredValue,
+      {
+        recipient,
+        amount: requiredValue,
+      },
     ),
   });
 
-  const permissionsContext = '0x';
+  const permissionsContext = '0x' as const;
 
   await runTest_expectFailure(
     delegationRequiringNativeTokenPayment,
     permissionsContext,
     recipient,
-    '', // The NativeTokenPaymentEnforcer rejects when it fails to decode the permissions context
+    undefined, // The NativeTokenPaymentEnforcer rejects when it fails to decode the permissions context
   );
 });
 
@@ -193,7 +201,10 @@ test('Bob attempts to redeem with invalid terms length', async () => {
   const { environment } = aliceSmartAccount;
 
   const caveats = createCaveatBuilder(environment)
-    .addCaveat('nativeTokenPayment', recipient, requiredValue)
+    .addCaveat('nativeTokenPayment', {
+      recipient,
+      amount: requiredValue,
+    })
     .build();
 
   // Create invalid terms length by appending an empty byte
@@ -214,10 +225,9 @@ test('Bob attempts to redeem with invalid terms length', async () => {
   const paymentDelegation = createDelegation({
     to: bobSmartAccount.environment.caveatEnforcers.NativeTokenPaymentEnforcer!,
     from: bobSmartAccount.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'argsEqualityCheck',
+    caveats: createCaveatBuilder(environment).addCaveat('argsEqualityCheck', {
       args,
-    ),
+    }),
   });
 
   const signedPaymentDelegation = {
@@ -245,11 +255,10 @@ test('Bob attempts to redeem with empty allowance delegations', async () => {
   const delegationRequiringNativeTokenPayment = createDelegation({
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'nativeTokenPayment',
+    caveats: createCaveatBuilder(environment).addCaveat('nativeTokenPayment', {
       recipient,
-      requiredValue,
-    ),
+      amount: requiredValue,
+    }),
   });
 
   // Create empty allowance delegations array
@@ -295,15 +304,21 @@ const runTest_expectFailure = async (
   delegation: Delegation,
   permissionsContext: Hex,
   recipient: Address,
-  expectedError: string,
+  expectedError: string | undefined,
 ) => {
   const balanceBefore = await publicClient.getBalance({
     address: recipient,
   });
 
-  await expect(
+  const rejects = expect(
     submitUserOpForTest(delegation, permissionsContext),
-  ).rejects.toThrow(expectedError);
+  ).rejects;
+
+  if (expectedError) {
+    await rejects.toThrow(expectedError);
+  } else {
+    await rejects.toThrow();
+  }
 
   const balanceAfter = await publicClient.getBalance({
     address: recipient,

@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { isHex, type Hex } from 'viem';
+import { describe, it, expect } from 'vitest';
 
 import {
   createExecution,

@@ -1,5 +1,4 @@
 import { Buffer as BufferPolyfill } from 'buffer/';
-import { expect } from 'chai';
 import {
   decodeAbiParameters,
   isHex,
@@ -8,6 +7,7 @@ import {
   toHex,
   serializeSignature,
 } from 'viem';
+import { describe, it, expect } from 'vitest';
 import { parseSignature } from 'webauthn-p256';
 
 import {

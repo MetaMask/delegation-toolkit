@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { pad, size, toHex } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { limitedCallsBuilder } from '../../src/caveatBuilder/limitedCallsBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';
@@ -12,7 +12,8 @@ describe('limitedCallsBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithLimit = (limit: number) => {
-    return limitedCallsBuilder(environment, limit);
+    const config = { limit };
+    return limitedCallsBuilder(environment, config);
   };
 
   describe('validation', () => {

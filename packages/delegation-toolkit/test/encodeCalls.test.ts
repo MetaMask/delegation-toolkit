@@ -1,7 +1,7 @@
 import { DeleGatorCore } from '@metamask/delegation-abis';
-import { expect } from 'chai';
 import type { Address } from 'viem';
 import { encodeFunctionData } from 'viem';
+import { describe, it, expect } from 'vitest';
 
 import { encodeCallsForCaller } from '../src/encodeCalls';
 import { ExecutionMode, encodeExecutionCalldatas } from '../src/executions';

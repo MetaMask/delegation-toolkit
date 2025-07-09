@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import { concat, toFunctionSelector, size } from 'viem';
 import type { AbiFunction, Hex } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import type { MethodSelector } from '../../src/caveatBuilder/allowedMethodsBuilder';
 import { allowedMethodsBuilder } from '../../src/caveatBuilder/allowedMethodsBuilder';
@@ -15,7 +15,8 @@ describe('allowedMethodsBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithSelectors = (selectors: MethodSelector[]) => {
-    return allowedMethodsBuilder(environment, selectors);
+    const config = { selectors };
+    return allowedMethodsBuilder(environment, config);
   };
 
   describe('validation', () => {

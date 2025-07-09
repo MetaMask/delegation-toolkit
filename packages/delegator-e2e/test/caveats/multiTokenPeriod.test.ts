@@ -2,10 +2,10 @@ import { beforeEach, test, expect } from 'vitest';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
   createDelegation,
-  createCaveatBuilder,
   createExecution,
   Implementation,
   toMetaMaskSmartAccount,
@@ -274,7 +274,7 @@ const runTest_expectFailure = async (
   ).rejects.toThrow(expectedError);
 };
 
-test('Bob redeems the delegation within period limit', async () => {
+test('maincase: Bob redeems the delegation within period limit', async () => {
   const recipient = randomAddress();
 
   const configs = [

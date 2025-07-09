@@ -2,9 +2,9 @@ import { beforeEach, test, expect } from 'vitest';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createDelegation,
   createExecution,
   Implementation,
@@ -163,9 +163,11 @@ const runTest_expectSuccess = async (deployedAddress: Hex, salt: Hex) => {
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'deployed',
-      deployedAddress,
-      salt,
-      CounterMetadata.bytecode.object as Hex,
+      {
+        contractAddress: deployedAddress,
+        salt,
+        bytecode: CounterMetadata.bytecode.object as Hex,
+      },
     ),
   });
 
@@ -244,9 +246,11 @@ const runTest_expectFailure = async (
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'deployed',
-      deployedAddress,
-      salt,
-      CounterMetadata.bytecode.object as Hex,
+      {
+        contractAddress: deployedAddress,
+        salt,
+        bytecode: CounterMetadata.bytecode.object as Hex,
+      },
     ),
   });
 

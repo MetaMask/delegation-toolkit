@@ -13,6 +13,14 @@ on:
       NPM_CLIENT:
         type: string
         default: 'yarn'
+      RUN_FULL_TESTS:
+        type: boolean
+        default: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/') }}
+  workflow_dispatch:
+    inputs:
+      RUN_FULL_TESTS:
+        type: boolean
+        default: true
 
 jobs:
   pipeline:
@@ -53,7 +61,7 @@ jobs:
 
       - name: Run end-to-end tests
         run: |
-          if [[ "$GITHUB_REF" == "refs/heads/main" ]] || [[ "$GITHUB_REF" =~ ^refs/heads/release/ ]]; then
+          if [[ "${{ inputs.RUN_FULL_TESTS }}" == "true" ]]; then
             yarn e2etest:full
           else
             yarn e2etest:smoketest

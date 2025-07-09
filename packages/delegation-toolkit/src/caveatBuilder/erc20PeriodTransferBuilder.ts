@@ -1,9 +1,28 @@
-import { concat, isAddress, toHex } from 'viem';
+import { createERC20TokenPeriodTransferTerms } from '@metamask/delegation-core';
 import type { Address } from 'viem';
 
 import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const erc20PeriodTransfer = 'erc20PeriodTransfer';
+
+export type Erc20PeriodTransferBuilderConfig = {
+  /**
+   * The ERC-20 contract address as a hex string.
+   */
+  tokenAddress: Address;
+  /**
+   * The maximum amount of tokens that can be transferred per period.
+   */
+  periodAmount: bigint;
+  /**
+   * The duration of each period in seconds.
+   */
+  periodDuration: number;
+  /**
+   * The timestamp when the first period begins in seconds.
+   */
+  startDate: number;
+};
 
 /**
  * Builds a caveat struct for ERC20PeriodTransferEnforcer.
@@ -12,42 +31,22 @@ export const erc20PeriodTransfer = 'erc20PeriodTransfer';
  * and any unused tokens are forfeited once the period ends.
  *
  * @param environment - The DeleGator environment.
- * @param tokenAddress - The address of the ERC20 token contract.
- * @param periodAmount - The maximum amount of tokens that can be transferred per period.
- * @param periodDuration - The duration of each period in seconds.
- * @param startDate - The timestamp when the first period begins.
+ * @param config - The configuration for the ERC20 period transfer builder.
  * @returns The Caveat.
  * @throws Error if the token address is invalid or if any of the numeric parameters are invalid.
  */
 export const erc20PeriodTransferBuilder = (
   environment: DeleGatorEnvironment,
-  tokenAddress: Address,
-  periodAmount: bigint,
-  periodDuration: number,
-  startDate: number,
+  config: Erc20PeriodTransferBuilderConfig,
 ): Caveat => {
-  if (!isAddress(tokenAddress)) {
-    throw new Error('Invalid tokenAddress: must be a valid address');
-  }
+  const { tokenAddress, periodAmount, periodDuration, startDate } = config;
 
-  if (periodAmount <= 0n) {
-    throw new Error('Invalid periodAmount: must be a positive number');
-  }
-
-  if (periodDuration <= 0) {
-    throw new Error('Invalid periodDuration: must be a positive number');
-  }
-
-  if (startDate <= 0) {
-    throw new Error('Invalid startDate: must be a positive number');
-  }
-
-  const terms = concat([
+  const terms = createERC20TokenPeriodTransferTerms({
     tokenAddress,
-    toHex(periodAmount, { size: 32 }),
-    toHex(periodDuration, { size: 32 }),
-    toHex(startDate, { size: 32 }),
-  ]);
+    periodAmount,
+    periodDuration,
+    startDate,
+  });
 
   const {
     caveatEnforcers: { ERC20PeriodTransferEnforcer },
