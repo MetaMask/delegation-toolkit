@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { size } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { nativeTokenStreamingBuilder } from '../../src/caveatBuilder/nativeTokenStreamingBuilder';
 import { TIMESTAMP_UPPER_BOUND_SECONDS } from '../../src/caveatBuilder/shared';

@@ -1,34 +1,34 @@
-import { expect } from 'chai';
-import hre from 'hardhat';
-import type { WalletClient } from 'viem';
 import { concat, encodePacked, isAddress, pad, toHex } from 'viem';
 import type { Address } from 'viem/accounts';
-import { hardhat } from 'viem/chains';
+import { expect, describe, it } from 'vitest';
 
 import { createCaveatBuilder, CaveatBuilder } from '../../src/caveatBuilder';
 import { BalanceChangeType } from '../../src/caveatBuilder/types';
 import type { DeleGatorEnvironment } from '../../src/types';
-import {
-  randomAddress,
-  randomBytes,
-  setupDevelopmentEnvironment,
-} from '../utils';
+import { randomAddress, randomBytes } from '../utils';
 
 describe('createCaveatBuilder()', () => {
-  const chain = hardhat;
-  let environment: DeleGatorEnvironment;
-
-  before(async () => {
-    const [walletClient] = (await hre.viem.getWalletClients()) as [
-      WalletClient,
-    ];
-    const publicClient = await hre.viem.getPublicClient();
-    environment = await setupDevelopmentEnvironment(
-      walletClient,
-      publicClient,
-      chain,
-    );
-  });
+  const environment: DeleGatorEnvironment = {
+    caveatEnforcers: {
+      AllowedMethodsEnforcer: randomBytes(20),
+      AllowedTargetsEnforcer: randomBytes(20),
+      DeployedEnforcer: randomBytes(20),
+      AllowedCalldataEnforcer: randomBytes(20),
+      ERC20BalanceChangeEnforcer: randomBytes(20),
+      ValueLteEnforcer: randomBytes(20),
+      LimitedCallsEnforcer: randomBytes(20),
+      IdEnforcer: randomBytes(20),
+      NonceEnforcer: randomBytes(20),
+      TimestampEnforcer: randomBytes(20),
+      BlockNumberEnforcer: randomBytes(20),
+      NativeTokenTransferAmountEnforcer: randomBytes(20),
+      NativeBalanceChangeEnforcer: randomBytes(20),
+      NativeTokenPaymentEnforcer: randomBytes(20),
+      ERC20TransferAmountEnforcer: randomBytes(20),
+      RedeemerEnforcer: randomBytes(20),
+      ArgsEqualityCheckEnforcer: randomBytes(20),
+    },
+  } as unknown as DeleGatorEnvironment;
 
   describe('ctor', () => {
     it('should create a CaveatBuilder', () => {

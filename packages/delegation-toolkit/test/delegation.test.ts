@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import { stub } from 'sinon';
 import { getAddress } from 'viem';
+import { describe, it, expect } from 'vitest';
 
 import { randomAddress } from './utils';
 import { resolveCaveats } from '../src/caveatBuilder';

@@ -1,5 +1,5 @@
-import { expect } from 'chai';
-import { type Address, encodePacked, size } from 'viem';
+import { encodePacked, size, type Address } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { erc20BalanceChangeBuilder } from '../../src/caveatBuilder/erc20BalanceChangeBuilder';
 import { BalanceChangeType } from '../../src/caveatBuilder/types';

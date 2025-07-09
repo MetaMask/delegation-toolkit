@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import { concat, toHex } from 'viem';
 import type { Address } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { exactExecutionBuilder } from '../../src/caveatBuilder/exactExecutionBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';

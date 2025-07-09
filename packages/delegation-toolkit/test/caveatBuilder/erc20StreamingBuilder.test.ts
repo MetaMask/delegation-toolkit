@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import type { Address } from 'viem';
 import { size } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { erc20StreamingBuilder } from '../../src/caveatBuilder/erc20StreamingBuilder';
 import { TIMESTAMP_UPPER_BOUND_SECONDS } from '../../src/caveatBuilder/shared';

@@ -1,8 +1,8 @@
-import { expect } from 'chai';
 import { stub } from 'sinon';
 import type { Account, Client } from 'viem';
 import { createClient, custom } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { erc7715ProviderActions } from '../../src/experimental';
 import {
@@ -134,7 +134,7 @@ describe('erc7715GrantPermissionsAction', () => {
 
       await expect(
         erc7715GrantPermissionsAction(mockClient, parameters),
-      ).rejectedWith('Invalid parameters: amountPerSecond is required');
+      ).rejects.toThrow('Invalid parameters: amountPerSecond is required');
     });
 
     it('should throw an error when startTime is undefined', async () => {
@@ -159,7 +159,7 @@ describe('erc7715GrantPermissionsAction', () => {
 
       await expect(
         erc7715GrantPermissionsAction(mockClient, parameters),
-      ).rejectedWith('Invalid parameters: startTime is required');
+      ).rejects.toThrow('Invalid parameters: startTime is required');
     });
 
     it('should throw an error when justification is undefined', async () => {
@@ -184,7 +184,7 @@ describe('erc7715GrantPermissionsAction', () => {
 
       await expect(
         erc7715GrantPermissionsAction(mockClient, parameters),
-      ).rejectedWith('Invalid parameters: justification is required');
+      ).rejects.toThrow('Invalid parameters: justification is required');
     });
 
     it('should format native-token-stream permission request correctly', async () => {
@@ -267,7 +267,7 @@ describe('erc7715GrantPermissionsAction', () => {
 
       await expect(
         erc7715GrantPermissionsAction(mockClient, parameters),
-      ).to.be.rejectedWith('Failed to grant permissions');
+      ).rejects.toThrow('Failed to grant permissions');
     });
 
     it('should use the default snap ID if not provided', async () => {

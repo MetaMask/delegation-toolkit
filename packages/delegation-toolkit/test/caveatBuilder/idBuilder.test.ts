@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { maxUint256, size, toHex } from 'viem';
+import { describe, it, expect } from 'vitest';
 
 import { idBuilder } from '../../src/caveatBuilder/idBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';

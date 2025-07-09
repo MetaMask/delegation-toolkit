@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import { encodeAbiParameters } from 'viem';
 import type { Address } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { exactExecutionBatchBuilder } from '../../src/caveatBuilder/exactExecutionBatchBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';

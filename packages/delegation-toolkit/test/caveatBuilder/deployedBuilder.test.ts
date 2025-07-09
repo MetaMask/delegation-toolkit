@@ -1,6 +1,5 @@
-import { expect } from 'chai';
-import { concat, pad, size } from 'viem';
-import type { Address, Hex } from 'viem';
+import { concat, pad, size, type Address, type Hex } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { deployedBuilder } from '../../src/caveatBuilder/deployedBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';
