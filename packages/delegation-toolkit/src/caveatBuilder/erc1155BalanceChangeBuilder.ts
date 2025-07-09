@@ -56,7 +56,7 @@ export const erc1155BalanceChangeBuilder = (
     throw new Error('Invalid balance: must be a positive number');
   }
 
-  if (tokenId < 0) {
+  if (tokenId < 0n) {
     throw new Error('Invalid tokenId: must be a non-negative number');
   }
 

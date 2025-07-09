@@ -33,7 +33,7 @@ export const erc721TransferBuilder = (
     throw new Error('Invalid tokenAddress: must be a valid address');
   }
 
-  if (tokenId < 0) {
+  if (tokenId < 0n) {
     throw new Error('Invalid tokenId: must be a non-negative number');
   }
 
