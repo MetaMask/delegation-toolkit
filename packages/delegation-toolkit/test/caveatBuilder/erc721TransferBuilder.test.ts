@@ -12,15 +12,9 @@ describe('erc721TransferBuilder()', () => {
     caveatEnforcers: { ERC721TransferEnforcer: randomAddress() },
   } as any as DeleGatorEnvironment;
 
-  const buildWithParams = (
-    permittedContract: Address,
-    permittedTokenId: bigint,
-  ) => {
-    return erc721TransferBuilder(
-      environment,
-      permittedContract,
-      permittedTokenId,
-    );
+  const buildWithParams = (tokenAddress: Address, tokenId: bigint) => {
+    const config = { tokenAddress, tokenId };
+    return erc721TransferBuilder(environment, config);
   };
 
   describe('validation', () => {
@@ -34,7 +28,7 @@ describe('erc721TransferBuilder()', () => {
     it('should fail with a negative token ID', () => {
       const validAddress = randomAddress();
       expect(() => buildWithParams(validAddress, -1n)).to.throw(
-        'Invalid permittedTokenId: must be a non-negative number',
+        'Invalid tokenId: must be a non-negative number',
       );
     });
 
@@ -51,13 +45,13 @@ describe('erc721TransferBuilder()', () => {
 
   describe('builds a caveat', () => {
     it('should build a caveat with valid parameters', () => {
-      const permittedContract = randomAddress();
-      const permittedTokenId = 1n;
+      const tokenAddress = randomAddress();
+      const tokenId = 1n;
 
-      const caveat = buildWithParams(permittedContract, permittedTokenId);
+      const caveat = buildWithParams(tokenAddress, tokenId);
       const expectedTerms = concat([
-        permittedContract,
-        toHex(permittedTokenId, { size: 32 }),
+        tokenAddress,
+        toHex(tokenId, { size: 32 }),
       ]).toLowerCase();
 
       expect({ ...caveat, terms: caveat.terms.toLowerCase() }).to.deep.equal({
@@ -69,10 +63,10 @@ describe('erc721TransferBuilder()', () => {
   });
 
   it('should create a caveat with terms of the correct length', () => {
-    const permittedContract = randomAddress();
-    const permittedTokenId = 1n;
+    const tokenAddress = randomAddress();
+    const tokenId = 1n;
 
-    const caveat = buildWithParams(permittedContract, permittedTokenId);
+    const caveat = buildWithParams(tokenAddress, tokenId);
 
     expect(size(caveat.terms)).to.equal(EXPECTED_TERMS_LENGTH);
   });

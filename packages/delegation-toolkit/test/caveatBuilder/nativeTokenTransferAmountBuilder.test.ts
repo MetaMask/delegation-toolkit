@@ -12,14 +12,15 @@ describe('nativeTokenTransferAmountBuilder()', () => {
     caveatEnforcers: { NativeTokenTransferAmountEnforcer: randomAddress() },
   } as any as DeleGatorEnvironment;
 
-  const buildWithAllowance = (allowance: bigint) => {
-    return nativeTokenTransferAmountBuilder(environment, allowance);
+  const buildWithAllowance = (maxAmount: bigint) => {
+    const config = { maxAmount };
+    return nativeTokenTransferAmountBuilder(environment, config);
   };
 
   describe('validation', () => {
     it('should fail with negative allowance', () => {
       expect(() => buildWithAllowance(-1n)).to.throw(
-        'Invalid allowance: must be zero or positive',
+        'Invalid maxAmount: must be zero or positive',
       );
     });
   });

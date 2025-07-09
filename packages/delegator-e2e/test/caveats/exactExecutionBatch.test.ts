@@ -3,10 +3,10 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   BATCH_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
   createDelegation,
-  createCaveatBuilder,
   Implementation,
   toMetaMaskSmartAccount,
   type ExecutionStruct,
@@ -79,10 +79,9 @@ const runTest_expectSuccess = async (
   const delegation = createDelegation({
     to: delegate,
     from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'exactExecutionBatch',
-      executions,
-    ),
+    caveats: createCaveatBuilder(environment).addCaveat('exactExecutionBatch', {
+      executions: executions,
+    }),
   });
 
   const signedDelegation = {
@@ -132,10 +131,9 @@ const runTest_expectFailure = async (
   const delegation = createDelegation({
     to: delegate,
     from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'exactExecutionBatch',
-      expectedExecutions,
-    ),
+    caveats: createCaveatBuilder(environment).addCaveat('exactExecutionBatch', {
+      executions: expectedExecutions,
+    }),
   });
 
   const signedDelegation = {

@@ -27,18 +27,18 @@ describe('CaveatBuilder', () => {
     });
   });
 
-  describe('allowEmptyCaveats', () => {
+  describe('allowInsecureUnrestrictedDelegation', () => {
     it('should disallow empty caveats', () => {
       const builder = new CaveatBuilder({} as DeleGatorEnvironment);
 
       expect(() => builder.build()).to.throw(
-        'No caveats found. If you definitely want to create an empty caveat collection, set `allowEmptyCaveats`.',
+        'No caveats found. If you definitely want to create an empty caveat collection, set `allowInsecureUnrestrictedDelegation` to `true`.',
       );
     });
 
     it('should allow empty caveats', () => {
       const builder = new CaveatBuilder({} as DeleGatorEnvironment, {
-        allowEmptyCaveats: true,
+        allowInsecureUnrestrictedDelegation: true,
       });
 
       expect(() => builder.build()).to.not.throw();
@@ -46,7 +46,7 @@ describe('CaveatBuilder', () => {
 
     it('should allow empty caveats when extended', () => {
       const builder = new CaveatBuilder({} as DeleGatorEnvironment, {
-        allowEmptyCaveats: true,
+        allowInsecureUnrestrictedDelegation: true,
       }).extend('caveat', () => caveat1);
 
       expect(() => builder.build()).to.not.throw();

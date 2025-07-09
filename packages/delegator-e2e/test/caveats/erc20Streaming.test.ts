@@ -3,9 +3,9 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createExecution,
   createDelegation,
   Implementation,
@@ -389,14 +389,13 @@ test('Bob attempts to redeem with invalid terms length', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20Streaming',
-      erc20TokenAddress,
+    .addCaveat('erc20Streaming', {
+      tokenAddress: erc20TokenAddress,
       initialAmount,
       maxAmount,
       amountPerSecond,
       startTime,
-    )
+    })
     .build();
 
   // create invalid terms length by appending an empty byte
@@ -461,14 +460,13 @@ test('Bob attempts to redeem with maxAmount less than initialAmount', async () =
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20Streaming',
-      erc20TokenAddress,
-      0n, // valid initialAmount
-      1n, // valid maxAmount
+    .addCaveat('erc20Streaming', {
+      tokenAddress: erc20TokenAddress,
+      initialAmount,
+      maxAmount: initialAmount + 1n, // we need a valid maxAmount
       amountPerSecond,
       startTime,
-    )
+    })
     .build();
 
   // Modify the terms to encode maxAmount < initialAmount
@@ -539,14 +537,13 @@ test('Bob attempts to redeem with zero start time', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20Streaming',
-      erc20TokenAddress,
+    .addCaveat('erc20Streaming', {
+      tokenAddress: erc20TokenAddress,
       initialAmount,
       maxAmount,
       amountPerSecond,
-      currentTime, // valid start time
-    )
+      startTime: currentTime, // valid start time
+    })
     .build();
 
   // Modify the terms to encode zero start time
@@ -621,14 +618,15 @@ const runTest_expectSuccess = async (
   const delegation = createDelegation({
     to: delegate,
     from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'erc20Streaming',
-      erc20TokenAddress,
-      initialAmount,
-      maxAmount,
-      amountPerSecond,
-      startTime,
-    ),
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('erc20Streaming', {
+        tokenAddress: erc20TokenAddress,
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime,
+      })
+      .build(),
   });
 
   const signedDelegation = {
@@ -708,14 +706,15 @@ const runTest_expectFailure = async (
   const delegation = createDelegation({
     to: delegate,
     from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'erc20Streaming',
-      erc20TokenAddress,
-      initialAmount,
-      maxAmount,
-      amountPerSecond,
-      startTime,
-    ),
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('erc20Streaming', {
+        tokenAddress: erc20TokenAddress,
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime,
+      })
+      .build(),
   });
 
   const signedDelegation = {

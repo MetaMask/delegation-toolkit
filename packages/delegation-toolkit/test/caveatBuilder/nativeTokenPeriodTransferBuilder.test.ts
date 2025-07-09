@@ -16,12 +16,8 @@ describe('nativeTokenPeriodTransferBuilder()', () => {
     periodDuration: number,
     startDate: number,
   ) => {
-    return nativeTokenPeriodTransferBuilder(
-      environment,
-      periodAmount,
-      periodDuration,
-      startDate,
-    );
+    const config = { periodAmount, periodDuration, startDate };
+    return nativeTokenPeriodTransferBuilder(environment, config);
   };
 
   describe('validation', () => {

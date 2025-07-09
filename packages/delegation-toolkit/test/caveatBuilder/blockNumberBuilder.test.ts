@@ -13,48 +13,45 @@ describe('blockNumberBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithThresholds = (
-    blockAfterThreshold: bigint,
-    blockBeforeThreshold: bigint,
+    afterThreshold: bigint,
+    beforeThreshold: bigint,
   ) => {
-    return blockNumberBuilder(
-      environment,
-      blockAfterThreshold,
-      blockBeforeThreshold,
-    );
+    const config = {
+      afterThreshold,
+      beforeThreshold,
+    };
+    return blockNumberBuilder(environment, config);
   };
 
   describe('validation', () => {
     it('should fail when both thresholds are zero', () => {
       expect(() => buildWithThresholds(0n, 0n)).to.throw(
-        'Invalid thresholds: At least one of blockAfterThreshold or blockBeforeThreshold must be specified',
+        'Invalid thresholds: At least one of afterThreshold or beforeThreshold must be specified',
       );
     });
 
-    it('should fail when blockAfterThreshold is greater than or equal to blockBeforeThreshold', () => {
+    it('should fail when afterThreshold is greater than or equal to beforeThreshold', () => {
       expect(() => buildWithThresholds(10n, 5n)).to.throw(
-        'Invalid thresholds: blockAfterThreshold must be less than blockBeforeThreshold if both are specified',
+        'Invalid thresholds: afterThreshold must be less than beforeThreshold if both are specified',
       );
       expect(() => buildWithThresholds(10n, 10n)).to.throw(
-        'Invalid thresholds: blockAfterThreshold must be less than blockBeforeThreshold if both are specified',
+        'Invalid thresholds: afterThreshold must be less than beforeThreshold if both are specified',
       );
     });
   });
 
   describe('builds a caveat', () => {
     it('should build a caveat with valid thresholds', () => {
-      const blockAfterThreshold = 5n;
-      const blockBeforeThreshold = 10n;
+      const afterThreshold = 5n;
+      const beforeThreshold = 10n;
 
-      const caveat = buildWithThresholds(
-        blockAfterThreshold,
-        blockBeforeThreshold,
-      );
+      const caveat = buildWithThresholds(afterThreshold, beforeThreshold);
 
       const terms = concat([
-        toHex(blockAfterThreshold, {
+        toHex(afterThreshold, {
           size: 16,
         }),
-        toHex(blockBeforeThreshold, {
+        toHex(beforeThreshold, {
           size: 16,
         }),
       ]);
@@ -66,19 +63,16 @@ describe('blockNumberBuilder()', () => {
       });
     });
 
-    it('should build a caveat with only blockAfterThreshold', () => {
-      const blockAfterThreshold = 5n;
-      const blockBeforeThreshold = 0n;
+    it('should build a caveat with only afterThreshold', () => {
+      const afterThreshold = 5n;
+      const beforeThreshold = 0n;
 
-      const caveat = buildWithThresholds(
-        blockAfterThreshold,
-        blockBeforeThreshold,
-      );
+      const caveat = buildWithThresholds(afterThreshold, beforeThreshold);
       const terms = concat([
-        toHex(blockAfterThreshold, {
+        toHex(afterThreshold, {
           size: 16,
         }),
-        toHex(blockBeforeThreshold, {
+        toHex(beforeThreshold, {
           size: 16,
         }),
       ]);
@@ -90,19 +84,16 @@ describe('blockNumberBuilder()', () => {
       });
     });
 
-    it('should build a caveat with only blockBeforeThreshold', () => {
-      const blockAfterThreshold = 0n;
-      const blockBeforeThreshold = 10n;
+    it('should build a caveat with only beforeThreshold', () => {
+      const afterThreshold = 0n;
+      const beforeThreshold = 10n;
 
-      const caveat = buildWithThresholds(
-        blockAfterThreshold,
-        blockBeforeThreshold,
-      );
+      const caveat = buildWithThresholds(afterThreshold, beforeThreshold);
       const terms = concat([
-        toHex(blockAfterThreshold, {
+        toHex(afterThreshold, {
           size: 16,
         }),
-        toHex(blockBeforeThreshold, {
+        toHex(beforeThreshold, {
           size: 16,
         }),
       ]);
@@ -116,13 +107,10 @@ describe('blockNumberBuilder()', () => {
   });
 
   it('should create a caveat with terms length matching number of targets', () => {
-    const blockAfterThreshold = 5n;
-    const blockBeforeThreshold = 10n;
+    const afterThreshold = 5n;
+    const beforeThreshold = 10n;
 
-    const caveat = buildWithThresholds(
-      blockAfterThreshold,
-      blockBeforeThreshold,
-    );
+    const caveat = buildWithThresholds(afterThreshold, beforeThreshold);
 
     expect(size(caveat.terms)).to.equal(EXPECTED_TERMS_LENGTH);
   });

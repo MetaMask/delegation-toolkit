@@ -14,7 +14,8 @@ describe('erc20TransferAmountBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithParams = (tokenAddress: Address, maxAmount: bigint) => {
-    return erc20TransferAmountBuilder(environment, tokenAddress, maxAmount);
+    const config = { tokenAddress, maxAmount };
+    return erc20TransferAmountBuilder(environment, config);
   };
 
   describe('validation', () => {

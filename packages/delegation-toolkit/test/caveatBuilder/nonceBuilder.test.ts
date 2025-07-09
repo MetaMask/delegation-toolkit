@@ -13,7 +13,8 @@ describe('nonceBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithNonce = (nonce: Hex) => {
-    return nonceBuilder(environment, nonce);
+    const config = { nonce };
+    return nonceBuilder(environment, config);
   };
 
   describe('validation', () => {

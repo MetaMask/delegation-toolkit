@@ -18,12 +18,8 @@ describe('nativeBalanceChangeBuilder', () => {
     balance: bigint,
     changeType: BalanceChangeType,
   ) => {
-    return nativeBalanceChangeBuilder(
-      environment,
-      recipient,
-      balance,
-      changeType,
-    );
+    const config = { recipient, balance, changeType };
+    return nativeBalanceChangeBuilder(environment, config);
   };
 
   describe('validation', () => {

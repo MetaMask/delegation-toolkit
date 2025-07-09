@@ -11,23 +11,24 @@ describe('argsEqualityCheckBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithArgs = (args: Hex) => {
-    return argsEqualityCheckBuilder(environment, args);
+    const config = { args };
+    return argsEqualityCheckBuilder(environment, config);
   };
 
   describe('validation', () => {
     it('should fail when args is not hex', () => {
       expect(() => buildWithArgs('not-hex' as Hex)).to.throw(
-        'Invalid args: must be a valid hex string',
+        'Invalid config: args must be a valid hex string',
       );
     });
 
     it('should fail when args is not defined', () => {
       expect(() => buildWithArgs(undefined as any as Hex)).to.throw(
-        'Invalid args: must be a valid hex string',
+        'Invalid config: args must be a valid hex string',
       );
 
       expect(() => buildWithArgs(null as any as Hex)).to.throw(
-        'Invalid args: must be a valid hex string',
+        'Invalid config: args must be a valid hex string',
       );
     });
   });

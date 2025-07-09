@@ -13,7 +13,8 @@ describe('allowedTargetsBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithTargets = (targets: Address[]) => {
-    return allowedTargetsBuilder(environment, targets);
+    const config = { targets };
+    return allowedTargetsBuilder(environment, config);
   };
 
   describe('validation', () => {

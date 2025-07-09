@@ -4,22 +4,35 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const deployed = 'deployed';
 
+export type DeployedBuilderConfig = {
+  /**
+   * The contract address as a hex string.
+   */
+  contractAddress: Address;
+  /**
+   * The salt to use with the deployment, as a hex string.
+   */
+  salt: Hex;
+  /**
+   * The bytecode of the contract as a hex string.
+   */
+  bytecode: Hex;
+};
+
 /**
  * Builds a caveat struct for a DeployedEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param contractAddress - The address of the contract that must be deployed.
- * @param salt - The address of the factory contract.
- * @param bytecode - The bytecode of the contract to be deployed.
+ * @param config - The configuration for the deployed builder.
  * @returns The Caveat.
  * @throws Error if the contract address, factory address, or bytecode is invalid.
  */
 export const deployedBuilder = (
   environment: DeleGatorEnvironment,
-  contractAddress: Address,
-  salt: Hex,
-  bytecode: Hex,
+  config: DeployedBuilderConfig,
 ): Caveat => {
+  const { contractAddress, salt, bytecode } = config;
+
   // we check that the addresses are valid, but don't need to be checksummed
   if (!isAddress(contractAddress, { strict: false })) {
     throw new Error(

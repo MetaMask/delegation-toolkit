@@ -1,6 +1,5 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  createCaveatBuilder,
   createDelegation,
   Implementation,
   toMetaMaskSmartAccount,
@@ -8,6 +7,7 @@ import {
   type ExecutionStruct,
 } from '@metamask/delegation-toolkit';
 import {
+  createCaveatBuilder,
   BATCH_DEFAULT_MODE,
   encodeExecutionCalldatas,
   encodePermissionContexts,
@@ -81,10 +81,9 @@ const runTest_expectSuccess = async (
   const delegation = createDelegation({
     to: delegate,
     from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'exactCalldataBatch',
-      expectedExecutions,
-    ),
+    caveats: createCaveatBuilder(environment).addCaveat('exactCalldataBatch', {
+      executions: expectedExecutions,
+    }),
   });
 
   const signedDelegation = {
@@ -134,10 +133,9 @@ const runTest_expectFailure = async (
   const delegation = createDelegation({
     to: delegate,
     from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'exactCalldataBatch',
-      expectedExecutions,
-    ),
+    caveats: createCaveatBuilder(environment).addCaveat('exactCalldataBatch', {
+      executions: expectedExecutions,
+    }),
   });
 
   const signedDelegation = {

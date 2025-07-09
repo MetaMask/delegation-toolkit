@@ -3,9 +3,9 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createDelegation,
   createExecution,
   Implementation,
@@ -104,7 +104,7 @@ test('Bob attempts to redeem a second delegation with the same id', async () => 
   await runTest_expectFailure(id, 'IdEnforcer:id-already-used');
 });
 
-const runTest_expectSuccess = async (id: number) => {
+const runTest_expectSuccess = async (idValue: number) => {
   const newCount = hexToBigInt(randomBytes(32));
 
   const delegation = createDelegation({
@@ -112,7 +112,7 @@ const runTest_expectSuccess = async (id: number) => {
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'id',
-      id,
+      { id: idValue },
     ),
   });
 
@@ -170,7 +170,10 @@ const runTest_expectSuccess = async (id: number) => {
   expect(countAfter).toEqual(newCount);
 };
 
-const runTest_expectFailure = async (id: number, expectedError: string) => {
+const runTest_expectFailure = async (
+  idValue: number,
+  expectedError: string,
+) => {
   const newCount = hexToBigInt(randomBytes(32));
 
   const delegation = createDelegation({
@@ -178,7 +181,7 @@ const runTest_expectFailure = async (id: number, expectedError: string) => {
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'id',
-      id,
+      { id: idValue },
     ),
   });
 

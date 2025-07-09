@@ -18,7 +18,8 @@ describe('exactExecutionBatchBuilder()', () => {
       callData: `0x${string}`;
     }[],
   ) => {
-    return exactExecutionBatchBuilder(environment, executions);
+    const config = { executions };
+    return exactExecutionBatchBuilder(environment, config);
   };
 
   describe('validation', () => {
@@ -62,7 +63,7 @@ describe('exactExecutionBatchBuilder()', () => {
             callData: 'invalid' as `0x${string}`,
           },
         ]),
-      ).to.throw('Invalid callData: must be a hex string starting with 0x');
+      ).to.throw('Invalid calldata: must be a hex string starting with 0x');
     });
 
     it('should allow valid addresses that are not checksummed', () => {

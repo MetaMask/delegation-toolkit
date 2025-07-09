@@ -4,9 +4,9 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createDelegation,
   createExecution,
   Implementation,
@@ -121,7 +121,7 @@ const runTest_expectSuccess = async (newCount: bigint, nonce: bigint) => {
     from: aliceAddress,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'nonce',
-      toHex(nonce),
+      { nonce: toHex(nonce) },
     ),
   });
 
@@ -191,7 +191,7 @@ const runTest_expectFailure = async (
     from: aliceAddress,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'nonce',
-      toHex(nonce),
+      { nonce: toHex(nonce) },
     ),
   });
 

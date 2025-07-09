@@ -4,24 +4,39 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export const nativeTokenStreaming = 'nativeTokenStreaming';
 
+export type NativeTokenStreamingBuilderConfig = {
+  /**
+   * The initial amount available at start time as a bigint.
+   */
+  initialAmount: bigint;
+  /**
+   * Maximum total amount that can be unlocked as a bigint.
+   */
+  maxAmount: bigint;
+  /**
+   * Rate at which tokens accrue per second as a bigint.
+   */
+  amountPerSecond: bigint;
+  /**
+   * Start timestamp as a number in seconds.
+   */
+  startTime: number;
+};
+
 /**
  * Builds a caveat struct for the NativeTokenStreamingEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param initialAmount - The initial amount of tokens to release at start time.
- * @param maxAmount - The maximum amount of tokens that can be released.
- * @param amountPerSecond - The rate at which the allowance increases per second.
- * @param startTime - The timestamp from which the allowance streaming begins.
+ * @param config - The configuration object for the NativeTokenStreamingEnforcer.
  * @returns The Caveat.
  * @throws Error if any of the parameters are invalid.
  */
 export const nativeTokenStreamingBuilder = (
   environment: DeleGatorEnvironment,
-  initialAmount: bigint,
-  maxAmount: bigint,
-  amountPerSecond: bigint,
-  startTime: number,
+  config: NativeTokenStreamingBuilderConfig,
 ): Caveat => {
+  const { initialAmount, maxAmount, amountPerSecond, startTime } = config;
+
   const terms = createNativeTokenStreamingTerms({
     initialAmount,
     maxAmount,

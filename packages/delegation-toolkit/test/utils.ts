@@ -1,4 +1,4 @@
-import { bytesToHex } from 'viem';
+import { bytesToHex, getAddress } from 'viem';
 import type {
   Chain,
   Hex,
@@ -27,13 +27,16 @@ export const PRIVATE_KEY_Y =
   3540107420755600117661092318610451508057836103782892212756062701855335759222n;
 export const THRESHOLD = 1;
 
-export const randomAddress = (lowerCase = false) => {
+export const randomAddress = (
+  mode: 'lowercase' | 'checksum' | 'none' = 'none',
+) => {
   const address = privateKeyToAddress(generatePrivateKey());
-  if (!lowerCase) {
-    return address;
+  if (mode === 'lowercase') {
+    return address.toLowerCase() as Hex;
+  } else if (mode === 'checksum') {
+    return getAddress(address);
   }
-
-  return address.toLowerCase() as Hex;
+  return address;
 };
 
 export const randomBytes = (byteLength: number): Hex => {
