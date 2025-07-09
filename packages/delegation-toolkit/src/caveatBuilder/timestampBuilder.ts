@@ -5,7 +5,15 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const timestamp = 'timestamp';
 
 export type TimestampBuilderConfig = {
+  /**
+   * The timestamp after which the delegation is valid in seconds.
+   * Set to 0 to disable this threshold.
+   */
   afterThreshold: number;
+  /**
+   * The timestamp before which the delegation is valid.
+   * Set to 0 to disable this threshold.
+   */
   beforeThreshold: number;
 };
 

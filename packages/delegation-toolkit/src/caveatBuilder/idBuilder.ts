@@ -3,6 +3,9 @@ import { maxUint256, toHex } from 'viem';
 import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export type IdBuilderConfig = {
+  /**
+   * An id for the delegation. Only one delegation may be redeemed with any given id.
+   */
   id: bigint | number;
 };
 

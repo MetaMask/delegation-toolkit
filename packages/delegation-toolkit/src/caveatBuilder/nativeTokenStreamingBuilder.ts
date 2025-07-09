@@ -5,9 +5,21 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 export const nativeTokenStreaming = 'nativeTokenStreaming';
 
 export type NativeTokenStreamingBuilderConfig = {
+  /**
+   * The initial amount available at start time as a bigint.
+   */
   initialAmount: bigint;
+  /**
+   * Maximum total amount that can be unlocked as a bigint.
+   */
   maxAmount: bigint;
+  /**
+   * Rate at which tokens accrue per second as a bigint.
+   */
   amountPerSecond: bigint;
+  /**
+   * Start timestamp as a number in seconds.
+   */
   startTime: number;
 };
 

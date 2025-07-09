@@ -5,8 +5,17 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const deployed = 'deployed';
 
 export type DeployedBuilderConfig = {
+  /**
+   * The contract address as a hex string.
+   */
   contractAddress: Address;
+  /**
+   * The salt to use with the deployment, as a hex string.
+   */
   salt: Hex;
+  /**
+   * The bytecode of the contract as a hex string.
+   */
   bytecode: Hex;
 };
 

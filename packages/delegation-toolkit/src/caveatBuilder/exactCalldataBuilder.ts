@@ -5,6 +5,9 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const exactCalldata = 'exactCalldata';
 
 export type ExactCalldataBuilderConfig = {
+  /**
+   * The exact calldata that must be matched as a hex string.
+   */
   calldata: `0x${string}`;
 };
 

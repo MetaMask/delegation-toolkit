@@ -5,6 +5,10 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const allowedTargets = 'allowedTargets';
 
 export type AllowedTargetsBuilderConfig = {
+  /**
+   * An array of addresses that the delegate is allowed to call.
+   * Each address must be a valid hex string.
+   */
   targets: Address[];
 };
 

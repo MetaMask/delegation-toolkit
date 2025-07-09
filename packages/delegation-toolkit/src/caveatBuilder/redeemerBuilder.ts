@@ -5,6 +5,10 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const redeemer = 'redeemer';
 
 export type RedeemerBuilderConfig = {
+  /**
+   * An array of addresses that are allowed to redeem the delegation.
+   * Each address must be a valid hex string.
+   */
   redeemers: Address[];
 };
 

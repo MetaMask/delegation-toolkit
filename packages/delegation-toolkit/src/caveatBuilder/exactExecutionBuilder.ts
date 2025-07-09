@@ -6,6 +6,10 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const exactExecution = 'exactExecution';
 
 export type ExactExecutionBuilderConfig = {
+  /**
+   * The execution that must be matched exactly.
+   * Specifies the target address, value, and calldata.
+   */
   execution: ExecutionStruct;
 };
 

@@ -5,7 +5,15 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 export const blockNumber = 'blockNumber';
 
 export type BlockNumberBuilderConfig = {
+  /**
+   * The block number after which the delegation is valid.
+   * Set to 0n to disable this threshold.
+   */
   afterThreshold: bigint;
+  /**
+   * The block number before which the delegation is valid.
+   * Set to 0n to disable this threshold.
+   */
   beforeThreshold: bigint;
 };
 

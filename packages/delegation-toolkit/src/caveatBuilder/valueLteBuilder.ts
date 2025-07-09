@@ -5,6 +5,9 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const valueLte = 'valueLte';
 
 export type ValueLteBuilderConfig = {
+  /**
+   * The maximum value that may be specified when redeeming this delegation.
+   */
   maxValue: bigint;
 };
 

@@ -5,6 +5,9 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 export const limitedCalls = 'limitedCalls';
 
 export type LimitedCallsBuilderConfig = {
+  /**
+   * The maximum number of times this delegation may be redeemed.
+   */
   limit: number;
 };
 

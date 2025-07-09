@@ -6,10 +6,25 @@ export const specificActionERC20TransferBatch =
   'specificActionERC20TransferBatch';
 
 export type SpecificActionErc20TransferBatchBuilderConfig = {
+  /**
+   * The address of the ERC-20 token contract.
+   */
   tokenAddress: Address;
+  /**
+   * The address that will receive the tokens.
+   */
   recipient: Address;
+  /**
+   * The amount of tokens to transfer.
+   */
   amount: bigint;
+  /**
+   * The target address for the first transaction.
+   */
   target: Address;
+  /**
+   * The calldata for the first transaction.
+   */
   calldata: Hex;
 };
 

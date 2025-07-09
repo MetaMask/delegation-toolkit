@@ -6,6 +6,10 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const exactExecutionBatch = 'exactExecutionBatch';
 
 export type ExactExecutionBatchBuilderConfig = {
+  /**
+   * An array of executions that must be matched exactly in the batch.
+   * Each execution specifies a target address, value, and calldata.
+   */
   executions: ExecutionStruct[];
 };
 

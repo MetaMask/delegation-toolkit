@@ -5,7 +5,14 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 export const allowedCalldata = 'allowedCalldata';
 
 export type AllowedCalldataBuilderConfig = {
+  /**
+   * The index in the calldata byte array (including the 4-byte method selector)
+   * where the expected calldata starts.
+   */
   startIndex: number;
+  /**
+   * The expected calldata as a hex string that must match at the specified index.
+   */
   value: Hex;
 };
 

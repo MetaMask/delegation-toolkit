@@ -5,7 +5,13 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const nativeTokenPayment = 'nativeTokenPayment';
 
 export type NativeTokenPaymentBuilderConfig = {
+  /**
+   * The recipient's address as a hex string.
+   */
   recipient: Address;
+  /**
+   * The amount that must be paid as a bigint.
+   */
   amount: bigint;
 };
 

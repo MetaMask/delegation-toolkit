@@ -5,6 +5,9 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const nativeTokenTransferAmount = 'nativeTokenTransferAmount';
 
 export type NativeTokenTransferAmountBuilderConfig = {
+  /**
+   * The maximum amount of native tokens that can be transferred.
+   */
   maxAmount: bigint;
 };
 

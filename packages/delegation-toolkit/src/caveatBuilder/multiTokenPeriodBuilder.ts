@@ -4,9 +4,21 @@ import { concat, isAddress, pad, toHex } from 'viem';
 import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export type TokenPeriodConfig = {
+  /**
+   * The token contract address as a hex string.
+   */
   token: Hex;
+  /**
+   * The maximum amount of tokens that can be transferred per period.
+   */
   periodAmount: bigint;
+  /**
+   * The duration of each period in seconds.
+   */
   periodDuration: number;
+  /**
+   * The timestamp when the first period begins in seconds.
+   */
   startDate: number;
 };
 

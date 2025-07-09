@@ -5,8 +5,17 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const nativeTokenPeriodTransfer = 'nativeTokenPeriodTransfer';
 
 export type NativeTokenPeriodTransferBuilderConfig = {
+  /**
+   * The maximum amount of tokens that can be transferred per period.
+   */
   periodAmount: bigint;
+  /**
+   * The duration of each period in seconds.
+   */
   periodDuration: number;
+  /**
+   * The timestamp when the first period begins in seconds.
+   */
   startDate: number;
 };
 

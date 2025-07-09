@@ -8,6 +8,9 @@ export const nonce = 'nonce';
 const MAX_NONCE_STRING_LENGTH = 66;
 
 export type NonceBuilderConfig = {
+  /**
+   * A nonce as a hex string to allow bulk revocation of delegations.
+   */
   nonce: Hex;
 };
 

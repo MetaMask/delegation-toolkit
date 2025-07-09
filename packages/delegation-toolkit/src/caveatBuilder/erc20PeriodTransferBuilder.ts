@@ -6,9 +6,21 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const erc20PeriodTransfer = 'erc20PeriodTransfer';
 
 export type Erc20PeriodTransferBuilderConfig = {
+  /**
+   * The ERC-20 contract address as a hex string.
+   */
   tokenAddress: Address;
+  /**
+   * The maximum amount of tokens that can be transferred per period.
+   */
   periodAmount: bigint;
+  /**
+   * The duration of each period in seconds.
+   */
   periodDuration: number;
+  /**
+   * The timestamp when the first period begins in seconds.
+   */
   startDate: number;
 };
 

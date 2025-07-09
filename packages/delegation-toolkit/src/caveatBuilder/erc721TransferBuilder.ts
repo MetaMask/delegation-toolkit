@@ -5,7 +5,13 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 export const erc721Transfer = 'erc721Transfer';
 
 export type Erc721TransferBuilderConfig = {
+  /**
+   * The ERC-721 contract address as a hex string.
+   */
   tokenAddress: Address;
+  /**
+   * The token ID as a bigint.
+   */
   tokenId: bigint;
 };
 

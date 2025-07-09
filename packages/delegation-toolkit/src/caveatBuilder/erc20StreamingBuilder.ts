@@ -6,10 +6,25 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 export const erc20Streaming = 'erc20Streaming';
 
 export type Erc20StreamingBuilderConfig = {
+  /**
+   * The ERC-20 contract address as a hex string.
+   */
   tokenAddress: Address;
+  /**
+   * The initial amount available at start time as a bigint.
+   */
   initialAmount: bigint;
+  /**
+   * Maximum total amount that can be unlocked as a bigint.
+   */
   maxAmount: bigint;
+  /**
+   * Rate at which tokens accrue per second as a bigint.
+   */
   amountPerSecond: bigint;
+  /**
+   * The start timestamp in seconds.
+   */
   startTime: number;
 };
 

@@ -11,6 +11,10 @@ export type MethodSelector = Hex | string | AbiFunction;
 const FUNCTION_SELECTOR_STRING_LENGTH = 10;
 
 export type AllowedMethodsBuilderConfig = {
+  /**
+   * An array of method selectors that the delegate is allowed to call.
+   * Can be 4-byte hex strings, ABI function signatures, or ABIFunction objects.
+   */
   selectors: MethodSelector[];
 };
 

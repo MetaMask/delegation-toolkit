@@ -5,6 +5,9 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 export const ownershipTransfer = 'ownershipTransfer';
 
 export type OwnershipTransferBuilderConfig = {
+  /**
+   * The target contract address as a hex string for which ownership transfers are allowed.
+   */
   contractAddress: Address;
 };
 

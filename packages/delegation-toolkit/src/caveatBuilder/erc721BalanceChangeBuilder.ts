@@ -6,9 +6,23 @@ import { BalanceChangeType } from './types';
 export const erc721BalanceChange = 'erc721BalanceChange';
 
 export type Erc721BalanceChangeBuilderConfig = {
+  /**
+   * The ERC-721 contract address as a hex string.
+   */
   tokenAddress: Address;
+  /**
+   * The recipient's address as a hex string.
+   */
   recipient: Address;
+  /**
+   * The amount by which the balance must have changed as a bigint.
+   */
   amount: bigint;
+  /**
+   * The balance change type for the ERC-721 token.
+   * Specifies whether the balance should have increased or decreased.
+   * Valid parameters are BalanceChangeType.Increase and BalanceChangeType.Decrease.
+   */
   changeType: BalanceChangeType;
 };
 

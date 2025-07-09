@@ -5,6 +5,9 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 export const argsEqualityCheck = 'argsEqualityCheck';
 
 export type ArgsEqualityCheckBuilderConfig = {
+  /**
+   * The expected args as a hex string that must match exactly when redeeming the delegation.
+   */
   args: Hex;
 };
 

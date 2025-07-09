@@ -6,7 +6,13 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 export const erc20TransferAmount = 'erc20TransferAmount';
 
 export type Erc20TransferAmountBuilderConfig = {
+  /**
+   * The ERC-20 contract address as a hex string.
+   */
   tokenAddress: Address;
+  /**
+   * The maximum amount of tokens that can be transferred as a bigint.
+   */
   maxAmount: bigint;
 };
 
