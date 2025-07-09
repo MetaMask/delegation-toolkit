@@ -48,7 +48,7 @@ export const erc721BalanceChangeBuilder = (
     throw new Error('Invalid recipient: must be a valid address');
   }
 
-  if (amount <= 0) {
+  if (amount <= 0n) {
     throw new Error('Invalid balance: must be a positive number');
   }
 

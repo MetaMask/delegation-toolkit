@@ -1,4 +1,5 @@
 import { createExactCalldataTerms } from '@metamask/delegation-core';
+import type { Hex } from 'viem';
 
 import type { Caveat, DeleGatorEnvironment } from '../types';
 
@@ -8,7 +9,7 @@ export type ExactCalldataBuilderConfig = {
   /**
    * The exact calldata that must be matched as a hex string.
    */
-  calldata: `0x${string}`;
+  calldata: Hex;
 };
 
 /**
