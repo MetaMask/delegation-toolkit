@@ -22,7 +22,6 @@ import {
   type PartialSignature,
 } from '@metamask/delegation-toolkit';
 import {
-  createCaveatBuilder,
   encodePermissionContexts,
   encodeExecutionCalldatas,
 } from '@metamask/delegation-toolkit/utils';
@@ -92,14 +91,18 @@ test('maincase: Bob increments the counter with a delegation from Alice', async 
 
   expect(countBefore, 'Expected initial count to be 0n').toEqual(0n);
 
+  const { environment } = aliceSmartAccount;
+
   const delegation = createDelegation({
+    environment,
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', {
-        targets: [aliceCounterContractAddress],
-      })
-      .addCaveat('allowedMethods', { selectors: ['increment()'] }),
+    scope: {
+      type: 'functionCall',
+      targets: [aliceCounterContractAddress],
+      selectors: ['increment()'],
+    },
+    caveats: [],
   });
 
   const signedDelegation = {
@@ -201,13 +204,15 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
   expect(countBefore, 'Expected initial count to be 0n').toEqual(0n);
 
   const delegation = createDelegation({
+    environment: aliceSmartAccount.environment,
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', {
-        targets: [aliceCounterContractAddress],
-      })
-      .addCaveat('allowedMethods', { selectors: ['notTheRightFunction()'] }),
+    scope: {
+      type: 'functionCall',
+      targets: [aliceCounterContractAddress],
+      selectors: ['notTheRightFunction()'],
+    },
+    caveats: [],
   });
 
   const signedDelegation = {
@@ -281,13 +286,15 @@ test('Bob increments the counter with a delegation from a multisig account', asy
   expect(countBefore, 'Expected initial count to be 0n').toEqual(0n);
 
   const delegation = createDelegation({
+    environment: multisigSmartAccount.environment,
     to: bobSmartAccount.address,
     from: multisigSmartAccount.address,
-    caveats: createCaveatBuilder(multisigSmartAccount.environment)
-      .addCaveat('allowedTargets', {
-        targets: [counterContract.address],
-      })
-      .addCaveat('allowedMethods', { selectors: ['increment()'] }),
+    scope: {
+      type: 'functionCall',
+      targets: [counterContract.address],
+      selectors: ['increment()'],
+    },
+    caveats: [],
   });
 
   // Get signatures from each signer

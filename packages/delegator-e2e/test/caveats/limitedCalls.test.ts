@@ -1,17 +1,18 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  encodeExecutionCalldatas,
-  encodePermissionContexts,
-  createCaveatBuilder,
-} from '@metamask/delegation-toolkit/utils';
-import {
-  createDelegation,
   createExecution,
   Implementation,
   toMetaMaskSmartAccount,
   ExecutionMode,
   type MetaMaskSmartAccount,
+  ROOT_AUTHORITY,
+  type Delegation,
 } from '@metamask/delegation-toolkit';
+import {
+  createCaveatBuilder,
+  encodeExecutionCalldatas,
+  encodePermissionContexts,
+} from '@metamask/delegation-toolkit/utils';
 
 import {
   gasPrice,
@@ -95,14 +96,18 @@ const runTest_expectFailure = async (
 };
 
 const runTest = async (limit: number, runs: number) => {
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'limitedCalls',
-      { limit },
-    ),
-  });
+  const { environment } = aliceSmartAccount;
+
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('limitedCalls', { limit })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

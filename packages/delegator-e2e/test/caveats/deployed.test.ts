@@ -1,18 +1,20 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  encodeExecutionCalldatas,
-  encodePermissionContexts,
-  createCaveatBuilder,
-} from '@metamask/delegation-toolkit/utils';
-import {
-  createDelegation,
   createExecution,
   Implementation,
   toMetaMaskSmartAccount,
   ExecutionMode,
   type MetaMaskSmartAccount,
+  ROOT_AUTHORITY,
+  type Delegation,
 } from '@metamask/delegation-toolkit';
 import {
+  createCaveatBuilder,
+  encodeExecutionCalldatas,
+  encodePermissionContexts,
+} from '@metamask/delegation-toolkit/utils';
+import {
+  transport,
   gasPrice,
   sponsoredBundlerClient,
   deploySmartAccount,
@@ -150,18 +152,22 @@ test('Bob attempts to redeem the delegation, but provides the wrong bytecode', a
 const runTest_expectSuccess = async (deployedAddress: Hex, salt: Hex) => {
   const newCount = hexToBigInt(randomBytes(32));
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'deployed',
-      {
+  const { environment } = aliceSmartAccount;
+
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('deployed', {
         contractAddress: deployedAddress,
         salt,
         bytecode: CounterMetadata.bytecode.object as Hex,
-      },
-    ),
-  });
+      })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -233,18 +239,22 @@ const runTest_expectFailure = async (
 ) => {
   const newCount = hexToBigInt(randomBytes(32));
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'deployed',
-      {
+  const { environment } = aliceSmartAccount;
+
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('deployed', {
         contractAddress: deployedAddress,
         salt,
         bytecode: CounterMetadata.bytecode.object as Hex,
-      },
-    ),
-  });
+      })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

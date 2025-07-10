@@ -1,19 +1,21 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  encodeExecutionCalldatas,
-  encodePermissionContexts,
-  createCaveatBuilder,
-} from '@metamask/delegation-toolkit/utils';
-import {
   createExecution,
-  createDelegation,
   Implementation,
   toMetaMaskSmartAccount,
   ExecutionMode,
   type MetaMaskSmartAccount,
   type ExecutionStruct,
+  ROOT_AUTHORITY,
+  type Delegation,
 } from '@metamask/delegation-toolkit';
 import {
+  createCaveatBuilder,
+  encodeExecutionCalldatas,
+  encodePermissionContexts,
+} from '@metamask/delegation-toolkit/utils';
+import {
+  transport,
   gasPrice,
   sponsoredBundlerClient,
   deploySmartAccount,
@@ -393,11 +395,14 @@ test('Bob attempts to redeem with invalid terms length', async () => {
   // create invalid terms length by appending an empty byte
   caveats[0].terms = concat([caveats[0].terms, '0x00']);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
     caveats,
-  });
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -472,11 +477,14 @@ test('Bob attempts to redeem with maxAmount less than initialAmount', async () =
     `0x${startTime.toString(16).padStart(64, '0')}`, // startTime
   ]);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
     caveats,
-  });
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -551,11 +559,14 @@ test('Bob attempts to redeem with zero start time', async () => {
     `0x${startTime.toString(16).padStart(64, '0')}`, // zero start time
   ]);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
     caveats,
-  });
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -613,9 +624,11 @@ const runTest_expectSuccess = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
+  const delegation: Delegation = {
+    delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
     caveats: createCaveatBuilder(environment)
       .addCaveat('erc20Streaming', {
         tokenAddress: erc20TokenAddress,
@@ -625,7 +638,8 @@ const runTest_expectSuccess = async (
         startTime,
       })
       .build(),
-  });
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -701,9 +715,11 @@ const runTest_expectFailure = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
+  const delegation: Delegation = {
+    delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
     caveats: createCaveatBuilder(environment)
       .addCaveat('erc20Streaming', {
         tokenAddress: erc20TokenAddress,
@@ -713,7 +729,8 @@ const runTest_expectFailure = async (
         startTime,
       })
       .build(),
-  });
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

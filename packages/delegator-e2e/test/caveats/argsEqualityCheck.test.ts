@@ -1,18 +1,20 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  encodeExecutionCalldatas,
-  encodePermissionContexts,
-  createCaveatBuilder,
-} from '@metamask/delegation-toolkit/utils';
-import {
   createExecution,
-  createDelegation,
   Implementation,
   toMetaMaskSmartAccount,
   ExecutionMode,
   type MetaMaskSmartAccount,
+  ROOT_AUTHORITY,
+  type Delegation,
 } from '@metamask/delegation-toolkit';
 import {
+  createCaveatBuilder,
+  encodeExecutionCalldatas,
+  encodePermissionContexts,
+} from '@metamask/delegation-toolkit/utils';
+import {
+  transport,
   gasPrice,
   sponsoredBundlerClient,
   deploySmartAccount,
@@ -128,14 +130,18 @@ test('Bob attempts to redeem the delegation with args when none are expected', a
 });
 
 const runTest_expectSuccess = async (args: Hex, actualArgs: Hex) => {
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'argsEqualityCheck',
-      { args },
-    ),
-  });
+  const { environment } = aliceSmartAccount;
+
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('argsEqualityCheck', { args })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -196,14 +202,18 @@ const runTest_expectFailure = async (
   actualArgs: Hex,
   expectedError: string,
 ) => {
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'argsEqualityCheck',
-      { args },
-    ),
-  });
+  const { environment } = aliceSmartAccount;
+
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('argsEqualityCheck', { args })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
