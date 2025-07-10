@@ -7,13 +7,13 @@ import {
   createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createDelegation,
   createExecution,
   Implementation,
   toMetaMaskSmartAccount,
   ExecutionMode,
   type MetaMaskSmartAccount,
   type Delegation,
+  ROOT_AUTHORITY,
 } from '@metamask/delegation-toolkit';
 import {
   transport,
@@ -82,17 +82,19 @@ test('maincase: Bob redeems the delegation with a permissions context allowing p
   const recipient = randomAddress();
   const requiredValue = parseEther('1');
 
-  const delegationRequiringNativeTokenPayment = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'nativeTokenPayment',
-      {
+  const delegationRequiringNativeTokenPayment: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('nativeTokenPayment', {
         recipient,
         amount: requiredValue,
-      },
-    ),
-  });
+      })
+      .build(),
+    signature: '0x',
+  };
 
   const delegationHash = getDelegationHashOffchain(
     delegationRequiringNativeTokenPayment,
@@ -100,16 +102,19 @@ test('maincase: Bob redeems the delegation with a permissions context allowing p
 
   const args = concat([delegationHash, bobSmartAccount.address]);
 
-  const paymentDelegation = createDelegation({
-    to: bobSmartAccount.environment.caveatEnforcers.NativeTokenPaymentEnforcer!,
-    from: bobSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'argsEqualityCheck',
-      {
+  const paymentDelegation: Delegation = {
+    delegate:
+      bobSmartAccount.environment.caveatEnforcers.NativeTokenPaymentEnforcer!,
+    delegator: bobSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('argsEqualityCheck', {
         args,
-      },
-    ),
-  });
+      })
+      .build(),
+    signature: '0x',
+  };
 
   const signedPaymentDelegation = {
     ...paymentDelegation,
@@ -132,25 +137,31 @@ test('Bob attempts to redeem the delegation without an argsEqualityCheckEnforcer
   const recipient = randomAddress();
   const requiredValue = parseEther('1');
 
-  const delegationRequiringNativeTokenPayment = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'nativeTokenPayment',
-      {
+  const delegationRequiringNativeTokenPayment: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('nativeTokenPayment', {
         recipient,
         amount: requiredValue,
-      },
-    ),
-  });
+      })
+      .build(),
+    signature: '0x',
+  };
 
-  const paymentDelegation = createDelegation({
-    to: bobSmartAccount.environment.caveatEnforcers.NativeTokenPaymentEnforcer!,
-    from: bobSmartAccount.address,
+  const paymentDelegation: Delegation = {
+    delegate:
+      bobSmartAccount.environment.caveatEnforcers.NativeTokenPaymentEnforcer!,
+    delegator: bobSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
     caveats: createCaveatBuilder(aliceSmartAccount.environment, {
       allowInsecureUnrestrictedDelegation: true,
-    }),
-  });
+    }).build(),
+    signature: '0x',
+  };
 
   const signedPaymentDelegation = {
     ...paymentDelegation,
@@ -173,17 +184,19 @@ test('Bob attempts to redeem the delegation without providing a valid permission
   const recipient = randomAddress();
   const requiredValue = parseEther('1');
 
-  const delegationRequiringNativeTokenPayment = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'nativeTokenPayment',
-      {
+  const delegationRequiringNativeTokenPayment: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('nativeTokenPayment', {
         recipient,
         amount: requiredValue,
-      },
-    ),
-  });
+      })
+      .build(),
+    signature: '0x',
+  };
 
   const permissionsContext = '0x' as const;
 
@@ -210,11 +223,14 @@ test('Bob attempts to redeem with invalid terms length', async () => {
   // Create invalid terms length by appending an empty byte
   caveats[0].terms = concat([caveats[0].terms, '0x00']);
 
-  const delegationRequiringNativeTokenPayment = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegationRequiringNativeTokenPayment: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
     caveats,
-  });
+    signature: '0x',
+  };
 
   const delegationHash = getDelegationHashOffchain(
     delegationRequiringNativeTokenPayment,
@@ -222,13 +238,19 @@ test('Bob attempts to redeem with invalid terms length', async () => {
 
   const args = concat([delegationHash, bobSmartAccount.address]);
 
-  const paymentDelegation = createDelegation({
-    to: bobSmartAccount.environment.caveatEnforcers.NativeTokenPaymentEnforcer!,
-    from: bobSmartAccount.address,
-    caveats: createCaveatBuilder(environment).addCaveat('argsEqualityCheck', {
-      args,
-    }),
-  });
+  const paymentDelegation: Delegation = {
+    delegate:
+      bobSmartAccount.environment.caveatEnforcers.NativeTokenPaymentEnforcer!,
+    delegator: bobSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('argsEqualityCheck', {
+        args,
+      })
+      .build(),
+    signature: '0x',
+  };
 
   const signedPaymentDelegation = {
     ...paymentDelegation,
@@ -252,14 +274,19 @@ test('Bob attempts to redeem with empty allowance delegations', async () => {
   const requiredValue = parseEther('1');
   const { environment } = aliceSmartAccount;
 
-  const delegationRequiringNativeTokenPayment = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(environment).addCaveat('nativeTokenPayment', {
-      recipient,
-      amount: requiredValue,
-    }),
-  });
+  const delegationRequiringNativeTokenPayment: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('nativeTokenPayment', {
+        recipient,
+        amount: requiredValue,
+      })
+      .build(),
+    signature: '0x',
+  };
 
   // Create empty allowance delegations array
   const permissionsContext = encodeDelegations([]);

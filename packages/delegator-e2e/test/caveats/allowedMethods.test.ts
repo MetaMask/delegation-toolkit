@@ -5,11 +5,12 @@ import {
 } from '@metamask/delegation-toolkit/utils';
 import {
   createExecution,
-  createDelegation,
   Implementation,
-  ExecutionMode,
-  type MetaMaskSmartAccount,
   toMetaMaskSmartAccount,
+  type MetaMaskSmartAccount,
+  ExecutionMode,
+  ROOT_AUTHORITY,
+  type Delegation,
 } from '@metamask/delegation-toolkit';
 import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 import {
@@ -135,14 +136,18 @@ const runTest_expectSuccess = async (
   allowedMethods: (string | AbiFunction | Hex)[],
   calledMethod: string,
 ) => {
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'allowedMethods',
-      { selectors: allowedMethods },
-    ),
-  });
+  const { environment } = aliceSmartAccount;
+
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('allowedMethods', { selectors: allowedMethods })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -201,14 +206,18 @@ const runTest_expectFailure = async (
   calledMethod: string,
   expectedError: string,
 ) => {
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'allowedMethods',
-      { selectors: allowedMethods },
-    ),
-  });
+  const { environment } = aliceSmartAccount;
+
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('allowedMethods', { selectors: allowedMethods })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

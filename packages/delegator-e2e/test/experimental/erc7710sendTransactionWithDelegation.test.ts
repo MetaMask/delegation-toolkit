@@ -29,7 +29,7 @@ import {
 } from 'viem';
 import {
   encodeDelegations,
-  createCaveatBuilder,
+  getDelegationHashOffchain,
 } from '@metamask/delegation-toolkit/utils';
 
 import CounterMetadata from '../utils/counter/metadata.json';
@@ -58,15 +58,16 @@ beforeEach(async () => {
   const aliceCounter = await deployCounter(aliceSmartAccount.address);
   aliceCounterContractAddress = aliceCounter.address;
 
-  const caveats = createCaveatBuilder(aliceSmartAccount.environment)
-    .addCaveat('allowedTargets', { targets: [aliceCounterContractAddress] })
-    .addCaveat('allowedMethods', { selectors: ['increment()'] })
-    .addCaveat('valueLte', { maxValue: 0n });
-
   const delegation = createDelegation({
+    environment: aliceSmartAccount.environment,
+    scope: {
+      type: 'functionCall',
+      targets: [aliceCounterContractAddress],
+      selectors: ['increment()'],
+    },
     to: bob.address,
     from: aliceSmartAccount.address,
-    caveats,
+    caveats: [{ type: 'valueLte', maxValue: 0n }],
   });
 
   signedDelegation = {
@@ -143,14 +144,14 @@ test('Bob redelegates to Carol, who redeems the delegation to call increment() o
   const { DelegationManager: delegationManager } =
     aliceSmartAccount.environment;
 
-  const redelegation = createDelegation({
-    to: carol.address,
-    from: bob.address,
-    parentDelegation: signedDelegation,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment, {
-      allowInsecureUnrestrictedDelegation: true,
-    }),
-  });
+  const redelegation: Delegation = {
+    delegate: carol.address,
+    delegator: bob.address,
+    authority: getDelegationHashOffchain(signedDelegation),
+    salt: '0x0',
+    caveats: [],
+    signature: '0x',
+  };
 
   const signedRedelegation: Delegation = {
     ...redelegation,
