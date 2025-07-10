@@ -53,7 +53,9 @@ export const shortenHash = (address: string | undefined) =>
  * @throws If the API key is missing or the chain is unsupported.
  */
 export const getInfuraRpcUrl = (chainId: number, apiKey?: string): string => {
-  if (!apiKey) throw new Error('Infura API key is required');
+  if (!apiKey) {
+    throw new Error('Infura API key is required');
+  }
   switch (chainId) {
     case CHAIN_ID.arbitrum:
       return `https://arbitrum-mainnet.infura.io/v3/${apiKey}`;
