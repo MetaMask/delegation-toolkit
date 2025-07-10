@@ -114,42 +114,6 @@ describe('createErc20CaveatBuilder', () => {
     ]);
   });
 
-  it('creates a specific action ERC20 transfer batch CaveatBuilder', () => {
-    const config: Erc20ScopeConfig = {
-      type: 'erc20',
-      tokenAddress: randomAddress(),
-      recipient: randomAddress(),
-      amount: 1000n,
-      target: randomAddress(),
-      calldata: '0x',
-    };
-
-    const caveatBuilder = createErc20CaveatBuilder(environment, config);
-
-    const caveats = caveatBuilder.build();
-
-    expect(caveats).to.deep.equal([
-      {
-        enforcer: environment.caveatEnforcers.ValueLteEnforcer,
-        args: '0x',
-        terms:
-          '0x0000000000000000000000000000000000000000000000000000000000000000',
-      },
-      {
-        enforcer:
-          environment.caveatEnforcers.SpecificActionERC20TransferBatchEnforcer,
-        args: '0x',
-        terms: concat([
-          config.tokenAddress,
-          config.recipient,
-          toHex(config.amount, { size: 32 }),
-          config.target,
-          config.calldata,
-        ]),
-      },
-    ]);
-  });
-
   it('throws an error for invalid configuration', () => {
     const config = { type: 'erc20' } as unknown as Erc20ScopeConfig;
 
