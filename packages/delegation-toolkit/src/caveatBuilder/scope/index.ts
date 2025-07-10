@@ -43,6 +43,10 @@ export const createCaveatBuilderFromScope = (
     case 'functionCall':
       return createFunctionCallCaveatBuilder(environment, scopeConfig);
     default:
-      throw new Error('Invalid scope type');
+      // eslint-disable-next-line no-case-declarations
+      const exhaustivenessCheck: never = scopeConfig;
+      throw new Error(
+        `Invalid scope type: ${(exhaustivenessCheck as { type: string }).type}`,
+      );
   }
 };
