@@ -1,6 +1,6 @@
-import type { Account, Client } from 'viem';
+import type { Account, PublicClient } from 'viem';
 import {
-  createClient,
+  createPublicClient,
   custom,
   hashTypedData,
   isAddress,
@@ -19,7 +19,7 @@ import type { DeleGatorEnvironment, MetaMaskSmartAccount } from '../src/types';
 import { SIGNABLE_USER_OP_TYPED_DATA } from '../src/userOp';
 
 describe('MetaMaskSmartAccount', () => {
-  let client: Client;
+  let publicClient: PublicClient;
   let alice: Account;
   let bob: Account;
   let environment: DeleGatorEnvironment;
@@ -28,7 +28,8 @@ describe('MetaMaskSmartAccount', () => {
     const transport = custom({
       request: async () => '0x',
     });
-    client = createClient({ transport, chain });
+    publicClient = createPublicClient({ transport, chain });
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 
     environment = {
       SimpleFactory: randomAddress(),
@@ -48,7 +49,7 @@ describe('MetaMaskSmartAccount', () => {
     // note derivation of the correctness of counterfactual account data is validated in counterfactualAccountData.test.ts
     it('creates a MetaMaskSmartAccount for Hybrid implementation', async () => {
       const smartAccount = await toMetaMaskSmartAccount({
-        client,
+        client: publicClient,
         implementation: Implementation.Hybrid,
         deployParams: [alice.address, [], [], []],
         deploySalt: '0x0',
@@ -65,7 +66,7 @@ describe('MetaMaskSmartAccount', () => {
 
     it('creates a MetaMaskSmartAccount for MultiSig implementation', async () => {
       const smartAccount = await toMetaMaskSmartAccount({
-        client,
+        client: publicClient,
         implementation: Implementation.MultiSig,
         deployParams: [[alice.address, bob.address], 2n],
         deploySalt: '0x0',
@@ -82,7 +83,7 @@ describe('MetaMaskSmartAccount', () => {
 
     it('creates a MetaMaskSmartAccount for Stateless7702 implementation with existing address', async () => {
       const smartAccount = await toMetaMaskSmartAccount({
-        client,
+        client: publicClient,
         implementation: Implementation.Stateless7702,
         address: alice.address,
         signatory: { account: alice },
@@ -102,7 +103,7 @@ describe('MetaMaskSmartAccount', () => {
     it('throws error when creating Stateless7702 without address (counterfactual not supported)', async () => {
       await expect(
         toMetaMaskSmartAccount({
-          client,
+          client: publicClient,
           implementation: Implementation.Stateless7702,
           signatory: { account: alice },
           environment,
@@ -115,7 +116,7 @@ describe('MetaMaskSmartAccount', () => {
     it('throws an error for unsupported implementation', async () => {
       await expect(
         toMetaMaskSmartAccount({
-          client,
+          client: publicClient,
           implementation: 99 as any as Implementation,
           deployParams: [alice.address, [], [], []],
           deploySalt: '0x0',
@@ -128,7 +129,7 @@ describe('MetaMaskSmartAccount', () => {
     it('has a default for MetaMaskSmartAccount generic TImplementation parameter', async () => {
       // MetaMaskSmartAccount requires a generic parameter, and defaults to `Implementation` which covers all implementations
       const smartAccount: MetaMaskSmartAccount = await toMetaMaskSmartAccount({
-        client,
+        client: publicClient,
         implementation: Implementation.MultiSig,
         deployParams: [[alice.address, bob.address], 2n],
         deploySalt: '0x0',
@@ -142,7 +143,7 @@ describe('MetaMaskSmartAccount', () => {
   describe('signUserOperation()', () => {
     it('signs a user operation for MultiSig implementation', async () => {
       const smartAccount = await toMetaMaskSmartAccount({
-        client,
+        client: publicClient,
         implementation: Implementation.MultiSig,
         deployParams: [[alice.address, bob.address], 2n],
         deploySalt: '0x0',
@@ -188,7 +189,7 @@ describe('MetaMaskSmartAccount', () => {
 
     it('signs a user operation for Hybrid implementation', async () => {
       const smartAccount = await toMetaMaskSmartAccount({
-        client,
+        client: publicClient,
         implementation: Implementation.Hybrid,
         deployParams: [alice.address, [], [], []],
         deploySalt: '0x0',
@@ -234,7 +235,7 @@ describe('MetaMaskSmartAccount', () => {
 
     it('signs a user operation for Stateless7702 implementation', async () => {
       const smartAccount = await toMetaMaskSmartAccount({
-        client,
+        client: publicClient,
         implementation: Implementation.Stateless7702,
         address: alice.address,
         signatory: { account: alice },

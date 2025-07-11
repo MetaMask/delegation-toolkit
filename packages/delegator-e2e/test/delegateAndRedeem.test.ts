@@ -6,6 +6,7 @@ import {
   gasPrice,
   sponsoredBundlerClient,
   deploySmartAccount,
+  stringToUnprefixedHex,
 } from './utils/helpers';
 import { expectCodeAt, expectUserOperationToSucceed } from './utils/assertions';
 
@@ -43,10 +44,8 @@ beforeEach(async () => {
   const alice = privateKeyToAccount(generatePrivateKey());
   const bob = privateKeyToAccount(generatePrivateKey());
 
-  const client = createClient({ transport, chain });
-
   aliceSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x',
@@ -55,7 +54,7 @@ beforeEach(async () => {
   await deploySmartAccount(aliceSmartAccount);
 
   bobSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [bob.address, [], [], []],
     deploySalt: '0x',
@@ -174,6 +173,8 @@ test('Bob attempts to increment the counter without a delegation', async () => {
     functionName: 'increment',
   });
 
+  const expectedError = 'Ownable: caller is not the owner';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -186,7 +187,7 @@ test('Bob attempts to increment the counter without a delegation', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('Ownable: caller is not the owner');
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 
   const countAfter = await counterContract.read.count();
   expect(countAfter, 'Expected final count to be 0n').toEqual(0n);
@@ -239,6 +240,8 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
     ],
   });
 
+  const expectedError = 'AllowedMethodsEnforcer:method-not-allowed';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -251,7 +254,7 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('AllowedMethodsEnforcer:method-not-allowed');
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 
   const countAfter = await counterContract.read.count();
   expect(countAfter, 'Expected final count to be 0n').toEqual(0n);
@@ -268,10 +271,8 @@ test('Bob increments the counter with a delegation from a multisig account', asy
     account,
   }));
 
-  const client = createClient({ transport, chain });
-
   const multisigSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.MultiSig,
     deployParams: [signers.map((account) => account.address), 2n],
     deploySalt: '0x',

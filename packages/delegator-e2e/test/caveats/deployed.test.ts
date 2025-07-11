@@ -14,17 +14,14 @@ import {
   encodePermissionContexts,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  transport,
   gasPrice,
   sponsoredBundlerClient,
   deploySmartAccount,
-  deployCounter,
-  CounterContract,
   publicClient,
   randomBytes,
+  stringToUnprefixedHex,
 } from '../utils/helpers';
 import {
-  createClient,
   encodeFunctionData,
   getCreate2Address,
   Hex,
@@ -33,20 +30,17 @@ import {
 } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { chain } from '../../src/config';
 import CounterMetadata from '../utils/counter/metadata.json';
 
-let aliceSmartAccount: MetaMaskSmartAccount<Implementation.Hybrid>;
-let bobSmartAccount: MetaMaskSmartAccount<Implementation.Hybrid>;
-let aliceCounter: CounterContract;
+let aliceSmartAccount: MetaMaskSmartAccount;
+let bobSmartAccount: MetaMaskSmartAccount;
 
 beforeEach(async () => {
-  const client = createClient({ transport, chain });
   const alice = privateKeyToAccount(generatePrivateKey());
   const bob = privateKeyToAccount(generatePrivateKey());
 
   aliceSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x1',
@@ -56,14 +50,12 @@ beforeEach(async () => {
   await deploySmartAccount(aliceSmartAccount);
 
   bobSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [bob.address, [], [], []],
     deploySalt: '0x1',
     signatory: { account: bob },
   });
-
-  aliceCounter = await deployCounter(aliceSmartAccount.address);
 });
 
 /*
@@ -302,7 +294,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 
   const counterCodeAfter = await publicClient.getCode({
     address: deployedAddress,

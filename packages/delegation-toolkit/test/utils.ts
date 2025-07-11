@@ -1,12 +1,5 @@
 import { bytesToHex, getAddress } from 'viem';
-import type {
-  Chain,
-  Hex,
-  WalletClient,
-  PublicClient,
-  Account,
-  Client,
-} from 'viem';
+import type { Chain, Hex, WalletClient, PublicClient, Account } from 'viem';
 import {
   generatePrivateKey,
   privateKeyToAccount,
@@ -48,7 +41,7 @@ export const randomBytes = (byteLength: number): Hex => {
 
 export const counterfactualAccountConfig: ToMetaMaskSmartAccountParameters<Implementation.Hybrid> =
   {
-    client: {} as Client,
+    client: {} as PublicClient,
     implementation: Implementation.Hybrid,
     deployParams: [
       OWNER_ACCOUNT.address,
@@ -62,7 +55,7 @@ export const counterfactualAccountConfig: ToMetaMaskSmartAccountParameters<Imple
 
 export const multiSigAccountConfig: ToMetaMaskSmartAccountParameters<Implementation.MultiSig> =
   {
-    client: {} as Client,
+    client: {} as PublicClient,
     implementation: Implementation.MultiSig,
     deployParams: [[OWNER_ACCOUNT.address], 1n],
     deploySalt: SALT,
@@ -71,7 +64,7 @@ export const multiSigAccountConfig: ToMetaMaskSmartAccountParameters<Implementat
 
 export const deployedAccountConfig: ToMetaMaskSmartAccountParameters<Implementation.Hybrid> =
   {
-    client: {} as Client,
+    client: {} as PublicClient,
     implementation: Implementation.Hybrid,
     address: DEPLOYED_ADDRESS,
     signatory: { account: OWNER_ACCOUNT },

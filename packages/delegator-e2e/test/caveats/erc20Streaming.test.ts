@@ -15,7 +15,6 @@ import {
   encodePermissionContexts,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  transport,
   gasPrice,
   sponsoredBundlerClient,
   deploySmartAccount,
@@ -25,22 +24,16 @@ import {
   fundAddressWithErc20Token,
   deployErc20Token,
   getErc20Balance,
+  stringToUnprefixedHex,
 } from '../utils/helpers';
-import {
-  concat,
-  createClient,
-  encodeFunctionData,
-  Hex,
-  parseEther,
-} from 'viem';
+import { concat, encodeFunctionData, Hex, parseEther } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { chain } from '../../src/config';
 import * as ERC20Token from '../../contracts/out/ERC20Token.sol/ERC20Token.json';
 const { abi: erc20TokenAbi } = ERC20Token;
 
-let aliceSmartAccount: MetaMaskSmartAccount<Implementation.Hybrid>;
-let bobSmartAccount: MetaMaskSmartAccount<Implementation.Hybrid>;
+let aliceSmartAccount: MetaMaskSmartAccount;
+let bobSmartAccount: MetaMaskSmartAccount;
 let currentTime: number;
 let erc20TokenAddress: Hex;
 
@@ -62,14 +55,13 @@ let erc20TokenAddress: Hex;
  */
 
 beforeEach(async () => {
-  const client = createClient({ transport, chain });
   const alice = privateKeyToAccount(generatePrivateKey());
   const bob = privateKeyToAccount(generatePrivateKey());
 
   erc20TokenAddress = await deployErc20Token();
 
   aliceSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x1',
@@ -80,7 +72,7 @@ beforeEach(async () => {
   await fundAddress(aliceSmartAccount.address, parseEther('10'));
 
   bobSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [bob.address, [], [], []],
     deploySalt: '0x1',
@@ -439,6 +431,8 @@ test('Bob attempts to redeem with invalid terms length', async () => {
     ],
   });
 
+  const expectedError = 'ERC20StreamingEnforcer:invalid-terms-length';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -450,7 +444,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('ERC20StreamingEnforcer:invalid-terms-length');
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 });
 
 test('Bob attempts to redeem with maxAmount less than initialAmount', async () => {
@@ -519,6 +513,8 @@ test('Bob attempts to redeem with maxAmount less than initialAmount', async () =
     ],
   });
 
+  const expectedError = 'ERC20StreamingEnforcer:invalid-max-amount';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -530,7 +526,7 @@ test('Bob attempts to redeem with maxAmount less than initialAmount', async () =
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('ERC20StreamingEnforcer:invalid-max-amount');
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 });
 
 test('Bob attempts to redeem with zero start time', async () => {
@@ -599,6 +595,8 @@ test('Bob attempts to redeem with zero start time', async () => {
     ],
   });
 
+  const expectedError = 'ERC20StreamingEnforcer:invalid-zero-start-time';
+
   await expect(
     sponsoredBundlerClient.sendUserOperation({
       account: bobSmartAccount,
@@ -610,7 +608,7 @@ test('Bob attempts to redeem with zero start time', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow('ERC20StreamingEnforcer:invalid-zero-start-time');
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 });
 
 const runTest_expectSuccess = async (
@@ -778,7 +776,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 
   const recipientBalanceAfter = await getErc20Balance(
     recipient,

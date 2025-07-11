@@ -20,7 +20,6 @@ import { createClient, encodeFunctionData, parseEther } from 'viem';
 import { chain } from '../src/config';
 import CounterMetadata from './utils/counter/metadata.json';
 import { sponsoredBundlerClient } from './utils/helpers';
-import { eip7702Actions } from 'viem/experimental';
 
 let aliceSmartAccount: MetaMaskSmartAccount<Implementation.Stateless7702>;
 let aliceAccount: ReturnType<typeof privateKeyToAccount>;
@@ -37,15 +36,14 @@ async function upgradeAliceEOAWithEIP7702() {
   const { EIP7702StatelessDeleGatorImpl } =
     aliceSmartAccount.environment.implementations;
 
-  const signedAuthorization = await aliceAccount.experimental_signAuthorization(
-    {
-      contractAddress: EIP7702StatelessDeleGatorImpl,
-      chainId: chain.id,
-      nonce,
-    },
-  );
+  const signedAuthorization = await aliceAccount.signAuthorization({
+    contractAddress: EIP7702StatelessDeleGatorImpl,
+    chainId: chain.id,
+    nonce,
+  });
 
-  const txHash = await deployerClient.extend(eip7702Actions()).sendTransaction({
+  const txHash = await deployerClient.sendTransaction({
+    to: aliceAccount.address,
     authorizationList: [signedAuthorization],
   });
 

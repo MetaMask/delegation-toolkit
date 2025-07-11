@@ -8,9 +8,9 @@ import type {
   Account,
   Address,
   Chain,
-  Client,
   Hex,
   OneOf,
+  PublicClient,
   Transport,
   WalletClient,
 } from 'viem';
@@ -143,7 +143,7 @@ export type DeployParams<TImplementation extends Implementation> = {
 export type ToMetaMaskSmartAccountParameters<
   TImplementation extends Implementation,
 > = {
-  client: Client;
+  client: PublicClient;
   implementation: TImplementation;
   signatory: SignatoryConfigByImplementation<TImplementation>;
   environment?: DeleGatorEnvironment;

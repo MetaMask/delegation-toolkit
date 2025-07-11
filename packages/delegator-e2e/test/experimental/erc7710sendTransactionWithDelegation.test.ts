@@ -5,6 +5,7 @@ import {
   deploySmartAccount,
   publicClient,
   fundAddress,
+  randomAddress,
 } from '../utils/helpers';
 import { chain } from '../../src/config';
 
@@ -226,11 +227,62 @@ test('Bob attempts to call the increment function directly', async () => {
     }),
   });
 
-  await expect(sendTransactionResponse).rejects.toThrow(
-    'Ownable: caller is not the owner',
-  );
+  const expectedError = 'Ownable: caller is not the owner';
+
+  await expect(sendTransactionResponse).rejects.toThrow(expectedError);
 
   const countAfter = await counterContract.read.count();
 
   expect(countAfter).toEqual(0n);
+});
+
+test('Bob sends a native value transaction with delegation', async () => {
+  await deploySmartAccount(aliceSmartAccount);
+
+  const allowance = 100n;
+  const recipient = randomAddress();
+
+  const { DelegationManager: delegationManager } =
+    aliceSmartAccount.environment;
+
+  const caveats = createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
+    'nativeTokenTransferAmount',
+    allowance,
+  );
+
+  const delegation = createDelegation({
+    to: bob.address,
+    from: aliceSmartAccount.address,
+    caveats,
+  });
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({ delegation }),
+  };
+
+  const permissionsContext = encodeDelegations([signedDelegation]);
+
+  const bobWalletClient = createWalletClient({
+    account: bob,
+    transport,
+    chain,
+  }).extend(erc7710WalletActions());
+
+  await fundAddress(aliceSmartAccount.address, allowance);
+
+  const transactionHash = await bobWalletClient.sendTransactionWithDelegation({
+    account: bob,
+    chain,
+    to: recipient,
+    value: allowance,
+    permissionsContext,
+    delegationManager,
+  });
+
+  await publicClient.waitForTransactionReceipt({ hash: transactionHash });
+
+  const balance = await publicClient.getBalance({ address: recipient });
+
+  expect(balance).toEqual(allowance);
 });
