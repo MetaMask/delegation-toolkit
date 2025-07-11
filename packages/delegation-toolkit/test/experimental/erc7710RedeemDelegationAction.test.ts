@@ -8,7 +8,6 @@ import type {
   WalletClient,
 } from 'viem';
 import {
-  createClient,
   createPublicClient,
   createWalletClient,
   custom,

@@ -1,11 +1,5 @@
 import { bytesToHex, getAddress } from 'viem';
-import type {
-  Chain,
-  Hex,
-  WalletClient,
-  PublicClient,
-  Account,
-} from 'viem';
+import type { Chain, Hex, WalletClient, PublicClient, Account } from 'viem';
 import {
   generatePrivateKey,
   privateKeyToAccount,

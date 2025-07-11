@@ -26,7 +26,6 @@ import {
   Account,
   encodeFunctionData,
   Hex,
-  stringToHex,
 } from 'viem';
 import {
   encodeDelegations,
@@ -228,9 +227,7 @@ test('Bob attempts to call the increment function directly', async () => {
 
   const expectedError = 'Ownable: caller is not the owner';
 
-  await expect(sendTransactionResponse).rejects.toThrow(
-    stringToHex(expectedError),
-  );
+  await expect(sendTransactionResponse).rejects.toThrow(expectedError);
 
   const countAfter = await counterContract.read.count();
 
