@@ -5,12 +5,13 @@ import {
   createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createDelegation,
   createExecution,
   Implementation,
   toMetaMaskSmartAccount,
   ExecutionMode,
   type MetaMaskSmartAccount,
+  ROOT_AUTHORITY,
+  type Delegation,
 } from '@metamask/delegation-toolkit';
 import {
   gasPrice,
@@ -120,14 +121,16 @@ const runTest_expectSuccess = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'multiTokenPeriod',
-      configs,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('multiTokenPeriod', configs)
+      .build(),
+    signature: '0x',
+  };
 
   if (!delegation.caveats[0]) {
     throw new Error('MultiTokenPeriod caveat not found');
@@ -206,14 +209,16 @@ const runTest_expectFailure = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'multiTokenPeriod',
-      configs,
-    ),
-  });
+  const delegation: Delegation = {
+    delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('multiTokenPeriod', configs)
+      .build(),
+    signature: '0x',
+  };
 
   if (!delegation.caveats[0]) {
     throw new Error('MultiTokenPeriod caveat not found');
