@@ -87,18 +87,66 @@ const monadTestnetChain: Chain = {
   },
 };
 
-const chains = {
+const citreaTestnetChain: Chain = {
+  id: 5115,
+  name: 'Citrea Testnet',
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.testnet.citrea.xyz'],
+    },
+  },
+  nativeCurrency: {
+    name: 'cBTC',
+    symbol: 'cBTC',
+    decimals: 18,
+  },
+};
+
+const inkMainnetChain: Chain = {
+  id: 57073,
+  name: 'Ink Mainnet',
+  rpcUrls: {
+    default: {
+      http: ['https://rpc-qnd.inkonchain.com'],
+    },
+  },
+  nativeCurrency: {
+    name: 'Ether',
+    symbol: 'ETH',
+    decimals: 18,
+  },
+};
+
+const inkSepoliaChain: Chain = {
+  id: 763373,
+  name: 'Ink Sepolia',
+  rpcUrls: {
+    default: {
+      http: ['https://ink-sepolia.drpc.org'],
+    },
+  },
+  nativeCurrency: {
+    name: 'Ether',
+    symbol: 'ETH',
+    decimals: 18,
+  },
+};
+
+export const chains = {
   ...allChains,
   megaEthTestNet: megaEthTestNetChain,
   berachainMainnet: berachainMainnetChain,
   bepoliaTestnet: bepoliaTestnetChain,
   unichain: unichainChain,
   monadTestnet: monadTestnetChain,
+  citreaTestnet: citreaTestnetChain,
+  inkMainnet: inkMainnetChain,
+  inkSepolia: inkSepoliaChain,
 } as any as { [key: string]: Chain };
 
 // The default rpc urls for these chains are not reliable, so we override them
 // This may be a game of cat and mouse, so a better solution may be needed.
-const rpcUrlOverrides = {
+export const rpcUrlOverrides = {
   [chains.mainnet.id]: 'https://eth.merkle.io',
   [chains.bsc.id]: 'https://bsc-dataseed1.binance.org/',
   [chains.bscTestnet.id]: 'https://bsc-testnet-rpc.publicnode.com',
