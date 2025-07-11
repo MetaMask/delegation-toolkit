@@ -314,15 +314,20 @@ describe('erc7710RedeemDelegationAction', () => {
         ],
       });
 
+      const { delegationManager } = args;
+
       const expectedArgs = {
-        ...args,
-        to: args.delegationManager,
+        account,
+        chain,
+        to: delegationManager,
+        // value is not passed to sendTransaction
         data: redeemDelegationCallData,
+        // permissionsContext and delegationManager are not passed to sendTransaction
       };
 
-      expect(sendTransaction.calledOnceWithExactly(expectedArgs)).to.equal(
-        true,
-      );
+      expect(sendTransaction.calledOnce).to.equal(true);
+
+      expect(sendTransaction.firstCall.args[0]).to.deep.equal(expectedArgs);
     });
 
     it('should throw an error when `to` is not provided', async () => {
@@ -339,6 +344,34 @@ describe('erc7710RedeemDelegationAction', () => {
         }),
       ).rejects.toThrow(
         '`to` is required. `sendTransactionWithDelegation` cannot be used to deploy contracts.',
+      );
+    });
+
+    it('should not encode the specified `value`, `permissionsContext` and `delegationManager` into the resulting transaction', async () => {
+      const extendedWalletClient = walletClient.extend(erc7710WalletActions());
+
+      const sendTransaction = stub(walletClient, 'sendTransaction');
+
+      const args: SendTransactionWithDelegationParameters = {
+        account,
+        chain,
+        to: randomAddress(),
+        value: 100n,
+        data: randomBytes(128),
+        permissionsContext: randomBytes(128),
+        delegationManager: randomAddress(),
+      };
+
+      await extendedWalletClient.sendTransactionWithDelegation(args);
+
+      expect(sendTransaction.calledOnce).to.equal(true);
+      const sendTransactionArgs = sendTransaction.firstCall.args[0];
+      expect(sendTransactionArgs.value).to.equal(undefined);
+      expect((sendTransactionArgs as any).permissionsContext).to.equal(
+        undefined,
+      );
+      expect((sendTransactionArgs as any).delegationManager).to.equal(
+        undefined,
       );
     });
   });
