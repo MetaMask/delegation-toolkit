@@ -21,7 +21,7 @@ import {
   CounterContract,
   publicClient,
 } from '../utils/helpers';
-import { createClient, encodeFunctionData } from 'viem';
+import { createClient, encodeFunctionData, stringToHex } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { chain } from '../../src/config';
@@ -292,7 +292,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 
   const countAfter = await aliceCounter.read.count();
   expect(countAfter, 'Expected count to remain 0n').toEqual(0n);

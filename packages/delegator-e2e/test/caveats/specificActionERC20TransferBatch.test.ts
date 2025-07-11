@@ -24,7 +24,13 @@ import {
   getErc20Balance,
   fundAddressWithErc20Token,
 } from '../utils/helpers';
-import { createClient, encodeFunctionData, type Hex, parseEther } from 'viem';
+import {
+  createClient,
+  encodeFunctionData,
+  type Hex,
+  parseEther,
+  stringToHex,
+} from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { chain } from '../../src/config';
@@ -205,7 +211,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 
   const recipientBalanceAfter = await getErc20Balance(recipient, tokenAddress);
   expect(recipientBalanceAfter - recipientBalanceBefore).toBe(0n);

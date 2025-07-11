@@ -30,6 +30,7 @@ import {
   createClient,
   encodeFunctionData,
   parseEther,
+  stringToHex,
   toHex,
 } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
@@ -232,7 +233,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 
   const countAfter = await publicClient.readContract({
     address: aliceCounterAddress,

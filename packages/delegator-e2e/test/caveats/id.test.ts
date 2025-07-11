@@ -23,7 +23,12 @@ import {
   publicClient,
   randomBytes,
 } from '../utils/helpers';
-import { createClient, encodeFunctionData, hexToBigInt } from 'viem';
+import {
+  createClient,
+  encodeFunctionData,
+  hexToBigInt,
+  stringToHex,
+} from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { chain } from '../../src/config';
@@ -221,7 +226,7 @@ const runTest_expectFailure = async (id: number, expectedError: string) => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 
   const countAfter = await publicClient.readContract({
     address: aliceCounter.address,

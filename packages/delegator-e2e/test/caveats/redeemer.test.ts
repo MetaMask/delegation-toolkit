@@ -24,7 +24,13 @@ import {
   publicClient,
 } from '../utils/helpers';
 import CounterMetadata from '../utils/counter/metadata.json';
-import { Address, createClient, encodeFunctionData, parseEther } from 'viem';
+import {
+  Address,
+  createClient,
+  encodeFunctionData,
+  parseEther,
+  stringToHex,
+} from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { chain } from '../../src/config';
@@ -222,7 +228,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 
   const countAfter = await publicClient.readContract({
     address: aliceCounterAddress,

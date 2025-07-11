@@ -21,7 +21,13 @@ import {
   deployCounter,
   CounterContract,
 } from '../utils/helpers';
-import { createClient, encodeFunctionData, type Hex, parseEther } from 'viem';
+import {
+  createClient,
+  encodeFunctionData,
+  type Hex,
+  parseEther,
+  stringToHex,
+} from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { chain } from '../../src/config';
@@ -164,7 +170,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 };
 
 test('maincase: Bob redeems the delegation with exact matching execution', async () => {

@@ -27,6 +27,7 @@ import {
   Hex,
   hexToBigInt,
   slice,
+  stringToHex,
 } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
@@ -249,7 +250,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 
   const counterAfter = await aliceCounter.read.count?.();
   expect(counterAfter, 'Expected count to remain 0n').toEqual(0n);

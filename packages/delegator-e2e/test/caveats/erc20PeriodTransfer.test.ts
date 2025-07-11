@@ -29,6 +29,7 @@ import {
   type Hex,
   parseEther,
   concat,
+  stringToHex,
 } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
@@ -239,7 +240,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 
   const recipientBalanceAfter = await getErc20Balance(
     recipient,
@@ -389,7 +390,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 });
 
 test('Bob attempts to redeem with invalid execution length', async () => {
@@ -460,7 +461,7 @@ test('Bob attempts to redeem with invalid execution length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 });
 
 test('Bob attempts to redeem with invalid contract', async () => {
@@ -529,7 +530,7 @@ test('Bob attempts to redeem with invalid contract', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 });
 
 test('Bob attempts to redeem with invalid method', async () => {
@@ -597,7 +598,7 @@ test('Bob attempts to redeem with invalid method', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 });
 
 test('Bob attempts to redeem with zero start date', async () => {
@@ -672,7 +673,7 @@ test('Bob attempts to redeem with zero start date', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 });
 
 test('Bob attempts to redeem with zero period amount', async () => {
@@ -748,7 +749,7 @@ test('Bob attempts to redeem with zero period amount', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 });
 
 test('Bob attempts to redeem with zero period duration', async () => {
@@ -824,7 +825,7 @@ test('Bob attempts to redeem with zero period duration', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 });
 
 test('Bob attempts to redeem before start date', async () => {
@@ -891,5 +892,5 @@ test('Bob attempts to redeem before start date', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 });

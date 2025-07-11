@@ -23,7 +23,12 @@ import {
   publicClient,
   randomBytes,
 } from '../utils/helpers';
-import { createClient, encodeFunctionData, hexToBigInt } from 'viem';
+import {
+  createClient,
+  encodeFunctionData,
+  hexToBigInt,
+  stringToHex,
+} from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { chain } from '../../src/config';
@@ -92,7 +97,7 @@ const runTest_expectFailure = async (
   expectedError: string,
 ) => {
   await expect(runTest(limit, runs)).rejects.toThrow(
-    Buffer.from(expectedError).toString('hex'),
+    stringToHex(expectedError),
   );
 };
 

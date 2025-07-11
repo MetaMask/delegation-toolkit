@@ -32,6 +32,7 @@ import {
   getContract,
   Address,
   createWalletClient,
+  stringToHex,
 } from 'viem';
 import { chain } from '../src/config';
 import CounterMetadata from './utils/counter/metadata.json';
@@ -183,7 +184,7 @@ test('Bob attempts to increment the counter without a delegation', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 
   const countAfter = await counterContract.read.count();
   expect(countAfter, 'Expected final count to be 0n').toEqual(0n);
@@ -246,7 +247,7 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 
   const countAfter = await counterContract.read.count();
   expect(countAfter, 'Expected final count to be 0n').toEqual(0n);

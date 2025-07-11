@@ -23,7 +23,13 @@ import {
   randomAddress,
   fundAddress,
 } from '../utils/helpers';
-import { concat, createClient, encodeFunctionData, parseEther } from 'viem';
+import {
+  concat,
+  createClient,
+  encodeFunctionData,
+  parseEther,
+  stringToHex,
+} from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { chain } from '../../src/config';
@@ -176,7 +182,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 });
 
 const testRun_expectSuccess = async (
@@ -327,5 +333,5 @@ const testRun_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 };

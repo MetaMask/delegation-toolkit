@@ -31,6 +31,7 @@ import {
   encodeFunctionData,
   Hex,
   parseEther,
+  stringToHex,
   zeroAddress,
 } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
@@ -306,7 +307,7 @@ const runTest_expectFailure = async (
   ).rejects;
 
   if (expectedError) {
-    await rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+    await rejects.toThrow(stringToHex(expectedError));
   } else {
     await rejects.toThrow();
   }

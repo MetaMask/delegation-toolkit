@@ -31,6 +31,7 @@ import {
   encodeFunctionData,
   Hex,
   parseEther,
+  stringToHex,
 } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
@@ -449,7 +450,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 });
 
 test('Bob attempts to redeem with maxAmount less than initialAmount', async () => {
@@ -529,7 +530,7 @@ test('Bob attempts to redeem with maxAmount less than initialAmount', async () =
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 });
 
 test('Bob attempts to redeem with zero start time', async () => {
@@ -609,7 +610,7 @@ test('Bob attempts to redeem with zero start time', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 });
 
 const runTest_expectSuccess = async (
@@ -769,7 +770,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 
   const recipientBalanceAfter = await getErc20Balance(
     recipient,

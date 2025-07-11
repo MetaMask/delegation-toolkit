@@ -29,6 +29,7 @@ import {
   Hex,
   hexToBigInt,
   isHex,
+  stringToHex,
 } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
@@ -289,7 +290,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 
   const counterCodeAfter = await publicClient.getCode({
     address: deployedAddress,

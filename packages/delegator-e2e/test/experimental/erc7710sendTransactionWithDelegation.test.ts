@@ -27,6 +27,7 @@ import {
   Account,
   encodeFunctionData,
   Hex,
+  stringToHex,
 } from 'viem';
 import { encodeDelegations } from '@metamask/delegation-toolkit/utils';
 
@@ -225,7 +226,7 @@ test('Bob attempts to call the increment function directly', async () => {
   const expectedError = 'Ownable: caller is not the owner';
 
   await expect(sendTransactionResponse).rejects.toThrow(
-    Buffer.from(expectedError).toString('hex'),
+    stringToHex(expectedError),
   );
 
   const countAfter = await counterContract.read.count();

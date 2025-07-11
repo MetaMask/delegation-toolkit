@@ -30,6 +30,7 @@ import {
   parseEther,
   concat,
   encodePacked,
+  stringToHex,
 } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
@@ -271,7 +272,7 @@ const runTest_expectFailure = async (
       calls: [call],
       ...gasPrice,
     }),
-  ).rejects.toThrow(Buffer.from(expectedError).toString('hex'));
+  ).rejects.toThrow(stringToHex(expectedError));
 };
 
 test('maincase: Bob redeems the delegation within period limit', async () => {
