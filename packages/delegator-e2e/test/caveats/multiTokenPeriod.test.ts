@@ -13,7 +13,6 @@ import {
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
 import {
-  transport,
   gasPrice,
   sponsoredBundlerClient,
   deploySmartAccount,
@@ -22,9 +21,9 @@ import {
   deployErc20Token,
   fundAddressWithErc20Token,
   getErc20Balance,
+  stringToUnprefixedHex,
 } from '../utils/helpers';
 import {
-  createClient,
   encodeFunctionData,
   type Hex,
   parseEther,
@@ -33,12 +32,11 @@ import {
 } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { chain } from '../../src/config';
 import * as ERC20Token from '../../contracts/out/ERC20Token.sol/ERC20Token.json';
 const { abi: erc20TokenAbi } = ERC20Token;
 
-let aliceSmartAccount: MetaMaskSmartAccount<Implementation.Hybrid>;
-let bobSmartAccount: MetaMaskSmartAccount<Implementation.Hybrid>;
+let aliceSmartAccount: MetaMaskSmartAccount;
+let bobSmartAccount: MetaMaskSmartAccount;
 let erc20TokenAddress1: Hex;
 let erc20TokenAddress2: Hex;
 let currentTime: number;
@@ -73,7 +71,6 @@ type TokenTransfer = {
  */
 
 beforeEach(async () => {
-  const client = createClient({ transport, chain });
   const alice = privateKeyToAccount(generatePrivateKey());
   const bob = privateKeyToAccount(generatePrivateKey());
 
@@ -81,7 +78,7 @@ beforeEach(async () => {
   erc20TokenAddress2 = await deployErc20Token();
 
   aliceSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x1',
@@ -91,7 +88,7 @@ beforeEach(async () => {
   await deploySmartAccount(aliceSmartAccount);
 
   bobSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [bob.address, [], [], []],
     deploySalt: '0x1',
@@ -271,7 +268,7 @@ const runTest_expectFailure = async (
       calls: [call],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 };
 
 test('maincase: Bob redeems the delegation within period limit', async () => {

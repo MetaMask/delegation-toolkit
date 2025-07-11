@@ -13,6 +13,7 @@ import {
   GetContractReturnType,
   http,
   parseEther,
+  stringToHex,
   type Abi,
   type Address,
   type Hex,
@@ -229,4 +230,8 @@ export const randomAddress = (lowerCase: boolean = false) => {
   }
 
   return address.toLowerCase() as Hex;
+};
+
+export const stringToUnprefixedHex = (value: string) => {
+  return stringToHex(value).slice(2);
 };

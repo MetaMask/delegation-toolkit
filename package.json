@@ -52,7 +52,7 @@
     "prettier": "^3.3.3",
     "turbo": "latest",
     "typescript": "5.0.4",
-    "viem": "2.21.55",
+    "viem": "^2.31.4",
     "webauthn-p256": "^0.0.10"
   },
   "packageManager": "yarn@4.2.2",

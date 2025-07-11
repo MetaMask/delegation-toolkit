@@ -14,7 +14,6 @@ import {
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
 import {
-  transport,
   gasPrice,
   sponsoredBundlerClient,
   deploySmartAccount,
@@ -22,31 +21,24 @@ import {
   fundAddress,
   deployCounter,
   publicClient,
+  stringToUnprefixedHex,
 } from '../utils/helpers';
 import CounterMetadata from '../utils/counter/metadata.json';
 
-import {
-  Address,
-  createClient,
-  encodeFunctionData,
-  parseEther,
-  toHex,
-} from 'viem';
+import { Address, encodeFunctionData, parseEther, toHex } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { chain } from '../../src/config';
 
-let aliceSmartAccount: MetaMaskSmartAccount<Implementation.Hybrid>;
-let bobSmartAccount: MetaMaskSmartAccount<Implementation.Hybrid>;
+let aliceSmartAccount: MetaMaskSmartAccount;
+let bobSmartAccount: MetaMaskSmartAccount;
 let aliceCounterAddress: Address;
 
 beforeEach(async () => {
-  const client = createClient({ transport, chain });
   const alice = privateKeyToAccount(generatePrivateKey());
   const bob = privateKeyToAccount(generatePrivateKey());
 
   aliceSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x1',
@@ -57,7 +49,7 @@ beforeEach(async () => {
   await fundAddress(aliceSmartAccount.address, parseEther('2'));
 
   bobSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [bob.address, [], [], []],
     deploySalt: '0x1',
@@ -232,7 +224,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(expectedError);
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 
   const countAfter = await publicClient.readContract({
     address: aliceCounterAddress,

@@ -8,7 +8,6 @@ import type {
   WalletClient,
 } from 'viem';
 import {
-  createClient,
   createPublicClient,
   createWalletClient,
   custom,
@@ -65,10 +64,7 @@ describe('erc7710RedeemDelegationAction', () => {
       });
 
       metaMaskSmartAccount = await toMetaMaskSmartAccount({
-        client: createClient({
-          transport: custom({ request: async () => '0x' }),
-          chain,
-        }),
+        client: publicClient,
         implementation: Implementation.MultiSig,
         signatory: [{ account: owner }],
         deployParams: [[owner.address], 1n],
