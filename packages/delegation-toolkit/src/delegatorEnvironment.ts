@@ -47,17 +47,10 @@ import { deployContract } from './write';
 type SupportedVersion = '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0';
 export const PREFERRED_VERSION: SupportedVersion = '1.3.0';
 
-type DeployedEnvironments = Record<
-  SupportedVersion,
-  Record<number, DeleGatorEnvironment>
->;
+const contractOverrideMap: Map<string, DeleGatorEnvironment> = new Map();
 
-const contractOverrides: DeployedEnvironments = {
-  '1.0.0': {},
-  '1.1.0': {},
-  '1.2.0': {},
-  '1.3.0': {},
-};
+const getContractOverrideKey = (chainId: number, version: SupportedVersion) =>
+  `${version}:${chainId}`;
 
 /**
  * Overrides the deployed environment for a specific chain and version.
@@ -70,7 +63,10 @@ export function overrideDeployedEnvironment(
   version: SupportedVersion,
   environment: DeleGatorEnvironment,
 ) {
-  contractOverrides[version][chainId] = environment;
+  contractOverrideMap.set(
+    getContractOverrideKey(chainId, version),
+    environment,
+  );
 }
 
 /**
@@ -82,10 +78,14 @@ export function overrideDeployedEnvironment(
 export function getDeleGatorEnvironment(
   chainId: number,
   version: SupportedVersion = PREFERRED_VERSION,
-) {
-  const override = contractOverrides[version][chainId];
-  if (override) {
-    return override;
+): DeleGatorEnvironment {
+  const overrideKey = getContractOverrideKey(chainId, version);
+
+  if (contractOverrideMap.has(overrideKey)) {
+    const overridenContracts = contractOverrideMap.get(overrideKey);
+    if (overridenContracts) {
+      return overridenContracts;
+    }
   }
 
   const contracts = DELEGATOR_CONTRACTS[version]?.[chainId];
