@@ -1,7 +1,7 @@
-import { expect } from 'chai';
 import type { Address, Hex } from 'viem';
 import {
   createWalletClient,
+  custom,
   recoverMessageAddress,
   recoverTypedDataAddress,
   slice,
@@ -9,8 +9,9 @@ import {
 import type { WebAuthnAccount } from 'viem/account-abstraction';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { hardhat as chain } from 'viem/chains';
+import { describe, it, expect } from 'vitest';
 
-import { createHardhatTransport, OWNER_ACCOUNT } from './utils';
+import { OWNER_ACCOUNT } from './utils';
 import { Implementation } from '../src/constants';
 import { resolveSignatory } from '../src/signatory';
 
@@ -48,12 +49,18 @@ const typedData = {
 
 const message = { message: 'test' };
 
+const createMockTransport = () => {
+  return custom({
+    request: async () => '0x',
+  });
+};
+
 describe('resolveSignatory', () => {
-  it('should resolve Hybrid signatory from WalletSignatoryConfig', async () => {
+  it('resolves Hybrid signatory from WalletSignatoryConfig', async () => {
     const walletClient = createWalletClient({
       account: OWNER_ACCOUNT,
       chain,
-      transport: await createHardhatTransport(),
+      transport: createMockTransport(),
     });
 
     const signatory = resolveSignatory({
@@ -78,12 +85,11 @@ describe('resolveSignatory', () => {
     expect(recoveredTypedDataAddress).to.equal(OWNER_ACCOUNT.address);
   });
 
-  it('should resolve Hybrid signatory from AccountSignatoryConfig', async () => {
+  it('resolves Hybrid signatory from AccountSignatoryConfig', async () => {
     const signatory = resolveSignatory({
       implementation: Implementation.Hybrid,
       signatory: { account: OWNER_ACCOUNT },
     });
-
     const messageSignature = await signatory.signMessage(message);
 
     const recoveredMessageAddress = await recoverMessageAddress({
@@ -164,7 +170,7 @@ describe('resolveSignatory', () => {
     expect(stubSignature).to.equal(expectedStubSignature);
   });
 
-  it('should resolve MultiSig signatory', async () => {
+  it('resolves MultiSig signatory', async () => {
     const config = {
       implementation: Implementation.MultiSig,
       signatory: [{ account: OWNER_ACCOUNT }],
@@ -189,7 +195,7 @@ describe('resolveSignatory', () => {
     expect(recoveredTypedDataAddress).to.equal(OWNER_ACCOUNT.address);
   });
 
-  it('should resolve MultiSig signatory with multiple signatories', async () => {
+  it('resolves MultiSig signatory with multiple signatories', async () => {
     // at least 3 signatories, at most 10
     const numSignatories = Math.floor(Math.random() * 8) + 3;
 
@@ -244,11 +250,11 @@ describe('resolveSignatory', () => {
     );
   });
 
-  it('should resolve Stateless7702 signatory from WalletSignatoryConfig', async () => {
+  it('resolves Stateless7702 signatory from WalletSignatoryConfig', async () => {
     const walletClient = createWalletClient({
       account: OWNER_ACCOUNT,
       chain,
-      transport: await createHardhatTransport(),
+      transport: createMockTransport(),
     });
 
     const signatory = resolveSignatory({
@@ -273,7 +279,7 @@ describe('resolveSignatory', () => {
     expect(recoveredTypedDataAddress).to.equal(OWNER_ACCOUNT.address);
   });
 
-  it('should resolve Stateless7702 signatory from AccountSignatoryConfig', async () => {
+  it('resolves Stateless7702 signatory from AccountSignatoryConfig', async () => {
     const signatory = resolveSignatory({
       implementation: Implementation.Stateless7702,
       signatory: { account: OWNER_ACCOUNT },
@@ -296,7 +302,7 @@ describe('resolveSignatory', () => {
     expect(recoveredTypedDataAddress).to.equal(OWNER_ACCOUNT.address);
   });
 
-  it('should throw error for Stateless7702 signatory with account that does not support signMessage', async () => {
+  it('throws error for Stateless7702 signatory with account that does not support signMessage', async () => {
     const accountWithoutSignMessage = {
       ...OWNER_ACCOUNT,
       signMessage: undefined,
@@ -310,7 +316,7 @@ describe('resolveSignatory', () => {
     ).to.throw('Account does not support signMessage');
   });
 
-  it('should throw error for Stateless7702 signatory with account that does not support signTypedData', async () => {
+  it('throws error for Stateless7702 signatory with account that does not support signTypedData', async () => {
     const accountWithoutSignTypedData = {
       ...OWNER_ACCOUNT,
       signTypedData: undefined,
@@ -324,7 +330,7 @@ describe('resolveSignatory', () => {
     ).to.throw('Account does not support signTypedData');
   });
 
-  it('should throw error for Stateless7702 signatory with invalid config', async () => {
+  it('throws error for Stateless7702 signatory with invalid config', async () => {
     expect(() =>
       resolveSignatory({
         implementation: Implementation.Stateless7702,

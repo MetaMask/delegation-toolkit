@@ -2,13 +2,14 @@
   "name": "@metamask/delegator-e2e",
   "private": true,
   "version": "0.8.1",
+  "type": "module",
   "description": "Tests to validate the Delegation Framework end-to-end.",
   "devDependencies": {
     "@metamask/delegation-toolkit": "workspace:*",
     "dotenv": "^16.3.1",
     "permissionless": "^0.1.44",
     "tsx": "^4.19.3",
-    "vitest": "^2.1.9"
+    "vitest": "^3.2.4"
   },
   "scripts": {
     "build": "cd contracts && forge build && cd ..",

@@ -2,13 +2,13 @@ import { beforeEach, test, expect } from 'vitest';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
-  SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
   createDelegation,
-  createCaveatBuilder,
   Implementation,
   toMetaMaskSmartAccount,
+  ExecutionMode,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
 
@@ -91,9 +91,11 @@ const runTest_expectSuccess = async (
     from: delegator.address,
     caveats: createCaveatBuilder(environment).addCaveat(
       'nativeTokenPeriodTransfer',
-      periodAmount,
-      periodDuration,
-      startDate,
+      {
+        periodAmount,
+        periodDuration,
+        startDate,
+      },
     ),
   });
 
@@ -109,7 +111,7 @@ const runTest_expectSuccess = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([
         [{ target: recipient, value: transferAmount, callData: '0x' }],
       ]),
@@ -161,9 +163,11 @@ const runTest_expectFailure = async (
     from: delegator.address,
     caveats: createCaveatBuilder(environment).addCaveat(
       'nativeTokenPeriodTransfer',
-      periodAmount,
-      periodDuration,
-      startDate,
+      {
+        periodAmount,
+        periodDuration,
+        startDate,
+      },
     ),
   });
 
@@ -179,7 +183,7 @@ const runTest_expectFailure = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([
         [{ target: recipient, value: transferAmount, callData: '0x' }],
       ]),
@@ -289,12 +293,11 @@ test('Bob attempts to redeem with invalid terms length', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenPeriodTransfer',
+    .addCaveat('nativeTokenPeriodTransfer', {
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
   // Create invalid terms length by appending an empty byte
@@ -318,7 +321,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([
         [{ target: targetAddress, value: transferAmount, callData: '0x' }],
       ]),
@@ -352,12 +355,11 @@ test('Bob attempts to redeem with zero start date', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenPeriodTransfer',
+    .addCaveat('nativeTokenPeriodTransfer', {
       periodAmount,
       periodDuration,
-      currentTime, // valid start date
-    )
+      startDate: currentTime, // valid start date
+    })
     .build();
 
   // Modify the terms to encode zero start date
@@ -385,7 +387,7 @@ test('Bob attempts to redeem with zero start date', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([
         [{ target: targetAddress, value: transferAmount, callData: '0x' }],
       ]),
@@ -419,12 +421,11 @@ test('Bob attempts to redeem with zero period amount', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenPeriodTransfer',
-      1n, // valid period amount
+    .addCaveat('nativeTokenPeriodTransfer', {
+      periodAmount: 1n, // valid period amount
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
   // Modify the terms to encode zero period amount
@@ -452,7 +453,7 @@ test('Bob attempts to redeem with zero period amount', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([
         [{ target: targetAddress, value: transferAmount, callData: '0x' }],
       ]),
@@ -486,12 +487,11 @@ test('Bob attempts to redeem with zero period duration', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenPeriodTransfer',
+    .addCaveat('nativeTokenPeriodTransfer', {
       periodAmount,
-      3600, // valid period duration
+      periodDuration: 3600, // valid period duration
       startDate,
-    )
+    })
     .build();
 
   // Modify the terms to encode zero period duration
@@ -519,7 +519,7 @@ test('Bob attempts to redeem with zero period duration', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([
         [{ target: targetAddress, value: transferAmount, callData: '0x' }],
       ]),
@@ -553,12 +553,11 @@ test('Bob attempts to redeem before start date', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenPeriodTransfer',
+    .addCaveat('nativeTokenPeriodTransfer', {
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
   const delegation = createDelegation({
@@ -579,7 +578,7 @@ test('Bob attempts to redeem before start date', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([
         [{ target: targetAddress, value: transferAmount, callData: '0x' }],
       ]),

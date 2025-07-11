@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import { concat, size, toHex } from 'viem';
 import type { Address } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { specificActionERC20TransferBatchBuilder } from '../../src/caveatBuilder/specificActionERC20TransferBatchBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';
@@ -18,17 +18,17 @@ describe('specificActionERC20TransferBatchBuilder()', () => {
     tokenAddress: Address,
     recipient: Address,
     amount: bigint,
-    firstTarget: Address,
-    firstCalldata: `0x${string}`,
+    target: Address,
+    calldata: `0x${string}`,
   ) => {
-    return specificActionERC20TransferBatchBuilder(
-      environment,
+    const config = {
       tokenAddress,
       recipient,
       amount,
-      firstTarget,
-      firstCalldata,
-    );
+      target,
+      calldata,
+    };
+    return specificActionERC20TransferBatchBuilder(environment, config);
   };
 
   describe('validation', () => {
@@ -58,7 +58,7 @@ describe('specificActionERC20TransferBatchBuilder()', () => {
       ).to.throw('Invalid recipient: must be a valid address');
     });
 
-    it('should fail with an invalid first target address', () => {
+    it('should fail with an invalid target address', () => {
       const invalidAddress = 'invalid-address' as Address;
       expect(() =>
         buildWithParams(
@@ -68,7 +68,7 @@ describe('specificActionERC20TransferBatchBuilder()', () => {
           invalidAddress,
           '0x',
         ),
-      ).to.throw('Invalid firstTarget: must be a valid address');
+      ).to.throw('Invalid target: must be a valid address');
     });
 
     it('should fail with a non-positive amount', () => {
@@ -111,15 +111,15 @@ describe('specificActionERC20TransferBatchBuilder()', () => {
       const tokenAddress = randomAddress();
       const recipient = randomAddress();
       const amount = 1000000n;
-      const firstTarget = randomAddress();
-      const firstCalldata = '0x12345678' as const;
+      const target = randomAddress();
+      const calldata = '0x12345678' as const;
 
       const caveat = buildWithParams(
         tokenAddress,
         recipient,
         amount,
-        firstTarget,
-        firstCalldata,
+        target,
+        calldata,
       );
 
       expect(caveat.enforcer).to.equal(
@@ -132,8 +132,8 @@ describe('specificActionERC20TransferBatchBuilder()', () => {
         tokenAddress,
         recipient,
         toHex(amount, { size: 32 }),
-        firstTarget,
-        firstCalldata,
+        target,
+        calldata,
       ]);
       expect(caveat.terms).to.equal(expectedTerms);
     });
@@ -142,15 +142,15 @@ describe('specificActionERC20TransferBatchBuilder()', () => {
       const tokenAddress = randomAddress();
       const recipient = randomAddress();
       const amount = 1000000n;
-      const firstTarget = randomAddress();
-      const firstCalldata = '0x' as const;
+      const target = randomAddress();
+      const calldata = '0x' as const;
 
       const caveat = buildWithParams(
         tokenAddress,
         recipient,
         amount,
-        firstTarget,
-        firstCalldata,
+        target,
+        calldata,
       );
 
       expect(size(caveat.terms)).to.be.greaterThanOrEqual(

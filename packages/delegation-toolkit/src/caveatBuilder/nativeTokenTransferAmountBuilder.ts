@@ -4,23 +4,32 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const nativeTokenTransferAmount = 'nativeTokenTransferAmount';
 
+export type NativeTokenTransferAmountBuilderConfig = {
+  /**
+   * The maximum amount of native tokens that can be transferred.
+   */
+  maxAmount: bigint;
+};
+
 /**
  * Builds a caveat struct for the NativeTokenTransferAmountEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param allowance - The maximum amount of native tokens allowed (in wei).
+ * @param config - The configuration object containing the maxAmount.
  * @returns The Caveat.
- * @throws Error if the allowance is negative.
+ * @throws Error if the maxAmount is negative.
  */
 export const nativeTokenTransferAmountBuilder = (
   environment: DeleGatorEnvironment,
-  allowance: bigint,
+  config: NativeTokenTransferAmountBuilderConfig,
 ): Caveat => {
-  if (allowance < 0n) {
-    throw new Error('Invalid allowance: must be zero or positive');
+  const { maxAmount } = config;
+
+  if (maxAmount < 0n) {
+    throw new Error('Invalid maxAmount: must be zero or positive');
   }
 
-  const terms = encodePacked(['uint256'], [allowance]);
+  const terms = encodePacked(['uint256'], [maxAmount]);
 
   const {
     caveatEnforcers: { NativeTokenTransferAmountEnforcer },

@@ -1,16 +1,16 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  createCaveatBuilder,
   createDelegation,
   createExecution,
   Implementation,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
+  ExecutionMode,
 } from '@metamask/delegation-toolkit';
 import {
+  createCaveatBuilder,
   encodeExecutionCalldatas,
   encodePermissionContexts,
-  SINGLE_DEFAULT_MODE,
 } from '@metamask/delegation-toolkit/utils';
 import {
   transport,
@@ -144,7 +144,10 @@ const runTest_expectSuccess = async (
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
     caveats: caveats.reduce((builder, caveat) => {
-      builder.addCaveat('allowedCalldata', caveat.from, caveat.calldata);
+      builder.addCaveat('allowedCalldata', {
+        startIndex: caveat.from,
+        value: caveat.calldata,
+      });
       return builder;
     }, createCaveatBuilder(environment)),
   });
@@ -172,7 +175,7 @@ const runTest_expectSuccess = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -212,7 +215,10 @@ const runTest_expectFailure = async (
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
     caveats: caveats.reduce((builder, caveat) => {
-      builder.addCaveat('allowedCalldata', caveat.from, caveat.calldata);
+      builder.addCaveat('allowedCalldata', {
+        startIndex: caveat.from,
+        value: caveat.calldata,
+      });
       return builder;
     }, createCaveatBuilder(aliceSmartAccount.environment)),
   });
@@ -234,7 +240,7 @@ const runTest_expectFailure = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });

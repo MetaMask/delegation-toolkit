@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import { concat, size, toHex } from 'viem';
 import type { Address } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { erc20PeriodTransferBuilder } from '../../src/caveatBuilder/erc20PeriodTransferBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';
@@ -20,13 +20,8 @@ describe('erc20PeriodTransferBuilder()', () => {
     periodDuration: number,
     startDate: number,
   ) => {
-    return erc20PeriodTransferBuilder(
-      environment,
-      tokenAddress,
-      periodAmount,
-      periodDuration,
-      startDate,
-    );
+    const config = { tokenAddress, periodAmount, periodDuration, startDate };
+    return erc20PeriodTransferBuilder(environment, config);
   };
 
   describe('validation', () => {

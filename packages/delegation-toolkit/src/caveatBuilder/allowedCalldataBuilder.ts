@@ -4,20 +4,32 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export const allowedCalldata = 'allowedCalldata';
 
+export type AllowedCalldataBuilderConfig = {
+  /**
+   * The index in the calldata byte array (including the 4-byte method selector)
+   * where the expected calldata starts.
+   */
+  startIndex: number;
+  /**
+   * The expected calldata as a hex string that must match at the specified index.
+   */
+  value: Hex;
+};
+
 /**
  * Builds a caveat struct for AllowedCalldataEnforcer that restricts calldata to a specific value at a given index.
  *
  * @param environment - The DeleGator environment.
- * @param startIndex - The start index of the subset of calldata bytes.
- * @param value - The expected value for the subset of calldata.
+ * @param config - The configuration object containing startIndex and value.
  * @returns The Caveat.
  * @throws Error if the value is not a valid hex string, if startIndex is negative, or if startIndex is not a whole number.
  */
 export const allowedCalldataBuilder = (
   environment: DeleGatorEnvironment,
-  startIndex: number,
-  value: Hex,
+  config: AllowedCalldataBuilderConfig,
 ): Caveat => {
+  const { startIndex, value } = config;
+
   if (!isHex(value)) {
     throw new Error('Invalid value: must be a valid hex string');
   }

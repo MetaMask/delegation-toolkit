@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import type { Hex } from 'viem';
 import { concat, size, slice, toHex } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import type { TokenPeriodConfig } from '../../src/caveatBuilder/multiTokenPeriodBuilder';
 import {

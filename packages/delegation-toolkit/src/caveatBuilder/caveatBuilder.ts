@@ -6,13 +6,27 @@ type CaveatWithOptionalArgs = Omit<Caveat, 'args'> & {
   args?: Caveat['args'];
 };
 
+const INSECURE_UNRESTRICTED_DELEGATION_ERROR_MESSAGE =
+  'No caveats found. If you definitely want to create an empty caveat collection, set `allowInsecureUnrestrictedDelegation` to `true`.';
+
 /**
  * Resolves the array of Caveat from a Caveats argument.
- * @param caveats - The caveats to be resolved, which can be either a CaveatBuilder or an array of Caveat.
+ * @param options - The caveats to be resolved, which can be either a CaveatBuilder or an array of Caveat.
+ * @param options.caveats - The caveats to be resolved, which can be either a CaveatBuilder or an array of Caveat.
+ * @param options.allowInsecureUnrestrictedDelegation - Whether to allow insecure unrestricted delegation.
  * @returns The resolved array of caveats.
  */
-export const resolveCaveats = (caveats: Caveats) => {
+export const resolveCaveats = ({
+  caveats,
+  allowInsecureUnrestrictedDelegation = false,
+}: {
+  caveats: Caveats;
+  allowInsecureUnrestrictedDelegation?: boolean;
+}) => {
   if (Array.isArray(caveats)) {
+    if (caveats.length === 0 && !allowInsecureUnrestrictedDelegation) {
+      throw new Error(INSECURE_UNRESTRICTED_DELEGATION_ERROR_MESSAGE);
+    }
     return caveats;
   }
   return caveats.build();
@@ -33,7 +47,7 @@ type CaveatBuilderMap = {
 };
 
 export type CaveatBuilderConfig = {
-  allowEmptyCaveats?: boolean;
+  allowInsecureUnrestrictedDelegation?: boolean;
 };
 
 /**
@@ -150,10 +164,11 @@ export class CaveatBuilder<
       throw new Error('This CaveatBuilder has already been built.');
     }
 
-    if (this.#results.length === 0 && !this.#config.allowEmptyCaveats) {
-      throw new Error(
-        'No caveats found. If you definitely want to create an empty caveat collection, set `allowEmptyCaveats`.',
-      );
+    if (
+      this.#results.length === 0 &&
+      !this.#config.allowInsecureUnrestrictedDelegation
+    ) {
+      throw new Error(INSECURE_UNRESTRICTED_DELEGATION_ERROR_MESSAGE);
     }
 
     this.#hasBeenBuilt = true;

@@ -3,12 +3,12 @@ import { NonceEnforcer } from '@metamask/delegation-abis';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
-  SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createDelegation,
   createExecution,
+  ExecutionMode,
   Implementation,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
@@ -122,7 +122,7 @@ const runTest_expectSuccess = async (newCount: bigint, nonce: bigint) => {
     from: aliceAddress,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'nonce',
-      toHex(nonce),
+      { nonce: toHex(nonce) },
     ),
   });
 
@@ -147,7 +147,7 @@ const runTest_expectSuccess = async (newCount: bigint, nonce: bigint) => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -192,7 +192,7 @@ const runTest_expectFailure = async (
     from: aliceAddress,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'nonce',
-      toHex(nonce),
+      { nonce: toHex(nonce) },
     ),
   });
 
@@ -217,7 +217,7 @@ const runTest_expectFailure = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });

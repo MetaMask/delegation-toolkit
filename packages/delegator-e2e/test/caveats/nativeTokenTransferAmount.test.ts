@@ -2,14 +2,14 @@ import { beforeEach, test, expect } from 'vitest';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
-  SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createDelegation,
   createExecution,
   Implementation,
   toMetaMaskSmartAccount,
+  ExecutionMode,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
 import {
@@ -95,7 +95,7 @@ const runTest_expectSuccess = async (
     from: aliceAddress,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'nativeTokenTransferAmount',
-      allowance,
+      { maxAmount: allowance },
     ),
   });
 
@@ -116,7 +116,7 @@ const runTest_expectSuccess = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -165,7 +165,7 @@ const runTest_expectFailure = async (
     from: aliceAddress,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'nativeTokenTransferAmount',
-      allowance,
+      { maxAmount: allowance },
     ),
   });
 
@@ -186,7 +186,7 @@ const runTest_expectFailure = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });

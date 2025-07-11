@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import { encodePacked } from 'viem';
 import type { Address } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { erc721BalanceChangeBuilder } from '../../src/caveatBuilder/erc721BalanceChangeBuilder';
 import { BalanceChangeType } from '../../src/caveatBuilder/types';
@@ -15,16 +15,11 @@ describe('erc721BalanceChangeBuilder()', () => {
   const buildWithParams = (
     tokenAddress: Address,
     recipient: Address,
-    balance: bigint,
+    amount: bigint,
     changeType: BalanceChangeType,
   ) => {
-    return erc721BalanceChangeBuilder(
-      environment,
-      tokenAddress,
-      recipient,
-      balance,
-      changeType,
-    );
+    const config = { tokenAddress, recipient, amount, changeType };
+    return erc721BalanceChangeBuilder(environment, config);
   };
 
   describe('validation', () => {

@@ -2,14 +2,14 @@ import { beforeEach, test, expect } from 'vitest';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
-  SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createDelegation,
   createExecution,
   Implementation,
   toMetaMaskSmartAccount,
+  ExecutionMode,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
 
@@ -127,7 +127,7 @@ const submitUserOperationForTest = async (
     from: aliceAddress,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'valueLte',
-      maxValue,
+      { maxValue },
     ),
   });
 
@@ -148,7 +148,7 @@ const submitUserOperationForTest = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });

@@ -21,7 +21,7 @@ import { getDeleGatorEnvironment } from '../delegatorEnvironment';
 import {
   createExecution,
   encodeExecutionCalldatas,
-  SINGLE_DEFAULT_MODE,
+  ExecutionMode,
 } from '../executions';
 import type { Call } from 'src/types';
 
@@ -74,7 +74,7 @@ export async function sendTransactionWithDelegationAction<
     functionName: 'redeemDelegations',
     args: [
       [args.permissionsContext],
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([executions]),
     ],
   });

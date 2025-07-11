@@ -5,15 +5,34 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export const erc20Streaming = 'erc20Streaming';
 
+export type Erc20StreamingBuilderConfig = {
+  /**
+   * The ERC-20 contract address as a hex string.
+   */
+  tokenAddress: Address;
+  /**
+   * The initial amount available at start time as a bigint.
+   */
+  initialAmount: bigint;
+  /**
+   * Maximum total amount that can be unlocked as a bigint.
+   */
+  maxAmount: bigint;
+  /**
+   * Rate at which tokens accrue per second as a bigint.
+   */
+  amountPerSecond: bigint;
+  /**
+   * The start timestamp in seconds.
+   */
+  startTime: number;
+};
+
 /**
  * Builds a caveat for ERC20 token streaming with configurable parameters.
  *
  * @param environment - The DeleGator environment.
- * @param tokenAddress - The tokenAddress of the ERC20 token.
- * @param initialAmount - The initial amount of tokens to release at start time.
- * @param maxAmount - The maximum amount of tokens that can be released.
- * @param amountPerSecond - The rate at which the allowance increases per second.
- * @param startTime - The timestamp from which the allowance streaming begins.
+ * @param config - The configuration for the ERC20 streaming builder.
  * @returns The Caveat.
  * @throws Error if the token address is invalid.
  * @throws Error if the initial amount is a negative number.
@@ -24,12 +43,11 @@ export const erc20Streaming = 'erc20Streaming';
  */
 export const erc20StreamingBuilder = (
   environment: DeleGatorEnvironment,
-  tokenAddress: Address,
-  initialAmount: bigint,
-  maxAmount: bigint,
-  amountPerSecond: bigint,
-  startTime: number,
+  config: Erc20StreamingBuilderConfig,
 ): Caveat => {
+  const { tokenAddress, initialAmount, maxAmount, amountPerSecond, startTime } =
+    config;
+
   const terms = createERC20StreamingTerms({
     tokenAddress,
     initialAmount,

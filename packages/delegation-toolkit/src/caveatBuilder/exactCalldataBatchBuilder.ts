@@ -5,20 +5,30 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const exactCalldataBatch = 'exactCalldataBatch';
 
+export type ExactCalldataBatchBuilderConfig = {
+  /**
+   * An array of executions that must be matched exactly in the batch.
+   * Each execution specifies a target address, value, and calldata.
+   */
+  executions: ExecutionStruct[];
+};
+
 /**
  * Builds a caveat struct for ExactCalldataBatchEnforcer.
  * This enforcer ensures that the provided batch execution calldata matches exactly
  * the expected calldata for each execution.
  *
  * @param environment - The DeleGator environment.
- * @param executions - Array of expected executions, each containing target address, value, and calldata.
+ * @param config - Configuration object containing executions.
  * @returns The Caveat.
  * @throws Error if any of the executions have invalid parameters.
  */
 export const exactCalldataBatchBuilder = (
   environment: DeleGatorEnvironment,
-  executions: ExecutionStruct[],
+  config: ExactCalldataBatchBuilderConfig,
 ): Caveat => {
+  const { executions } = config;
+
   if (executions.length === 0) {
     throw new Error('Invalid executions: array cannot be empty');
   }
@@ -35,7 +45,7 @@ export const exactCalldataBatchBuilder = (
 
     if (!execution.callData.startsWith('0x')) {
       throw new Error(
-        'Invalid callData: must be a hex string starting with 0x',
+        'Invalid calldata: must be a hex string starting with 0x',
       );
     }
   }

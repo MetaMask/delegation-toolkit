@@ -1,14 +1,14 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  createCaveatBuilder,
   createDelegation,
   Implementation,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
   type ExecutionStruct,
+  ExecutionMode,
 } from '@metamask/delegation-toolkit';
 import {
-  BATCH_DEFAULT_MODE,
+  createCaveatBuilder,
   encodeExecutionCalldatas,
   encodePermissionContexts,
 } from '@metamask/delegation-toolkit/utils';
@@ -87,10 +87,9 @@ const runTest_expectSuccess = async (
   const delegation = createDelegation({
     to: delegate,
     from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'exactCalldataBatch',
-      expectedExecutions,
-    ),
+    caveats: createCaveatBuilder(environment).addCaveat('exactCalldataBatch', {
+      executions: expectedExecutions,
+    }),
   });
 
   const signedDelegation = {
@@ -105,7 +104,7 @@ const runTest_expectSuccess = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [BATCH_DEFAULT_MODE],
+      [ExecutionMode.BatchDefault],
       encodeExecutionCalldatas([actualExecutions]),
     ],
   });
@@ -140,10 +139,9 @@ const runTest_expectFailure = async (
   const delegation = createDelegation({
     to: delegate,
     from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'exactCalldataBatch',
-      expectedExecutions,
-    ),
+    caveats: createCaveatBuilder(environment).addCaveat('exactCalldataBatch', {
+      executions: expectedExecutions,
+    }),
   });
 
   const signedDelegation = {
@@ -158,7 +156,7 @@ const runTest_expectFailure = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [BATCH_DEFAULT_MODE],
+      [ExecutionMode.BatchDefault],
       encodeExecutionCalldatas([actualExecutions]),
     ],
   });

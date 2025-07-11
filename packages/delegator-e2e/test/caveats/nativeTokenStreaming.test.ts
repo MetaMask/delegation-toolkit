@@ -2,15 +2,15 @@ import { beforeEach, test, expect } from 'vitest';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
-  SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createExecution,
   createDelegation,
   Implementation,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
+  ExecutionMode,
 } from '@metamask/delegation-toolkit';
 
 import {
@@ -321,13 +321,12 @@ test('Bob attempts to redeem with invalid terms length', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenStreaming',
+    .addCaveat('nativeTokenStreaming', {
       initialAmount,
       maxAmount,
       amountPerSecond,
       startTime,
-    )
+    })
     .build();
 
   // Create invalid terms length by appending an empty byte
@@ -356,7 +355,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -388,13 +387,12 @@ test('Bob attempts to redeem with invalid max amount', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenStreaming',
+    .addCaveat('nativeTokenStreaming', {
       initialAmount,
-      parseEther('20'), // valid maxAmount
+      maxAmount: initialAmount + 1n, // we need a valid maxAmount
       amountPerSecond,
       startTime,
-    )
+    })
     .build();
 
   caveats[0].terms = concat([
@@ -427,7 +425,7 @@ test('Bob attempts to redeem with invalid max amount', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -459,13 +457,12 @@ test('Bob attempts to redeem with zero start time', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'nativeTokenStreaming',
+    .addCaveat('nativeTokenStreaming', {
       initialAmount,
       maxAmount,
       amountPerSecond,
-      currentTime, // valid start time
-    )
+      startTime: currentTime, // valid start time
+    })
     .build();
 
   // Modify the terms to encode zero start time
@@ -499,7 +496,7 @@ test('Bob attempts to redeem with zero start time', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -537,10 +534,12 @@ const runTest_expectSuccess = async (
     from: delegator.address,
     caveats: createCaveatBuilder(environment).addCaveat(
       'nativeTokenStreaming',
-      initialAmount,
-      maxAmount,
-      amountPerSecond,
-      startTime,
+      {
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime,
+      },
     ),
   });
 
@@ -561,7 +560,7 @@ const runTest_expectSuccess = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -615,10 +614,12 @@ const runTest_expectFailure = async (
     from: delegator.address,
     caveats: createCaveatBuilder(environment).addCaveat(
       'nativeTokenStreaming',
-      initialAmount,
-      maxAmount,
-      amountPerSecond,
-      startTime,
+      {
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime,
+      },
     ),
   });
 
@@ -639,7 +640,7 @@ const runTest_expectFailure = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });

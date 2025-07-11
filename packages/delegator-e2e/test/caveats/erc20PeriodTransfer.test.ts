@@ -2,14 +2,14 @@ import { beforeEach, test, expect } from 'vitest';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
-  SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
   createDelegation,
-  createCaveatBuilder,
   createExecution,
   Implementation,
   toMetaMaskSmartAccount,
+  ExecutionMode,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
 import {
@@ -107,13 +107,12 @@ const runTest_expectSuccess = async (
   const delegation = createDelegation({
     to: delegate,
     from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    caveats: createCaveatBuilder(environment).addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
       startDate,
-    ),
+    }),
   });
 
   const signedDelegation = {
@@ -138,7 +137,7 @@ const runTest_expectSuccess = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -188,13 +187,12 @@ const runTest_expectFailure = async (
   const delegation = createDelegation({
     to: delegate,
     from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    caveats: createCaveatBuilder(environment).addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
       startDate,
-    ),
+    }),
   });
 
   const signedDelegation = {
@@ -219,7 +217,7 @@ const runTest_expectFailure = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -333,13 +331,12 @@ test('Bob attempts to redeem with invalid terms length', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
   // Create invalid terms length by appending an empty byte
@@ -372,7 +369,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -403,13 +400,12 @@ test('Bob attempts to redeem with invalid execution length', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
   const delegation = createDelegation({
@@ -443,7 +439,7 @@ test('Bob attempts to redeem with invalid execution length', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -475,13 +471,12 @@ test('Bob attempts to redeem with invalid contract', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress, // valid token address
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
   const delegation = createDelegation({
@@ -512,7 +507,7 @@ test('Bob attempts to redeem with invalid contract', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -543,13 +538,12 @@ test('Bob attempts to redeem with invalid method', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
   const delegation = createDelegation({
@@ -580,7 +574,7 @@ test('Bob attempts to redeem with invalid method', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -611,13 +605,12 @@ test('Bob attempts to redeem with zero start date', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
-      currentTime, // valid start date
-    )
+      startDate: 1, // we need a valid start date to pass validation
+    })
     .build();
 
   // Modify the terms to encode zero start date
@@ -655,7 +648,7 @@ test('Bob attempts to redeem with zero start date', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -686,13 +679,12 @@ test('Bob attempts to redeem with zero period amount', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
-      1n, // valid period amount
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
+      periodAmount: 1n, // we need a valid period amount to pass validation
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
   // Modify the terms to encode zero period amount
@@ -730,7 +722,7 @@ test('Bob attempts to redeem with zero period amount', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -762,13 +754,12 @@ test('Bob attempts to redeem with zero period duration', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
-      3600, // valid period duration
+      periodDuration: 1, // we need a valid period duration to pass validation
       startDate,
-    )
+    })
     .build();
 
   // Modify the terms to encode zero period duration
@@ -806,7 +797,7 @@ test('Bob attempts to redeem with zero period duration', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -838,13 +829,12 @@ test('Bob attempts to redeem before start date', async () => {
 
   const { environment } = aliceSmartAccount;
   const caveats = createCaveatBuilder(environment)
-    .addCaveat(
-      'erc20PeriodTransfer',
-      erc20TokenAddress,
+    .addCaveat('erc20PeriodTransfer', {
+      tokenAddress: erc20TokenAddress,
       periodAmount,
       periodDuration,
       startDate,
-    )
+    })
     .build();
 
   const delegation = createDelegation({
@@ -874,7 +864,7 @@ test('Bob attempts to redeem before start date', async () => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });

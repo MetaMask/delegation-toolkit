@@ -10,20 +10,20 @@ import {
 import { expectCodeAt, expectUserOperationToSucceed } from './utils/assertions';
 
 import {
-  createCaveatBuilder,
   createExecution,
   createDelegation,
+  ExecutionMode,
   Implementation,
   toMetaMaskSmartAccount,
   signDelegation,
   aggregateSignature,
   type MetaMaskSmartAccount,
+  type PartialSignature,
 } from '@metamask/delegation-toolkit';
 import {
+  createCaveatBuilder,
   encodePermissionContexts,
   encodeExecutionCalldatas,
-  SINGLE_DEFAULT_MODE,
-  type PartialSignature,
 } from '@metamask/delegation-toolkit/utils';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import {
@@ -98,8 +98,10 @@ test('maincase: Bob increments the counter with a delegation from Alice', async 
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', [aliceCounterContractAddress])
-      .addCaveat('allowedMethods', ['increment()']),
+      .addCaveat('allowedTargets', {
+        targets: [aliceCounterContractAddress],
+      })
+      .addCaveat('allowedMethods', { selectors: ['increment()'] }),
   });
 
   const signedDelegation = {
@@ -122,7 +124,7 @@ test('maincase: Bob increments the counter with a delegation from Alice', async 
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -204,8 +206,10 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', [aliceCounterContractAddress])
-      .addCaveat('allowedMethods', ['notTheRightFunction()']),
+      .addCaveat('allowedTargets', {
+        targets: [aliceCounterContractAddress],
+      })
+      .addCaveat('allowedMethods', { selectors: ['notTheRightFunction()'] }),
   });
 
   const signedDelegation = {
@@ -228,7 +232,7 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -284,8 +288,10 @@ test('Bob increments the counter with a delegation from a multisig account', asy
     to: bobSmartAccount.address,
     from: multisigSmartAccount.address,
     caveats: createCaveatBuilder(multisigSmartAccount.environment)
-      .addCaveat('allowedTargets', [counterContract.address])
-      .addCaveat('allowedMethods', ['increment()']),
+      .addCaveat('allowedTargets', {
+        targets: [counterContract.address],
+      })
+      .addCaveat('allowedMethods', { selectors: ['increment()'] }),
   });
 
   // Get signatures from each signer
@@ -328,7 +334,7 @@ test('Bob increments the counter with a delegation from a multisig account', asy
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });

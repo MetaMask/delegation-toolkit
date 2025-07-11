@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { concat, size, toHex, type Hex } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { allowedCalldataBuilder } from '../../src/caveatBuilder/allowedCalldataBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';
@@ -13,7 +13,8 @@ describe('allowedCalldataBuilder()', () => {
   } as any as DeleGatorEnvironment;
 
   const buildWithParams = (dataStart: number, value: Hex) => {
-    return allowedCalldataBuilder(environment, dataStart, value);
+    const config = { startIndex: dataStart, value };
+    return allowedCalldataBuilder(environment, config);
   };
 
   describe('validation', () => {

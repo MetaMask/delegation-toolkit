@@ -1,6 +1,4 @@
 import { DelegationManager } from '@metamask/delegation-abis';
-import { expect } from 'chai';
-import hre from 'hardhat';
 import { stub } from 'sinon';
 import type {
   Account,
@@ -10,6 +8,7 @@ import type {
   WalletClient,
 } from 'viem';
 import {
+  createClient,
   createPublicClient,
   createWalletClient,
   custom,
@@ -17,14 +16,15 @@ import {
 } from 'viem';
 import { createBundlerClient } from 'viem/account-abstraction';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { hardhat } from 'viem/chains';
+import { sepolia as chain } from 'viem/chains';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { Implementation } from '../../src/constants';
 import { overrideDeployedEnvironment } from '../../src/delegatorEnvironment';
 import {
   createExecution,
   encodeExecutionCalldatas,
-  SINGLE_DEFAULT_MODE,
+  ExecutionMode,
 } from '../../src/executions';
 import {
   erc7710BundlerActions,
@@ -39,7 +39,7 @@ import type {
   DeleGatorEnvironment,
   MetaMaskSmartAccount,
 } from '../../src/types';
-import { createHardhatTransport, randomAddress, randomBytes } from '../utils';
+import { randomAddress, randomBytes } from '../utils';
 
 describe('erc7710RedeemDelegationAction', () => {
   describe('sendUserOperationWithDelegationAction()', () => {
@@ -52,19 +52,20 @@ describe('erc7710RedeemDelegationAction', () => {
 
     beforeEach(async () => {
       mockBundlerRequest.reset();
-      publicClient = await hre.viem.getPublicClient();
-      overrideDeployedEnvironment(publicClient.chain.id, '1.3.0', {
+      overrideDeployedEnvironment(chain.id, '1.3.0', {
         SimpleFactory: simpleFactoryAddress,
         implementations: {
           MultiSigDeleGatorImpl: randomAddress(),
         },
       } as any as DeleGatorEnvironment);
 
+      publicClient = createPublicClient({
+        transport: custom({ request: async () => '0x' }),
+        chain,
+      });
+
       metaMaskSmartAccount = await toMetaMaskSmartAccount({
-        client: createPublicClient({
-          transport: await createHardhatTransport(),
-          chain: publicClient.chain,
-        }),
+        client: publicClient,
         implementation: Implementation.MultiSig,
         signatory: [{ account: owner }],
         deployParams: [[owner.address], 1n],
@@ -75,7 +76,7 @@ describe('erc7710RedeemDelegationAction', () => {
     it('should call sendUserOperation() with the specified parameters', async () => {
       const bundlerClient = createBundlerClient({
         transport: custom({ request: mockBundlerRequest }),
-        chain: publicClient.chain,
+        chain,
         account: metaMaskSmartAccount,
       });
       const extendedBundlerClient = bundlerClient.extend(
@@ -103,7 +104,7 @@ describe('erc7710RedeemDelegationAction', () => {
     it('should append factory calls when accountMetadata is provided', async () => {
       const bundlerClient = createBundlerClient({
         transport: custom({ request: mockBundlerRequest }),
-        chain: publicClient.chain,
+        chain,
       });
       const extendedBundlerClient = bundlerClient.extend(
         erc7710BundlerActions(),
@@ -160,7 +161,7 @@ describe('erc7710RedeemDelegationAction', () => {
     it('should throw an error when SimpleFactory is provided as accountMetadata factory', async () => {
       const bundlerClient = createBundlerClient({
         transport: custom({ request: mockBundlerRequest }),
-        chain: publicClient.chain,
+        chain,
       });
       const extendedBundlerClient = bundlerClient.extend(
         erc7710BundlerActions(),
@@ -197,7 +198,7 @@ describe('erc7710RedeemDelegationAction', () => {
         extendedBundlerClient.sendUserOperationWithDelegation(
           sendUserOperationWithDelegationArgs,
         ),
-      ).to.be.rejectedWith(
+      ).rejects.toThrow(
         `Invalid accountMetadata: ${factoryAddress} is not allowed.`,
       );
     });
@@ -205,7 +206,7 @@ describe('erc7710RedeemDelegationAction', () => {
     it('should not append factory calls for accounts that are already deployed', async () => {
       const bundlerClient = createBundlerClient({
         transport: custom({ request: mockBundlerRequest }),
-        chain: publicClient.chain,
+        chain,
       });
       const extendedBundlerClient = bundlerClient.extend(
         erc7710BundlerActions(),
@@ -265,12 +266,12 @@ describe('erc7710RedeemDelegationAction', () => {
     let account: Account;
 
     beforeEach(async () => {
-      const transport = await createHardhatTransport();
+      const transport = custom({ request: async () => '0x' });
 
       account = privateKeyToAccount(generatePrivateKey());
       walletClient = createWalletClient({
         account,
-        chain: hardhat,
+        chain,
         transport,
       });
     });
@@ -282,7 +283,7 @@ describe('erc7710RedeemDelegationAction', () => {
 
       const args: SendTransactionWithDelegationParameters = {
         account,
-        chain: hardhat,
+        chain,
         to: randomAddress(),
         value: 0n,
         data: randomBytes(128),
@@ -301,7 +302,7 @@ describe('erc7710RedeemDelegationAction', () => {
         functionName: 'redeemDelegations',
         args: [
           [args.permissionsContext],
-          [SINGLE_DEFAULT_MODE],
+          [ExecutionMode.SingleDefault],
           encodeExecutionCalldatas([
             [
               createExecution({
@@ -331,13 +332,13 @@ describe('erc7710RedeemDelegationAction', () => {
       await expect(
         extendedWalletClient.sendTransactionWithDelegation({
           account,
-          chain: hardhat,
+          chain,
           value: 0n,
           data: randomBytes(128),
           permissionsContext: randomBytes(128),
           delegationManager: randomAddress(),
         }),
-      ).to.be.rejectedWith(
+      ).rejects.toThrow(
         '`to` is required. `sendTransactionWithDelegation` cannot be used to deploy contracts.',
       );
     });

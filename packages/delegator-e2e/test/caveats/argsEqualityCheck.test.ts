@@ -2,14 +2,14 @@ import { beforeEach, test, expect } from 'vitest';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
-  SINGLE_DEFAULT_MODE,
+  createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createCaveatBuilder,
   createExecution,
   createDelegation,
   Implementation,
   toMetaMaskSmartAccount,
+  ExecutionMode,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
 import {
@@ -135,13 +135,13 @@ test('Bob attempts to redeem the delegation with args when none are expected', a
   );
 });
 
-const runTest_expectSuccess = async (expectedArgs: Hex, actualArgs: Hex) => {
+const runTest_expectSuccess = async (args: Hex, actualArgs: Hex) => {
   const delegation = createDelegation({
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'argsEqualityCheck',
-      expectedArgs,
+      { args },
     ),
   });
 
@@ -170,7 +170,7 @@ const runTest_expectSuccess = async (expectedArgs: Hex, actualArgs: Hex) => {
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -200,7 +200,7 @@ const runTest_expectSuccess = async (expectedArgs: Hex, actualArgs: Hex) => {
 };
 
 const runTest_expectFailure = async (
-  expectedArgs: Hex,
+  args: Hex,
   actualArgs: Hex,
   expectedError: string,
 ) => {
@@ -209,7 +209,7 @@ const runTest_expectFailure = async (
     from: aliceSmartAccount.address,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'argsEqualityCheck',
-      expectedArgs,
+      { args },
     ),
   });
 
@@ -238,7 +238,7 @@ const runTest_expectFailure = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });

@@ -1,16 +1,16 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  createCaveatBuilder,
   createExecution,
   createDelegation,
   Implementation,
   toMetaMaskSmartAccount,
+  ExecutionMode,
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
 import {
+  createCaveatBuilder,
   encodeExecutionCalldatas,
   encodePermissionContexts,
-  SINGLE_DEFAULT_MODE,
 } from '@metamask/delegation-toolkit/utils';
 
 import {
@@ -164,8 +164,10 @@ const runTest_expectSuccess = async (
     from: aliceAddress,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'timestamp',
-      afterThreshold,
-      beforeThreshold,
+      {
+        afterThreshold,
+        beforeThreshold,
+      },
     ),
   });
 
@@ -190,7 +192,7 @@ const runTest_expectSuccess = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });
@@ -243,8 +245,10 @@ const runTest_expectFailure = async (
     from: aliceAddress,
     caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
       'timestamp',
-      afterThreshold,
-      beforeThreshold,
+      {
+        afterThreshold,
+        beforeThreshold,
+      },
     ),
   });
 
@@ -269,7 +273,7 @@ const runTest_expectFailure = async (
     functionName: 'redeemDelegations',
     args: [
       encodePermissionContexts([[signedDelegation]]),
-      [SINGLE_DEFAULT_MODE],
+      [ExecutionMode.SingleDefault],
       encodeExecutionCalldatas([[execution]]),
     ],
   });

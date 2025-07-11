@@ -4,40 +4,50 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export const blockNumber = 'blockNumber';
 
+export type BlockNumberBuilderConfig = {
+  /**
+   * The block number after which the delegation is valid.
+   * Set to 0n to disable this threshold.
+   */
+  afterThreshold: bigint;
+  /**
+   * The block number before which the delegation is valid.
+   * Set to 0n to disable this threshold.
+   */
+  beforeThreshold: bigint;
+};
+
 /**
  * Builds a caveat struct for the BlockNumberEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param blockAfterThreshold - The earliest block number after which the delegation can be used.
- * @param blockBeforeThreshold - The latest block number before which the delegation can be used.
+ * @param config - The configuration object for the BlockNumberEnforcer.
  * @returns The Caveat.
  * @throws Error if both thresholds are zero, if blockAfterThreshold is greater than or equal to blockBeforeThreshold, or if BlockNumberEnforcer is not available in the environment.
  */
 export const blockNumberBuilder = (
   environment: DeleGatorEnvironment,
-  blockAfterThreshold: bigint,
-  blockBeforeThreshold: bigint,
+  config: BlockNumberBuilderConfig,
 ): Caveat => {
-  if (blockAfterThreshold === 0n && blockBeforeThreshold === 0n) {
+  const { afterThreshold, beforeThreshold } = config;
+
+  if (afterThreshold === 0n && beforeThreshold === 0n) {
     throw new Error(
-      'Invalid thresholds: At least one of blockAfterThreshold or blockBeforeThreshold must be specified',
+      'Invalid thresholds: At least one of afterThreshold or beforeThreshold must be specified',
     );
   }
 
-  if (
-    blockBeforeThreshold !== 0n &&
-    blockAfterThreshold >= blockBeforeThreshold
-  ) {
+  if (beforeThreshold !== 0n && afterThreshold >= beforeThreshold) {
     throw new Error(
-      'Invalid thresholds: blockAfterThreshold must be less than blockBeforeThreshold if both are specified',
+      'Invalid thresholds: afterThreshold must be less than beforeThreshold if both are specified',
     );
   }
 
   const terms = concat([
-    toHex(blockAfterThreshold, {
+    toHex(afterThreshold, {
       size: 16,
     }),
-    toHex(blockBeforeThreshold, {
+    toHex(beforeThreshold, {
       size: 16,
     }),
   ]);

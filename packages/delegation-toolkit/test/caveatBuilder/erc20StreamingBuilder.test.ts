@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import type { Address } from 'viem';
 import { size } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { erc20StreamingBuilder } from '../../src/caveatBuilder/erc20StreamingBuilder';
 import { TIMESTAMP_UPPER_BOUND_SECONDS } from '../../src/caveatBuilder/shared';
@@ -21,14 +21,14 @@ describe('erc20StreamingBuilder()', () => {
     amountPerSecond: bigint,
     startTime: number,
   ) => {
-    return erc20StreamingBuilder(
-      environment,
+    const config = {
       tokenAddress,
       initialAmount,
       maxAmount,
       amountPerSecond,
       startTime,
-    );
+    };
+    return erc20StreamingBuilder(environment, config);
   };
 
   describe('validation', () => {

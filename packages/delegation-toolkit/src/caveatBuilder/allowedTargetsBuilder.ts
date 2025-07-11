@@ -4,18 +4,28 @@ import type { Caveat, DeleGatorEnvironment } from '../types';
 
 export const allowedTargets = 'allowedTargets';
 
+export type AllowedTargetsBuilderConfig = {
+  /**
+   * An array of addresses that the delegate is allowed to call.
+   * Each address must be a valid hex string.
+   */
+  targets: Address[];
+};
+
 /**
  * Builds a caveat struct for AllowedTargetsEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param targets - The array of allowed target addresses.
+ * @param config - The configuration object containing the targets.
  * @returns The Caveat.
  * @throws Error if no targets are provided or if any of the addresses are invalid.
  */
 export const allowedTargetsBuilder = (
   environment: DeleGatorEnvironment,
-  targets: Address[],
+  config: AllowedTargetsBuilderConfig,
 ): Caveat => {
+  const { targets } = config;
+
   if (targets.length === 0) {
     throw new Error(
       'Invalid targets: must provide at least one target address',

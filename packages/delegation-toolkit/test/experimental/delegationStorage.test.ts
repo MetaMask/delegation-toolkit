@@ -1,5 +1,6 @@
-import { expect } from 'chai';
 import { stub } from 'sinon';
+import { zeroAddress } from 'viem';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import {
   createDelegationStoreAPIFetchResponse,
@@ -41,7 +42,7 @@ describe('DelegationStorageClient', () => {
         fetcher: mockFetch,
       });
 
-      expect(delegationStore).to.be.instanceOf(DelegationStorageClient);
+      expect(delegationStore).toBeInstanceOf(DelegationStorageClient);
     });
 
     it('should create an instance with a predefined environment', () => {
@@ -54,7 +55,31 @@ describe('DelegationStorageClient', () => {
         fetcher: mockFetch,
       });
 
-      expect(delegationStore).to.be.instanceOf(DelegationStorageClient);
+      expect(delegationStore).toBeInstanceOf(DelegationStorageClient);
+    });
+
+    it('accepts an apiUrl with a trailing slash', async () => {
+      mockFetch.resolves({
+        json: async () => Promise.resolve([]),
+      });
+
+      const delegationStore = new DelegationStorageClient({
+        ...mockConfig,
+        environment: {
+          apiUrl: `${mockApiUrl}/`,
+        },
+        fetcher: mockFetch,
+      });
+
+      await delegationStore.fetchDelegations(zeroAddress);
+
+      const calledUrl = mockFetch.getCall(0).args[0];
+
+      const expectedUrlPrefix = `${mockApiUrl}/api/v0/delegation`;
+
+      expect(calledUrl.slice(0, expectedUrlPrefix.length)).toStrictEqual(
+        expectedUrlPrefix,
+      );
     });
   });
 
@@ -75,7 +100,7 @@ describe('DelegationStorageClient', () => {
 
       await delegationStore.getDelegationChain(leafDelegationHash);
 
-      expect(mockFetch.getCall(0).args).to.deep.equal([
+      expect(mockFetch.getCall(0).args).toStrictEqual([
         `${mockApiUrl}/api/v0/delegation/chain/${leafDelegationHash}`,
         {
           headers: {
@@ -104,8 +129,8 @@ describe('DelegationStorageClient', () => {
       const delegations =
         await delegationStore.getDelegationChain(leafDelegationHash);
 
-      expect(delegations).to.deep.equal([MOCK_SIGNED_DELEGATION]);
-      expect(mockFetch.getCall(0).args).to.deep.equal([
+      expect(delegations).toStrictEqual([MOCK_SIGNED_DELEGATION]);
+      expect(mockFetch.getCall(0).args).toStrictEqual([
         `${mockApiUrl}/api/v0/delegation/chain/${leafDelegationHash}`,
         {
           method: 'GET',
@@ -135,8 +160,8 @@ describe('DelegationStorageClient', () => {
         MOCK_SIGNED_DELEGATION,
       );
 
-      expect(delegations).to.to.deep.equal([MOCK_SIGNED_DELEGATION]);
-      expect(mockFetch.getCall(0).args).to.deep.equal([
+      expect(delegations).toStrictEqual([MOCK_SIGNED_DELEGATION]);
+      expect(mockFetch.getCall(0).args).toStrictEqual([
         `${mockApiUrl}/api/v0/delegation/chain/${leafDelegationHash}`,
         {
           method: 'GET',
@@ -159,7 +184,7 @@ describe('DelegationStorageClient', () => {
 
       await expect(
         delegationStore.getDelegationChain('0x-leafDelegationHash'),
-      ).to.be.rejectedWith('Some API error');
+      ).rejects.toThrow('Some API error');
     });
   });
 
@@ -178,7 +203,7 @@ describe('DelegationStorageClient', () => {
 
       await delegationStore.fetchDelegations(deleGatorAddress);
 
-      expect(mockFetch.getCall(0).args).to.deep.equal([
+      expect(mockFetch.getCall(0).args).toStrictEqual([
         `${mockApiUrl}/api/v0/delegation/accounts/${deleGatorAddress}?filter=${DelegationStoreFilter.Received}`,
         {
           headers: {
@@ -207,7 +232,7 @@ describe('DelegationStorageClient', () => {
         DelegationStoreFilter.Given,
       );
 
-      expect(mockFetch.getCall(-1).args).to.deep.equal([
+      expect(mockFetch.getCall(-1).args).toStrictEqual([
         `${mockApiUrl}/api/v0/delegation/accounts/${deleGatorAddress}?filter=${DelegationStoreFilter.Given}`,
         {
           headers: {
@@ -234,8 +259,8 @@ describe('DelegationStorageClient', () => {
       const delegations =
         await delegationStore.fetchDelegations(deleGatorAddress);
 
-      expect(delegations).to.deep.equal([MOCK_SIGNED_DELEGATION]);
-      expect(mockFetch.getCall(-1).args).to.deep.equal([
+      expect(delegations).toStrictEqual([MOCK_SIGNED_DELEGATION]);
+      expect(mockFetch.getCall(-1).args).toStrictEqual([
         `${mockApiUrl}/api/v0/delegation/accounts/${deleGatorAddress}?filter=${DelegationStoreFilter.Received}`,
         {
           headers: {
@@ -258,7 +283,7 @@ describe('DelegationStorageClient', () => {
 
       await expect(
         delegationStore.fetchDelegations('0x-deleGatorAddress'),
-      ).to.be.rejectedWith('Some API error');
+      ).rejects.toThrow('Some API error');
     });
   });
 
@@ -279,7 +304,7 @@ describe('DelegationStorageClient', () => {
       const delegationHash = await delegationStore.storeDelegation(
         MOCK_SIGNED_DELEGATION,
       );
-      expect(delegationHash).to.equal(
+      expect(delegationHash).toStrictEqual(
         getDelegationHashOffchain(MOCK_SIGNED_DELEGATION),
       );
     });
@@ -298,7 +323,7 @@ describe('DelegationStorageClient', () => {
 
       await expect(
         delegationStore.storeDelegation(MOCK_SIGNED_DELEGATION),
-      ).to.be.rejectedWith(
+      ).rejects.toThrow(
         'Failed to store the Delegation, the hash returned from the MM delegation storage API does not match the hash of the delegation',
       );
     });
@@ -315,7 +340,7 @@ describe('DelegationStorageClient', () => {
 
       await expect(
         delegationStore.storeDelegation(UNSIGNED_DELEGATION),
-      ).to.be.rejectedWith('Delegation must be signed to be stored');
+      ).rejects.toThrow('Delegation must be signed to be stored');
     });
 
     it('should throw error when delegation store API returns error response', async () => {
@@ -330,7 +355,7 @@ describe('DelegationStorageClient', () => {
 
       await expect(
         delegationStore.storeDelegation(MOCK_SIGNED_DELEGATION),
-      ).to.be.rejectedWith('Some API error');
+      ).rejects.toThrow('Some API error');
     });
   });
 });

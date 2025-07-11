@@ -4,32 +4,40 @@ import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export const erc721Transfer = 'erc721Transfer';
 
+export type Erc721TransferBuilderConfig = {
+  /**
+   * The ERC-721 contract address as a hex string.
+   */
+  tokenAddress: Address;
+  /**
+   * The token ID as a bigint.
+   */
+  tokenId: bigint;
+};
+
 /**
  * Builds a caveat struct for the ERC721TransferEnforcer.
  *
  * @param environment - The DeleGator environment.
- * @param permittedContract - The permitted contract address for the ERC721 token.
- * @param permittedTokenId - The permitted token ID as a bigint.
+ * @param config - The configuration object for the ERC721 transfer builder.
  * @returns The Caveat representing the caveat for ERC721 transfer.
  * @throws Error if the permitted contract address is invalid.
  */
 export const erc721TransferBuilder = (
   environment: DeleGatorEnvironment,
-  permittedContract: Address,
-  permittedTokenId: bigint,
+  config: Erc721TransferBuilderConfig,
 ): Caveat => {
-  if (!isAddress(permittedContract, { strict: false })) {
+  const { tokenAddress, tokenId } = config;
+
+  if (!isAddress(tokenAddress, { strict: false })) {
     throw new Error('Invalid tokenAddress: must be a valid address');
   }
 
-  if (permittedTokenId < 0) {
-    throw new Error('Invalid permittedTokenId: must be a non-negative number');
+  if (tokenId < 0n) {
+    throw new Error('Invalid tokenId: must be a non-negative number');
   }
 
-  const terms = concat([
-    permittedContract,
-    toHex(permittedTokenId, { size: 32 }),
-  ]);
+  const terms = concat([tokenAddress, toHex(tokenId, { size: 32 })]);
 
   const {
     caveatEnforcers: { ERC721TransferEnforcer },

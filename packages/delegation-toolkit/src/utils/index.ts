@@ -20,12 +20,9 @@ export {
   encodeExecutionCalldatas,
   encodeSingleExecution,
   encodeBatchExecution,
-  SINGLE_DEFAULT_MODE,
-  SINGLE_TRY_MODE,
-  BATCH_DEFAULT_MODE,
 } from '../executions';
 
-export type { ExecutionMode, ExecutionStruct } from '../executions';
+export type { ExecutionStruct } from '../executions';
 
 export type { AuthenticatorFlags } from '../webAuthn';
 
@@ -42,4 +39,6 @@ export {
   deployDeleGatorEnvironment,
 } from '../delegatorEnvironment';
 
-export type { CoreCaveatBuilder } from '../caveatBuilder';
+export type { CoreCaveatBuilder, CaveatBuilderConfig } from '../caveatBuilder';
+
+export { createCaveatBuilder, CaveatBuilder } from '../caveatBuilder';

@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { concat, size, toHex } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { nativeTokenPeriodTransferBuilder } from '../../src/caveatBuilder/nativeTokenPeriodTransferBuilder';
 import type { DeleGatorEnvironment } from '../../src/types';
@@ -16,12 +16,8 @@ describe('nativeTokenPeriodTransferBuilder()', () => {
     periodDuration: number,
     startDate: number,
   ) => {
-    return nativeTokenPeriodTransferBuilder(
-      environment,
-      periodAmount,
-      periodDuration,
-      startDate,
-    );
+    const config = { periodAmount, periodDuration, startDate };
+    return nativeTokenPeriodTransferBuilder(environment, config);
   };
 
   describe('validation', () => {

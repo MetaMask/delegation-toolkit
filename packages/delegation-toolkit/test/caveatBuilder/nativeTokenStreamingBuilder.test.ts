@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { size } from 'viem';
+import { expect, describe, it } from 'vitest';
 
 import { nativeTokenStreamingBuilder } from '../../src/caveatBuilder/nativeTokenStreamingBuilder';
 import { TIMESTAMP_UPPER_BOUND_SECONDS } from '../../src/caveatBuilder/shared';
@@ -21,13 +21,8 @@ describe('nativeTokenStreamingBuilder()', () => {
     amountPerSecond: bigint,
     startTime: number,
   ) => {
-    return nativeTokenStreamingBuilder(
-      environment,
-      initialAmount,
-      maxAmount,
-      amountPerSecond,
-      startTime,
-    );
+    const config = { initialAmount, maxAmount, amountPerSecond, startTime };
+    return nativeTokenStreamingBuilder(environment, config);
   };
 
   describe('validation', () => {
