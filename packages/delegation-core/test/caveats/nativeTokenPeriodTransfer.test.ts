@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { createNativeTokenPeriodTransferTerms } from '../../src/caveats/nativeTokenPeriodTransfer';
+import { isValidHex } from '../../src/utils';
 
 describe('createNativeTokenPeriodTransferTerms', () => {
   const EXPECTED_BYTE_LENGTH = 96; // 32 bytes for each of the 3 parameters
@@ -53,7 +54,7 @@ describe('createNativeTokenPeriodTransferTerms', () => {
     });
 
     expect(result).toHaveLength(194);
-    expect(result).toMatch(/^0x[0-9a-f]{192}$/u);
+    expect(isValidHex(result, { exactLength: 192 })).toBe(true);
   });
 
   it('creates valid terms for maximum safe values', () => {
@@ -68,7 +69,7 @@ describe('createNativeTokenPeriodTransferTerms', () => {
     });
 
     expect(result).toHaveLength(194);
-    expect(result).toMatch(/^0x[0-9a-f]{192}$/u);
+    expect(isValidHex(result, { exactLength: 192 })).toBe(true);
   });
 
   it('throws an error for zero period amount', () => {
@@ -225,7 +226,7 @@ describe('createNativeTokenPeriodTransferTerms', () => {
       startDate,
     });
 
-    expect(result).toMatch(/^0x[0-9a-f]{192}$/u);
+    expect(isValidHex(result, { exactLength: 192 })).toBe(true);
     expect(result).toHaveLength(194);
   });
 
