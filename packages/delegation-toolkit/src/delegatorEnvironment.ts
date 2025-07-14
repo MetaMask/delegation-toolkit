@@ -81,11 +81,9 @@ export function getDeleGatorEnvironment(
 ): DeleGatorEnvironment {
   const overrideKey = getContractOverrideKey(chainId, version);
 
-  if (contractOverrideMap.has(overrideKey)) {
-    const overridenContracts = contractOverrideMap.get(overrideKey);
-    if (overridenContracts) {
-      return overridenContracts;
-    }
+  const overriddenContracts = contractOverrideMap.get(overrideKey);
+  if (overriddenContracts) {
+    return overriddenContracts;
   }
 
   const contracts = DELEGATOR_CONTRACTS[version]?.[chainId];
