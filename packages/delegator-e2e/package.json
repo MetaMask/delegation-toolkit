@@ -14,10 +14,8 @@
   "scripts": {
     "build": "cd contracts && forge build && cd ..",
     "setup": "yarn build && docker compose up -d && npx tsx src/await-dependencies.ts",
-    "run-test:full": "npx vitest run",
-    "run-test:smoketest": "npx vitest run --testNamePattern maincase",
-    "e2etest:full": "yarn setup && yarn run-test:full; EXIT_CODE=$?; yarn teardown; exit $EXIT_CODE",
-    "e2etest:smoketest": "yarn setup && yarn run-test:smoketest; EXIT_CODE=$?; yarn teardown; exit $EXIT_CODE",
+    "test": "npx vitest run",
+    "test:e2e": "yarn setup && yarn test; EXIT_CODE=$?; yarn teardown; exit $EXIT_CODE",
     "teardown": "docker compose down"
   },
   "peerDependencies": {

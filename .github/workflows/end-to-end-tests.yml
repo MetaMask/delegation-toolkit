@@ -13,14 +13,7 @@ on:
       NPM_CLIENT:
         type: string
         default: 'yarn'
-      RUN_FULL_TESTS:
-        type: boolean
-        default: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/') }}
   workflow_dispatch:
-    inputs:
-      RUN_FULL_TESTS:
-        type: boolean
-        default: true
 
 jobs:
   pipeline:
@@ -28,13 +21,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x, 22.x]
     steps:
       - name: Checkout and setup environment
         uses: MetaMask/action-checkout-and-setup@v1
         with:
           is-high-risk-environment: false
-          cache-node-modules: ${{ matrix.node-version == '22.x' }}
+          cache-node-modules: true
           submodules: 'recursive'
 
       - name: Install Foundry
@@ -60,9 +53,4 @@ jobs:
           NODE_ENV: production
 
       - name: Run end-to-end tests
-        run: |
-          if [[ "${{ inputs.RUN_FULL_TESTS }}" == "true" ]]; then
-            yarn e2etest:full
-          else
-            yarn e2etest:smoketest
-          fi
+        run: yarn test:e2e

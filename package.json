@@ -23,8 +23,7 @@
     "generate:abi": "cd ./shared/abi/scripts && ./generate-abi.sh",
     "lint": "turbo lint",
     "test": "turbo run test --filter='!./packages/delegator-e2e'",
-    "e2etest:full": "turbo run e2etest:full --filter='./packages/delegator-e2e'",
-    "e2etest:smoketest": "turbo run e2etest:smoketest --filter='./packages/delegator-e2e'",
+    "test:e2e": "turbo run test:e2e --filter='./packages/delegator-e2e'",
     "test:watch": "turbo run test:watch"
   },
   "devDependencies": {
