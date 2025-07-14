@@ -57,3 +57,22 @@ export type { AggregateSignatureParams } from './signatures';
 export { signUserOperation } from './userOp';
 
 export { redeemDelegations } from './write';
+
+export {
+  CaveatUtils,
+  createCaveatUtils,
+  getCaveatAvailableAmount,
+} from './caveatUtils/index';
+
+export type {
+  CaveatEnforcerName,
+  CaveatEnforcerParams,
+  CaveatEnforcerResult,
+  CaveatUtilsConfig,
+  BaseCaveatParams,
+  PeriodTransferParams,
+  MultiTokenPeriodParams,
+  StreamingParams,
+  PeriodTransferResult,
+  StreamingResult,
+} from './caveatUtils/index';
