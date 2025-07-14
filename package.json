@@ -13,8 +13,8 @@
   ],
   "scripts": {
     "allow-scripts": "echo 'n/a'",
-    "build": "turbo build --cache-dir=.turbo",
-    "build:packages": "turbo run build --cache-dir=.turbo --filter='!./packages/delegator-e2e'",
+    "build": "turbo build",
+    "build:packages": "turbo run build --filter='!./packages/delegator-e2e'",
     "changelog:update": "turbo run changelog:update --filter='!./packages/delegator-e2e'",
     "changelog:validate": "turbo run changelog:validate --filter='!./packages/delegator-e2e'",
     "clean": "turbo clean",

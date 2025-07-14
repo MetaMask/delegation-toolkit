@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x, 22.x]
+        node-version: [18.x, 20.x, 22.x]
     steps:
       - name: Checkout and setup environment
         uses: MetaMask/action-checkout-and-setup@v1
@@ -46,11 +46,6 @@ jobs:
 
       - name: Install Yarn dependencies
         run: yarn install
-
-      - name: Run build
-        run: yarn build
-        env:
-          NODE_ENV: production
 
       - name: Run end-to-end tests
         run: yarn test:e2e

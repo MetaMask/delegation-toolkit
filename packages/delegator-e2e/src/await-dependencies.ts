@@ -24,7 +24,7 @@ const waitFor = async (name: string, url: string) => {
   });
 
   do {
-    if (!isAvailable) {
+    if (isAvailable !== undefined) {
       // Only add a delay if it's not the first time
       await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
     }
@@ -62,12 +62,13 @@ const deployEnvironment = async () => {
 
 (async () => {
   await waitFor('Blockchain node', nodeUrl);
+  const waitingForDependencies = Promise.all([
+    waitFor('Bundler', bundlerUrl),
+    waitFor('Mock paymaster', paymasterUrl),
+  ]);
 
   const environment = await deployEnvironment();
   await writeFile('./.gator-env.json', JSON.stringify(environment, null, 2));
 
-  await Promise.all([
-    waitFor('Bundler', bundlerUrl),
-    waitFor('Mock paymaster', paymasterUrl),
-  ]);
+  await waitingForDependencies;
 })();
