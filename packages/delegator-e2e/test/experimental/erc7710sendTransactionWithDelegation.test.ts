@@ -238,7 +238,7 @@ test('Bob attempts to call the increment function directly', async () => {
 test('Bob sends a native value transaction with delegation', async () => {
   await deploySmartAccount(aliceSmartAccount);
 
-  const allowance = 100n;
+  const maxAmount = 100n;
   const recipient = randomAddress();
 
   const { DelegationManager: delegationManager } =
@@ -246,7 +246,7 @@ test('Bob sends a native value transaction with delegation', async () => {
 
   const caveats = createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
     'nativeTokenTransferAmount',
-    allowance,
+    { maxAmount },
   );
 
   const delegation = createDelegation({
@@ -268,13 +268,13 @@ test('Bob sends a native value transaction with delegation', async () => {
     chain,
   }).extend(erc7710WalletActions());
 
-  await fundAddress(aliceSmartAccount.address, allowance);
+  await fundAddress(aliceSmartAccount.address, maxAmount);
 
   const transactionHash = await bobWalletClient.sendTransactionWithDelegation({
     account: bob,
     chain,
     to: recipient,
-    value: allowance,
+    value: maxAmount,
     permissionsContext,
     delegationManager,
   });
@@ -283,5 +283,5 @@ test('Bob sends a native value transaction with delegation', async () => {
 
   const balance = await publicClient.getBalance({ address: recipient });
 
-  expect(balance).toEqual(allowance);
+  expect(balance).toEqual(maxAmount);
 });

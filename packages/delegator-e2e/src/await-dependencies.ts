@@ -11,7 +11,10 @@ import { deployDeleGatorEnvironment } from '@metamask/delegation-toolkit/utils';
 import { ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 import { writeFile } from 'fs/promises';
 
-const POLL_INTERVAL_MS = 1000;
+const POLL_INTERVAL_MS = 1_000;
+// timeout is 5 minutes, which is sufficiently long to never trigger a false positive
+const TIMEOUT_MS = 5 * 60_000;
+let hasTimedOut = false;
 
 const waitFor = async (name: string, url: string) => {
   let isAvailable: boolean | undefined = undefined;
@@ -24,7 +27,7 @@ const waitFor = async (name: string, url: string) => {
   });
 
   do {
-    if (!isAvailable) {
+    if (isAvailable !== undefined) {
       // Only add a delay if it's not the first time
       await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
     }
@@ -32,10 +35,8 @@ const waitFor = async (name: string, url: string) => {
     await client
       .request({ method: 'web3_clientVersion' })
       .then(() => (isAvailable = true))
-      .catch((e: any) => {
-        isAvailable = (e as Error).name !== 'HttpRequestError';
-      });
-  } while (!isAvailable);
+      .catch((_) => (isAvailable = false));
+  } while (!isAvailable && !hasTimedOut);
 
   console.log(`${name} is available`);
 };
@@ -61,6 +62,10 @@ const deployEnvironment = async () => {
 };
 
 (async () => {
+  const startTime = Date.now();
+
+  const timeoutRef = setTimeout(() => (hasTimedOut = true), TIMEOUT_MS);
+
   await waitFor('Blockchain node', nodeUrl);
 
   const environment = await deployEnvironment();
@@ -70,4 +75,14 @@ const deployEnvironment = async () => {
     waitFor('Bundler', bundlerUrl),
     waitFor('Mock paymaster', paymasterUrl),
   ]);
+
+  clearTimeout(timeoutRef);
+
+  if (hasTimedOut) {
+    console.error('Timed out waiting for dependencies');
+    process.exitCode = 1;
+  } else {
+    const duration = Date.now() - startTime;
+    console.log(`Dependencies ready in ${duration}ms`);
+  }
 })();
