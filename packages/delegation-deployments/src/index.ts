@@ -13,12 +13,14 @@ export const CHAIN_ID = {
   polygon: 137,
   base: 8453,
   arbitrum: 42161,
+  inkMainnet: 57073,
   linea: 59144,
   berachain: 80094,
   unichain: 130,
   arbitrumNova: 42170,
   // Testnets
   bscTestnet: 97,
+  citreaTestnet: 5115,
   megaEthTestnet: 6342,
   chiado: 10200,
   lineaSepolia: 59141,
@@ -29,6 +31,7 @@ export const CHAIN_ID = {
   optimismSepolia: 11155420,
   unichainSepolia: 1301,
   polygonAmoy: 80002,
+  inkSepolia: 763373,
   monadTestnet: 10143,
   // decommissioned
   lineaGoerli: 59140,
@@ -79,6 +82,7 @@ export const DELEGATOR_CONTRACTS: DeployedContracts = {
     [CHAIN_ID.bsc]: deployments_1_3_0,
     [CHAIN_ID.optimism]: deployments_1_3_0,
     [CHAIN_ID.arbitrum]: deployments_1_3_0,
+    [CHAIN_ID.inkMainnet]: deployments_1_3_0,
     [CHAIN_ID.linea]: deployments_1_3_0,
     [CHAIN_ID.base]: deployments_1_3_0,
     [CHAIN_ID.gnosis]: deployments_1_3_0,
@@ -87,6 +91,7 @@ export const DELEGATOR_CONTRACTS: DeployedContracts = {
     [CHAIN_ID.arbitrumNova]: deployments_1_3_0,
     // Testnets
     [CHAIN_ID.sepolia]: deployments_1_3_0,
+    [CHAIN_ID.citreaTestnet]: deployments_1_3_0,
     [CHAIN_ID.lineaSepolia]: deployments_1_3_0,
     [CHAIN_ID.baseSepolia]: deployments_1_3_0,
     [CHAIN_ID.megaEthTestnet]: deployments_1_3_0,
@@ -97,6 +102,7 @@ export const DELEGATOR_CONTRACTS: DeployedContracts = {
     [CHAIN_ID.berachainBepolia]: deployments_1_3_0,
     [CHAIN_ID.unichainSepolia]: deployments_1_3_0,
     [CHAIN_ID.polygonAmoy]: deployments_1_3_0,
+    [CHAIN_ID.inkSepolia]: deployments_1_3_0,
     [CHAIN_ID.monadTestnet]: deployments_1_3_0,
   },
 };
