@@ -42,7 +42,7 @@ yarn test
 Run the `delegator-e2e` integration test suite:
 
 ```sh
-yarn e2etest:full
+yarn e2etest
 ```
 
 # Contributing
