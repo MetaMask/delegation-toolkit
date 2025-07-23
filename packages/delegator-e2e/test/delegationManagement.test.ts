@@ -13,8 +13,10 @@ import {
   encodeExecutionCalldatas,
   getDelegationHashOffchain,
 } from '@metamask/delegation-toolkit/utils';
-import { DeleGatorCore } from '@metamask/delegation-toolkit/contracts';
-import { DelegationManager as DelegationManagerABI } from '@metamask/delegation-abis';
+import {
+  DeleGatorCore,
+  DelegationManager,
+} from '@metamask/delegation-toolkit/contracts';
 import {
   transport,
   gasPrice,
@@ -161,11 +163,10 @@ test('delegation management lifecycle: create, disable, enable, and check status
   expectUserOperationToSucceed(receipt);
 
   // Step 4: Verify the delegation is disabled using delegation-toolkit
-  const isDisabled = await publicClient.readContract({
-    address: aliceSmartAccount.environment.DelegationManager,
-    abi: DelegationManagerABI.abi,
-    functionName: 'disabledDelegations',
-    args: [delegationHash],
+  const isDisabled = await DelegationManager.read.disabledDelegations({
+    client: publicClient,
+    contractAddress: aliceSmartAccount.environment.DelegationManager,
+    delegationHash,
   });
 
   expect(isDisabled).toBe(true);
@@ -213,11 +214,10 @@ test('delegation management lifecycle: create, disable, enable, and check status
   expectUserOperationToSucceed(receipt);
 
   // Step 7: Verify the delegation is no longer disabled using delegation-toolkit
-  const isStillDisabled = await publicClient.readContract({
-    address: aliceSmartAccount.environment.DelegationManager,
-    abi: DelegationManagerABI.abi,
-    functionName: 'disabledDelegations',
-    args: [delegationHash],
+  const isStillDisabled = await DelegationManager.read.disabledDelegations({
+    client: publicClient,
+    contractAddress: aliceSmartAccount.environment.DelegationManager,
+    delegationHash,
   });
 
   expect(isStillDisabled).toBe(false);
@@ -363,11 +363,10 @@ test('disabling non-existent delegation should succeed silently', async () => {
 
   // Verify the delegation is now disabled
   const delegationHash = getDelegationHashOffchain(delegation);
-  const isDisabled = await publicClient.readContract({
-    address: aliceSmartAccount.environment.DelegationManager,
-    abi: DelegationManagerABI.abi,
-    functionName: 'disabledDelegations',
-    args: [delegationHash],
+  const isDisabled = await DelegationManager.read.disabledDelegations({
+    client: publicClient,
+    contractAddress: aliceSmartAccount.environment.DelegationManager,
+    delegationHash,
   });
 
   expect(isDisabled).toBe(true);
@@ -395,18 +394,16 @@ test('can check delegation status using disabledDelegations', async () => {
   const delegationHash2 = getDelegationHashOffchain(delegation2);
 
   // Initially, both delegations should not be disabled
-  let isDisabled1 = await publicClient.readContract({
-    address: aliceSmartAccount.environment.DelegationManager,
-    abi: DelegationManagerABI.abi,
-    functionName: 'disabledDelegations',
-    args: [delegationHash1],
+  let isDisabled1 = await DelegationManager.read.disabledDelegations({
+    client: publicClient,
+    contractAddress: aliceSmartAccount.environment.DelegationManager,
+    delegationHash: delegationHash1,
   });
 
-  let isDisabled2 = await publicClient.readContract({
-    address: aliceSmartAccount.environment.DelegationManager,
-    abi: DelegationManagerABI.abi,
-    functionName: 'disabledDelegations',
-    args: [delegationHash2],
+  let isDisabled2 = await DelegationManager.read.disabledDelegations({
+    client: publicClient,
+    contractAddress: aliceSmartAccount.environment.DelegationManager,
+    delegationHash: delegationHash2,
   });
 
   expect(isDisabled1).toBe(false);
@@ -436,18 +433,16 @@ test('can check delegation status using disabledDelegations', async () => {
   expectUserOperationToSucceed(receipt);
 
   // Check status again
-  isDisabled1 = await publicClient.readContract({
-    address: aliceSmartAccount.environment.DelegationManager,
-    abi: DelegationManagerABI.abi,
-    functionName: 'disabledDelegations',
-    args: [delegationHash1],
+  isDisabled1 = await DelegationManager.read.disabledDelegations({
+    client: publicClient,
+    contractAddress: aliceSmartAccount.environment.DelegationManager,
+    delegationHash: delegationHash1,
   });
 
-  isDisabled2 = await publicClient.readContract({
-    address: aliceSmartAccount.environment.DelegationManager,
-    abi: DelegationManagerABI.abi,
-    functionName: 'disabledDelegations',
-    args: [delegationHash2],
+  isDisabled2 = await DelegationManager.read.disabledDelegations({
+    client: publicClient,
+    contractAddress: aliceSmartAccount.environment.DelegationManager,
+    delegationHash: delegationHash2,
   });
 
   expect(isDisabled1).toBe(true);
