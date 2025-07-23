@@ -39,7 +39,9 @@ const waitFor = async (name: string, url: string) => {
       .catch((e) => (isAvailable = (e as Error).name !== 'HttpRequestError'));
   } while (!isAvailable && !hasTimedOut);
 
-  console.log(`${name} is available`);
+  if (isAvailable) {
+    console.log(`${name} is available`);
+  }
 };
 
 const deployEnvironment = async () => {
