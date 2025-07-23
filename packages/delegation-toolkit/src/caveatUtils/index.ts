@@ -1,10 +1,15 @@
 /**
  * CaveatUtils - Utilities for querying caveat enforcer available amounts
  */
+
 export {
-  CaveatUtils,
-  createCaveatUtils,
-  getCaveatAvailableAmount,
+  caveatUtilsActions,
+  getERC20PeriodTransferAvailableAmountAction,
+  getMultiTokenPeriodAvailableAmountAction,
+  getNativeTokenPeriodTransferAvailableAmountAction,
+  getERC20StreamingAvailableAmountAction,
+  getNativeTokenStreamingAvailableAmountAction,
+  getCaveatAvailableAmountAction,
 } from './caveatUtils';
 
 export type {

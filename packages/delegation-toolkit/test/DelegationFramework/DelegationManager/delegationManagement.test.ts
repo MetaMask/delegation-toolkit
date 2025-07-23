@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { isStrictHexString } from '@metamask/utils';
 
 import { createDelegation } from '../../../src/delegation';
 import { createCaveatBuilder } from '../../../src/caveatBuilder';
@@ -7,7 +8,6 @@ import * as DelegationManager from '../../../src/DelegationFramework/DelegationM
 import type { DeleGatorEnvironment } from '../../../src/types';
 import { ExecutionMode, createExecution } from '../../../src/executions';
 import { randomAddress } from '../../utils';
-import { isValidHex } from '../../../src/data';
 
 describe('DelegationManager - Delegation Management', () => {
   const environment: DeleGatorEnvironment = {
@@ -95,7 +95,7 @@ describe('DelegationManager - Delegation Management', () => {
         delegation,
       });
 
-      expect(isValidHex(encodedData)).toBe(true);
+      expect(isStrictHexString(encodedData)).toBe(true);
       expect(encodedData.length).toBe(1034);
     });
   });
@@ -117,7 +117,7 @@ describe('DelegationManager - Delegation Management', () => {
         delegation,
       });
 
-      expect(isValidHex(encodedData)).toBe(true);
+      expect(isStrictHexString(encodedData)).toBe(true);
       expect(encodedData.length).toBe(1034);
     });
   });
@@ -145,7 +145,7 @@ describe('DelegationManager - Delegation Management', () => {
         executions: [[execution]],
       });
 
-      expect(isValidHex(encodedData)).toBe(true);
+      expect(isStrictHexString(encodedData)).toBe(true);
       expect(encodedData.length).toBe(1994);
     });
   });

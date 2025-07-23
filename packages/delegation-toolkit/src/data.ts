@@ -1,33 +1,6 @@
 import { type Hex, isHex, toHex } from 'viem';
 
 /**
- * Validates if a string is a properly formatted hex string.
- * @param value - The string to validate.
- * @param options - Optional validation options.
- * @param options.minLength - Minimum length after '0x' prefix (default: 1).
- * @param options.exactLength - Exact length after '0x' prefix (optional).
- * @returns True if the string is a valid hex string, false otherwise.
- */
-export function isValidHex(
-  value: string,
-  options: { minLength?: number; exactLength?: number } = {},
-): value is Hex {
-  const { minLength = 1, exactLength } = options;
-
-  if (!isHex(value)) {
-    return false;
-  }
-
-  const hexContent = value.slice(2); // Remove '0x' prefix
-
-  if (exactLength !== undefined) {
-    return hexContent.length === exactLength;
-  }
-
-  return hexContent.length >= minLength;
-}
-
-/**
  * Checks if two hexadecimal strings are equal, ignoring case sensitivity.
  * @param a - The first hexadecimal string.
  * @param b - The second hexadecimal string.

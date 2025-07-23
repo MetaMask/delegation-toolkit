@@ -59,9 +59,13 @@ export { signUserOperation } from './userOp';
 export { redeemDelegations } from './write';
 
 export {
-  CaveatUtils,
-  createCaveatUtils,
-  getCaveatAvailableAmount,
+  caveatUtilsActions,
+  getERC20PeriodTransferAvailableAmountAction,
+  getMultiTokenPeriodAvailableAmountAction,
+  getNativeTokenPeriodTransferAvailableAmountAction,
+  getERC20StreamingAvailableAmountAction,
+  getNativeTokenStreamingAvailableAmountAction,
+  getCaveatAvailableAmountAction,
 } from './caveatUtils/index';
 
 export type {

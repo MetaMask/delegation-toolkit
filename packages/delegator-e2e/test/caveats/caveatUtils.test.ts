@@ -12,8 +12,7 @@ import {
   toMetaMaskSmartAccount,
   ExecutionMode,
   type MetaMaskSmartAccount,
-  CaveatUtils,
-  createCaveatUtils,
+  caveatUtilsActions,
 } from '@metamask/delegation-toolkit';
 import {
   transport,
@@ -32,7 +31,6 @@ import {
   encodeFunctionData,
   type Hex,
   parseEther,
-  concat,
   encodePacked,
 } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
@@ -48,7 +46,7 @@ let bobSmartAccount: MetaMaskSmartAccount<Implementation.Hybrid>;
 let charlieAddress: Hex;
 let erc20TokenAddress: Hex;
 let currentTime: number;
-let caveatUtils: CaveatUtils;
+let clientWithCaveats: any;
 
 /**
  * These tests verify the caveat utilities functionality with live delegations.
@@ -94,10 +92,7 @@ beforeEach(async () => {
   const { timestamp } = await publicClient.getBlock({ blockTag: 'latest' });
   currentTime = Number(timestamp);
 
-  // Initialize caveat utils
-  caveatUtils = createCaveatUtils({
-    client: publicClient,
-  });
+  clientWithCaveats = publicClient.extend(caveatUtilsActions());
 });
 
 describe('ERC20PeriodTransferEnforcer', () => {
@@ -128,7 +123,7 @@ describe('ERC20PeriodTransferEnforcer', () => {
     const delegationHash = getDelegationHashOffchain(signedDelegation);
 
     const beforeResult =
-      await caveatUtils.getERC20PeriodTransferAvailableAmount({
+      await clientWithCaveats.getERC20PeriodTransferAvailableAmount({
         delegationHash,
         terms: delegation.caveats[0].terms,
       });
@@ -168,12 +163,11 @@ describe('ERC20PeriodTransferEnforcer', () => {
 
     await expectUserOperationToSucceed(receipt);
 
-    const afterResult = await caveatUtils.getERC20PeriodTransferAvailableAmount(
-      {
+    const afterResult =
+      await clientWithCaveats.getERC20PeriodTransferAvailableAmount({
         delegationHash,
         terms: delegation.caveats[0].terms,
-      },
-    );
+      });
 
     expect(afterResult.availableAmount).toBe(periodAmount - transferAmount);
     expect(afterResult.isNewPeriod).toBe(false);
@@ -213,7 +207,7 @@ describe('ERC20PeriodTransferEnforcer', () => {
     const delegationHash = getDelegationHashOffchain(signedDelegation);
 
     const beforeResult =
-      await caveatUtils.getERC20PeriodTransferAvailableAmount({
+      await clientWithCaveats.getERC20PeriodTransferAvailableAmount({
         delegationHash,
         terms: delegation.caveats[0].terms,
       });
@@ -249,12 +243,11 @@ describe('ERC20PeriodTransferEnforcer', () => {
       }),
     ).rejects.toThrow();
 
-    const afterResult = await caveatUtils.getERC20PeriodTransferAvailableAmount(
-      {
+    const afterResult =
+      await clientWithCaveats.getERC20PeriodTransferAvailableAmount({
         delegationHash,
         terms: delegation.caveats[0].terms,
-      },
-    );
+      });
 
     expect(afterResult.availableAmount).toBe(0n);
     expect(afterResult.isNewPeriod).toBe(false);
@@ -296,7 +289,7 @@ describe('ERC20PeriodTransferEnforcer', () => {
 
     // Should be a new period, availableAmount reset to periodAmount
     const beforeResult =
-      await caveatUtils.getERC20PeriodTransferAvailableAmount({
+      await clientWithCaveats.getERC20PeriodTransferAvailableAmount({
         delegationHash,
         terms: delegation.caveats[0].terms,
       });
@@ -336,12 +329,11 @@ describe('ERC20PeriodTransferEnforcer', () => {
 
     await expectUserOperationToSucceed(receipt);
 
-    const afterResult = await caveatUtils.getERC20PeriodTransferAvailableAmount(
-      {
+    const afterResult =
+      await clientWithCaveats.getERC20PeriodTransferAvailableAmount({
         delegationHash,
         terms: delegation.caveats[0].terms,
-      },
-    );
+      });
 
     expect(afterResult.availableAmount).toBe(periodAmount - transferAmount);
     expect(afterResult.isNewPeriod).toBe(false);
@@ -388,9 +380,10 @@ describe('ERC20StreamingEnforcer', () => {
     const delegationHash = getDelegationHashOffchain(signedDelegation);
 
     // Check available amount before redemption
-    const beforeResult = await caveatUtils.getERC20StreamingAvailableAmount({
-      delegationHash,
-    });
+    const beforeResult =
+      await clientWithCaveats.getERC20StreamingAvailableAmount({
+        delegationHash,
+      });
 
     // @note: This enforcer shows 0 before first use.
     expect(beforeResult.availableAmount).toBe(0n);
@@ -435,9 +428,10 @@ describe('ERC20StreamingEnforcer', () => {
     await expectUserOperationToSucceed(receipt);
 
     // Check available amount after redemption
-    const afterResult = await caveatUtils.getERC20StreamingAvailableAmount({
-      delegationHash,
-    });
+    const afterResult =
+      await clientWithCaveats.getERC20StreamingAvailableAmount({
+        delegationHash,
+      });
 
     expect(afterResult.availableAmount).toBeGreaterThanOrEqual(
       initialAmount - transferAmount,
@@ -482,9 +476,10 @@ describe('ERC20StreamingEnforcer', () => {
 
     const delegationHash = getDelegationHashOffchain(signedDelegation);
 
-    const beforeResult = await caveatUtils.getERC20StreamingAvailableAmount({
-      delegationHash,
-    });
+    const beforeResult =
+      await clientWithCaveats.getERC20StreamingAvailableAmount({
+        delegationHash,
+      });
 
     expect(beforeResult.availableAmount).toBe(0n);
 
@@ -516,9 +511,10 @@ describe('ERC20StreamingEnforcer', () => {
       }),
     ).rejects.toThrow();
 
-    const afterResult = await caveatUtils.getERC20StreamingAvailableAmount({
-      delegationHash,
-    });
+    const afterResult =
+      await clientWithCaveats.getERC20StreamingAvailableAmount({
+        delegationHash,
+      });
 
     expect(afterResult.availableAmount).toBe(0n);
 
@@ -560,9 +556,10 @@ describe('ERC20StreamingEnforcer', () => {
 
     const delegationHash = getDelegationHashOffchain(signedDelegation);
 
-    const beforeResult = await caveatUtils.getERC20StreamingAvailableAmount({
-      delegationHash,
-    });
+    const beforeResult =
+      await clientWithCaveats.getERC20StreamingAvailableAmount({
+        delegationHash,
+      });
 
     // @note: This enforcer shows 0 before first use.
     expect(beforeResult.availableAmount).toBe(0n);
@@ -604,9 +601,10 @@ describe('ERC20StreamingEnforcer', () => {
     const currentBlockTime = Number(currentBlock.timestamp);
     const actualTimePassed = currentBlockTime - pastStartTime;
 
-    const afterResult = await caveatUtils.getERC20StreamingAvailableAmount({
-      delegationHash,
-    });
+    const afterResult =
+      await clientWithCaveats.getERC20StreamingAvailableAmount({
+        delegationHash,
+      });
 
     const expectedAmount =
       initialAmount -
@@ -659,11 +657,12 @@ describe('MultiTokenPeriodEnforcer', () => {
     signedDelegation.caveats[0].args = args;
 
     // Check available amount before redemption
-    const beforeResult = await caveatUtils.getMultiTokenPeriodAvailableAmount({
-      delegationHash,
-      terms: delegation.caveats[0].terms,
-      args,
-    });
+    const beforeResult =
+      await clientWithCaveats.getMultiTokenPeriodAvailableAmount({
+        delegationHash,
+        terms: delegation.caveats[0].terms,
+        args,
+      });
 
     expect(beforeResult.availableAmount).toBe(periodAmount);
     expect(beforeResult.isNewPeriod).toBe(true);
@@ -703,11 +702,12 @@ describe('MultiTokenPeriodEnforcer', () => {
     await expectUserOperationToSucceed(receipt);
 
     // Check available amount after redemption
-    const afterResult = await caveatUtils.getMultiTokenPeriodAvailableAmount({
-      delegationHash,
-      terms: delegation.caveats[0].terms,
-      args,
-    });
+    const afterResult =
+      await clientWithCaveats.getMultiTokenPeriodAvailableAmount({
+        delegationHash,
+        terms: delegation.caveats[0].terms,
+        args,
+      });
 
     expect(afterResult.availableAmount).toBe(0n); // All tokens were transferred
     expect(afterResult.isNewPeriod).toBe(false);
@@ -755,11 +755,12 @@ describe('MultiTokenPeriodEnforcer', () => {
     const args = encodePacked(['uint256'], [BigInt(0)]); // token index 0
     signedDelegation.caveats[0].args = args;
 
-    const beforeResult = await caveatUtils.getMultiTokenPeriodAvailableAmount({
-      delegationHash,
-      terms: delegation.caveats[0].terms,
-      args,
-    });
+    const beforeResult =
+      await clientWithCaveats.getMultiTokenPeriodAvailableAmount({
+        delegationHash,
+        terms: delegation.caveats[0].terms,
+        args,
+      });
 
     expect(beforeResult.availableAmount).toBe(0n);
     expect(beforeResult.isNewPeriod).toBe(false);
@@ -792,11 +793,12 @@ describe('MultiTokenPeriodEnforcer', () => {
       }),
     ).rejects.toThrow();
 
-    const afterResult = await caveatUtils.getMultiTokenPeriodAvailableAmount({
-      delegationHash,
-      terms: delegation.caveats[0].terms,
-      args,
-    });
+    const afterResult =
+      await clientWithCaveats.getMultiTokenPeriodAvailableAmount({
+        delegationHash,
+        terms: delegation.caveats[0].terms,
+        args,
+      });
 
     expect(afterResult.availableAmount).toBe(0n);
     expect(afterResult.isNewPeriod).toBe(false);
@@ -843,11 +845,12 @@ describe('MultiTokenPeriodEnforcer', () => {
     const args = encodePacked(['uint256'], [BigInt(0)]); // token index 0
     signedDelegation.caveats[0].args = args;
 
-    const beforeResult = await caveatUtils.getMultiTokenPeriodAvailableAmount({
-      delegationHash,
-      terms: delegation.caveats[0].terms,
-      args,
-    });
+    const beforeResult =
+      await clientWithCaveats.getMultiTokenPeriodAvailableAmount({
+        delegationHash,
+        terms: delegation.caveats[0].terms,
+        args,
+      });
 
     expect(beforeResult.availableAmount).toBe(periodAmount);
     expect(beforeResult.isNewPeriod).toBe(true);
@@ -884,11 +887,12 @@ describe('MultiTokenPeriodEnforcer', () => {
 
     await expectUserOperationToSucceed(receipt);
 
-    const afterResult = await caveatUtils.getMultiTokenPeriodAvailableAmount({
-      delegationHash,
-      terms: delegation.caveats[0].terms,
-      args,
-    });
+    const afterResult =
+      await clientWithCaveats.getMultiTokenPeriodAvailableAmount({
+        delegationHash,
+        terms: delegation.caveats[0].terms,
+        args,
+      });
 
     expect(afterResult.availableAmount).toBe(periodAmount - transferAmount);
     expect(afterResult.isNewPeriod).toBe(false);
@@ -933,7 +937,7 @@ describe('NativeTokenPeriodTransferEnforcer', () => {
 
     // Check available amount before redemption
     const beforeResult =
-      await caveatUtils.getNativeTokenPeriodTransferAvailableAmount({
+      await clientWithCaveats.getNativeTokenPeriodTransferAvailableAmount({
         delegationHash,
         terms: delegation.caveats[0].terms,
       });
@@ -978,7 +982,7 @@ describe('NativeTokenPeriodTransferEnforcer', () => {
 
     // Check available amount after redemption
     const afterResult =
-      await caveatUtils.getNativeTokenPeriodTransferAvailableAmount({
+      await clientWithCaveats.getNativeTokenPeriodTransferAvailableAmount({
         delegationHash,
         terms: delegation.caveats[0].terms,
       });
@@ -1022,7 +1026,7 @@ describe('NativeTokenPeriodTransferEnforcer', () => {
     const delegationHash = getDelegationHashOffchain(signedDelegation);
 
     const beforeResult =
-      await caveatUtils.getNativeTokenPeriodTransferAvailableAmount({
+      await clientWithCaveats.getNativeTokenPeriodTransferAvailableAmount({
         delegationHash,
         terms: delegation.caveats[0].terms,
       });
@@ -1055,7 +1059,7 @@ describe('NativeTokenPeriodTransferEnforcer', () => {
     ).rejects.toThrow();
 
     const afterResult =
-      await caveatUtils.getNativeTokenPeriodTransferAvailableAmount({
+      await clientWithCaveats.getNativeTokenPeriodTransferAvailableAmount({
         delegationHash,
         terms: delegation.caveats[0].terms,
       });
@@ -1098,7 +1102,7 @@ describe('NativeTokenPeriodTransferEnforcer', () => {
     const delegationHash = getDelegationHashOffchain(signedDelegation);
 
     const beforeResult =
-      await caveatUtils.getNativeTokenPeriodTransferAvailableAmount({
+      await clientWithCaveats.getNativeTokenPeriodTransferAvailableAmount({
         delegationHash,
         terms: delegation.caveats[0].terms,
       });
@@ -1135,7 +1139,7 @@ describe('NativeTokenPeriodTransferEnforcer', () => {
     await expectUserOperationToSucceed(receipt);
 
     const afterResult =
-      await caveatUtils.getNativeTokenPeriodTransferAvailableAmount({
+      await clientWithCaveats.getNativeTokenPeriodTransferAvailableAmount({
         delegationHash,
         terms: delegation.caveats[0].terms,
       });
@@ -1184,7 +1188,7 @@ describe('NativeTokenStreamingEnforcer', () => {
 
     // Check available amount before redemption
     const beforeResult =
-      await caveatUtils.getNativeTokenStreamingAvailableAmount({
+      await clientWithCaveats.getNativeTokenStreamingAvailableAmount({
         delegationHash,
       });
 
@@ -1228,7 +1232,7 @@ describe('NativeTokenStreamingEnforcer', () => {
 
     // Check available amount after redemption
     const afterResult =
-      await caveatUtils.getNativeTokenStreamingAvailableAmount({
+      await clientWithCaveats.getNativeTokenStreamingAvailableAmount({
         delegationHash,
       });
 
@@ -1274,7 +1278,7 @@ describe('NativeTokenStreamingEnforcer', () => {
     const delegationHash = getDelegationHashOffchain(signedDelegation);
 
     const beforeResult =
-      await caveatUtils.getNativeTokenStreamingAvailableAmount({
+      await clientWithCaveats.getNativeTokenStreamingAvailableAmount({
         delegationHash,
       });
 
@@ -1305,7 +1309,7 @@ describe('NativeTokenStreamingEnforcer', () => {
     ).rejects.toThrow();
 
     const afterResult =
-      await caveatUtils.getNativeTokenStreamingAvailableAmount({
+      await clientWithCaveats.getNativeTokenStreamingAvailableAmount({
         delegationHash,
       });
 
@@ -1348,7 +1352,7 @@ describe('NativeTokenStreamingEnforcer', () => {
     const delegationHash = getDelegationHashOffchain(signedDelegation);
 
     const beforeResult =
-      await caveatUtils.getNativeTokenStreamingAvailableAmount({
+      await clientWithCaveats.getNativeTokenStreamingAvailableAmount({
         delegationHash,
       });
 
@@ -1389,7 +1393,7 @@ describe('NativeTokenStreamingEnforcer', () => {
     const actualTimePassed = currentBlockTime - pastStartTime;
 
     const afterResult =
-      await caveatUtils.getNativeTokenStreamingAvailableAmount({
+      await clientWithCaveats.getNativeTokenStreamingAvailableAmount({
         delegationHash,
       });
 
@@ -1407,7 +1411,7 @@ describe('NativeTokenStreamingEnforcer', () => {
 });
 
 describe('Generic caveat utils functionality', () => {
-  test('should work with generic getAvailableAmount method', async () => {
+  test('should work with generic getCaveatAvailableAmount method', async () => {
     const periodAmount = parseEther('3');
     const periodDuration = 3600; // 1 hour
 
@@ -1437,7 +1441,7 @@ describe('Generic caveat utils functionality', () => {
     const delegationHash = getDelegationHashOffchain(signedDelegation);
 
     // Use generic method
-    const result = await caveatUtils.getAvailableAmount(
+    const result = await clientWithCaveats.getCaveatAvailableAmount(
       'ERC20PeriodTransferEnforcer',
       {
         delegationHash,
@@ -1481,11 +1485,12 @@ describe('Generic caveat utils functionality', () => {
     const delegationHash = getDelegationHashOffchain(signedDelegation);
 
     // This should fail with custom delegation manager since it's not the real one
-    const result = await caveatUtils.getERC20PeriodTransferAvailableAmount({
-      delegationHash,
-      terms: delegation.caveats[0].terms,
-      delegationManager: customDelegationManager,
-    });
+    const result =
+      await clientWithCaveats.getERC20PeriodTransferAvailableAmount({
+        delegationHash,
+        terms: delegation.caveats[0].terms,
+        delegationManager: customDelegationManager,
+      });
 
     // Should still return a result, check structure
     expect(result).toHaveProperty('availableAmount');

@@ -5,7 +5,7 @@ import {
   ERC20StreamingEnforcer,
   NativeTokenStreamingEnforcer,
 } from '@metamask/delegation-abis';
-import type { Address, Hex, PublicClient } from 'viem';
+import type { Address, Hex, PublicClient, Client } from 'viem';
 
 import { getDeleGatorEnvironment } from '../delegatorEnvironment';
 import type { DeleGatorEnvironment } from '../types';
@@ -92,251 +92,345 @@ export type CaveatEnforcerResult = {
  * Configuration for caveat utility functions
  */
 export interface CaveatUtilsConfig {
-  client: PublicClient;
   environment?: DeleGatorEnvironment;
 }
 
 /**
- * Main class for handling caveat enforcer queries
+ * Helper function to get environment from client or use provided environment
  */
-export class CaveatUtils {
-  private client: PublicClient;
-  private environment: DeleGatorEnvironment;
-
-  constructor(config: CaveatUtilsConfig) {
-    this.client = config.client;
-    this.environment = config.environment ?? this.getEnvironmentFromClient();
+function getEnvironmentFromClientOrConfig(
+  client: PublicClient,
+  config?: CaveatUtilsConfig,
+): DeleGatorEnvironment {
+  if (config?.environment) {
+    return config.environment;
   }
 
-  /**
-   * Gets the environment from the client's chain ID
-   */
-  private getEnvironmentFromClient(): DeleGatorEnvironment {
-    const chainId = this.client.chain?.id;
-    if (!chainId) {
-      throw new Error('Chain ID not found in client');
-    }
-    return getDeleGatorEnvironment(chainId);
+  const chainId = client.chain?.id;
+  if (!chainId) {
+    throw new Error('Chain ID not found in client');
   }
-
-  /**
-   * Resolves the delegation manager address from parameters or environment
-   */
-  private resolveDelegationManager(params: BaseCaveatParams): Address {
-    const delegationManager =
-      params.delegationManager || this.environment.DelegationManager;
-
-    if (!delegationManager) {
-      throw new Error('Delegation manager address not found');
-    }
-
-    return delegationManager;
-  }
-
-  /**
-   * Resolves the enforcer address from parameters or environment
-   */
-  private resolveEnforcerAddress(
-    caveatName: CaveatEnforcerName,
-    params: BaseCaveatParams,
-  ): Address {
-    if (params.enforcerAddress) {
-      return params.enforcerAddress;
-    }
-
-    const enforcerAddress = this.environment.caveatEnforcers[caveatName];
-    if (!enforcerAddress) {
-      throw new Error(`${caveatName} not found in environment`);
-    }
-
-    return enforcerAddress;
-  }
-
-  /**
-   * Gets available amount for ERC20PeriodTransferEnforcer
-   */
-  async getERC20PeriodTransferAvailableAmount(
-    params: PeriodTransferParams,
-  ): Promise<PeriodTransferResult> {
-    const delegationManager = this.resolveDelegationManager(params);
-    const enforcerAddress = this.resolveEnforcerAddress(
-      'ERC20PeriodTransferEnforcer',
-      params,
-    );
-
-    const result = await this.client.readContract({
-      address: enforcerAddress,
-      abi: ERC20PeriodTransferEnforcer.abi,
-      functionName: 'getAvailableAmount',
-      args: [params.delegationHash, delegationManager, params.terms],
-    });
-
-    return {
-      availableAmount: result[0],
-      isNewPeriod: result[1],
-      currentPeriod: result[2],
-    };
-  }
-
-  /**
-   * Gets available amount for MultiTokenPeriodEnforcer
-   */
-  async getMultiTokenPeriodAvailableAmount(
-    params: MultiTokenPeriodParams,
-  ): Promise<PeriodTransferResult> {
-    const delegationManager = this.resolveDelegationManager(params);
-    const enforcerAddress = this.resolveEnforcerAddress(
-      'MultiTokenPeriodEnforcer',
-      params,
-    );
-
-    const result = await this.client.readContract({
-      address: enforcerAddress,
-      abi: MultiTokenPeriodEnforcer.abi,
-      functionName: 'getAvailableAmount',
-      args: [
-        params.delegationHash,
-        delegationManager,
-        params.terms,
-        params.args,
-      ],
-    });
-
-    return {
-      availableAmount: result[0],
-      isNewPeriod: result[1],
-      currentPeriod: result[2],
-    };
-  }
-
-  /**
-   * Gets available amount for NativeTokenPeriodTransferEnforcer
-   */
-  async getNativeTokenPeriodTransferAvailableAmount(
-    params: PeriodTransferParams,
-  ): Promise<PeriodTransferResult> {
-    const delegationManager = this.resolveDelegationManager(params);
-    const enforcerAddress = this.resolveEnforcerAddress(
-      'NativeTokenPeriodTransferEnforcer',
-      params,
-    );
-
-    const result = await this.client.readContract({
-      address: enforcerAddress,
-      abi: NativeTokenPeriodTransferEnforcer.abi,
-      functionName: 'getAvailableAmount',
-      args: [params.delegationHash, delegationManager, params.terms],
-    });
-
-    return {
-      availableAmount: result[0],
-      isNewPeriod: result[1],
-      currentPeriod: result[2],
-    };
-  }
-
-  /**
-   * Gets available amount for ERC20StreamingEnforcer
-   */
-  async getERC20StreamingAvailableAmount(
-    params: StreamingParams,
-  ): Promise<StreamingResult> {
-    const delegationManager = this.resolveDelegationManager(params);
-    const enforcerAddress = this.resolveEnforcerAddress(
-      'ERC20StreamingEnforcer',
-      params,
-    );
-
-    const result = await this.client.readContract({
-      address: enforcerAddress,
-      abi: ERC20StreamingEnforcer.abi,
-      functionName: 'getAvailableAmount',
-      args: [delegationManager, params.delegationHash],
-    });
-
-    return {
-      availableAmount: result,
-    };
-  }
-
-  /**
-   * Gets available amount for NativeTokenStreamingEnforcer
-   */
-  async getNativeTokenStreamingAvailableAmount(
-    params: StreamingParams,
-  ): Promise<StreamingResult> {
-    const delegationManager = this.resolveDelegationManager(params);
-    const enforcerAddress = this.resolveEnforcerAddress(
-      'NativeTokenStreamingEnforcer',
-      params,
-    );
-
-    const result = await this.client.readContract({
-      address: enforcerAddress,
-      abi: NativeTokenStreamingEnforcer.abi,
-      functionName: 'getAvailableAmount',
-      args: [delegationManager, params.delegationHash],
-    });
-
-    return {
-      availableAmount: result,
-    };
-  }
-
-  /**
-   * Generic method to get available amount for any supported caveat enforcer
-   */
-  async getAvailableAmount<T extends CaveatEnforcerName>(
-    caveatName: T,
-    params: CaveatEnforcerParams[T],
-  ): Promise<CaveatEnforcerResult[T]> {
-    switch (caveatName) {
-      case 'ERC20PeriodTransferEnforcer':
-        return this.getERC20PeriodTransferAvailableAmount(
-          params as PeriodTransferParams,
-        ) as Promise<CaveatEnforcerResult[T]>;
-
-      case 'MultiTokenPeriodEnforcer':
-        return this.getMultiTokenPeriodAvailableAmount(
-          params as MultiTokenPeriodParams,
-        ) as Promise<CaveatEnforcerResult[T]>;
-
-      case 'NativeTokenPeriodTransferEnforcer':
-        return this.getNativeTokenPeriodTransferAvailableAmount(
-          params as PeriodTransferParams,
-        ) as Promise<CaveatEnforcerResult[T]>;
-
-      case 'ERC20StreamingEnforcer':
-        return this.getERC20StreamingAvailableAmount(
-          params as StreamingParams,
-        ) as Promise<CaveatEnforcerResult[T]>;
-
-      case 'NativeTokenStreamingEnforcer':
-        return this.getNativeTokenStreamingAvailableAmount(
-          params as StreamingParams,
-        ) as Promise<CaveatEnforcerResult[T]>;
-
-      default:
-        throw new Error(`Unsupported caveat enforcer: ${caveatName}`);
-    }
-  }
+  return getDeleGatorEnvironment(chainId);
 }
 
 /**
- * Factory function to create a CaveatUtils instance
+ * Resolves the delegation manager address from parameters or environment
  */
-export function createCaveatUtils(config: CaveatUtilsConfig): CaveatUtils {
-  return new CaveatUtils(config);
+function resolveDelegationManager(
+  params: BaseCaveatParams,
+  environment: DeleGatorEnvironment,
+): Address {
+  const delegationManager =
+    params.delegationManager || environment.DelegationManager;
+
+  if (!delegationManager) {
+    throw new Error('Delegation manager address not found');
+  }
+
+  return delegationManager;
 }
 
 /**
- * Standalone utility function to get available amount for a specific caveat enforcer
+ * Resolves the enforcer address from parameters or environment
  */
-export async function getCaveatAvailableAmount<T extends CaveatEnforcerName>(
+function resolveEnforcerAddress(
+  caveatName: CaveatEnforcerName,
+  params: BaseCaveatParams,
+  environment: DeleGatorEnvironment,
+): Address {
+  if (params.enforcerAddress) {
+    return params.enforcerAddress;
+  }
+
+  const enforcerAddress = environment.caveatEnforcers[caveatName];
+  if (!enforcerAddress) {
+    throw new Error(`${caveatName} not found in environment`);
+  }
+
+  return enforcerAddress;
+}
+
+/**
+ * Gets available amount for ERC20PeriodTransferEnforcer
+ */
+export async function getERC20PeriodTransferAvailableAmountAction(
+  client: PublicClient,
+  params: PeriodTransferParams,
+  config?: CaveatUtilsConfig,
+): Promise<PeriodTransferResult> {
+  const environment = getEnvironmentFromClientOrConfig(client, config);
+  const delegationManager = resolveDelegationManager(params, environment);
+  const enforcerAddress = resolveEnforcerAddress(
+    'ERC20PeriodTransferEnforcer',
+    params,
+    environment,
+  );
+
+  const result = await client.readContract({
+    address: enforcerAddress,
+    abi: ERC20PeriodTransferEnforcer.abi,
+    functionName: 'getAvailableAmount',
+    args: [params.delegationHash, delegationManager, params.terms],
+  });
+
+  const [availableAmount, isNewPeriod, currentPeriod] = result;
+
+  return {
+    availableAmount,
+    isNewPeriod,
+    currentPeriod,
+  };
+}
+
+/**
+ * Gets available amount for MultiTokenPeriodEnforcer
+ */
+export async function getMultiTokenPeriodAvailableAmountAction(
+  client: PublicClient,
+  params: MultiTokenPeriodParams,
+  config?: CaveatUtilsConfig,
+): Promise<PeriodTransferResult> {
+  const environment = getEnvironmentFromClientOrConfig(client, config);
+  const delegationManager = resolveDelegationManager(params, environment);
+  const enforcerAddress = resolveEnforcerAddress(
+    'MultiTokenPeriodEnforcer',
+    params,
+    environment,
+  );
+
+  const result = await client.readContract({
+    address: enforcerAddress,
+    abi: MultiTokenPeriodEnforcer.abi,
+    functionName: 'getAvailableAmount',
+    args: [params.delegationHash, delegationManager, params.terms, params.args],
+  });
+
+  const [availableAmount, isNewPeriod, currentPeriod] = result;
+
+  return {
+    availableAmount,
+    isNewPeriod,
+    currentPeriod,
+  };
+}
+
+/**
+ * Gets available amount for NativeTokenPeriodTransferEnforcer
+ */
+export async function getNativeTokenPeriodTransferAvailableAmountAction(
+  client: PublicClient,
+  params: PeriodTransferParams,
+  config?: CaveatUtilsConfig,
+): Promise<PeriodTransferResult> {
+  const environment = getEnvironmentFromClientOrConfig(client, config);
+  const delegationManager = resolveDelegationManager(params, environment);
+  const enforcerAddress = resolveEnforcerAddress(
+    'NativeTokenPeriodTransferEnforcer',
+    params,
+    environment,
+  );
+
+  const result = await client.readContract({
+    address: enforcerAddress,
+    abi: NativeTokenPeriodTransferEnforcer.abi,
+    functionName: 'getAvailableAmount',
+    args: [params.delegationHash, delegationManager, params.terms],
+  });
+
+  const [availableAmount, isNewPeriod, currentPeriod] = result;
+
+  return {
+    availableAmount,
+    isNewPeriod,
+    currentPeriod,
+  };
+}
+
+/**
+ * Gets available amount for ERC20StreamingEnforcer
+ */
+export async function getERC20StreamingAvailableAmountAction(
+  client: PublicClient,
+  params: StreamingParams,
+  config?: CaveatUtilsConfig,
+): Promise<StreamingResult> {
+  const environment = getEnvironmentFromClientOrConfig(client, config);
+  const delegationManager = resolveDelegationManager(params, environment);
+  const enforcerAddress = resolveEnforcerAddress(
+    'ERC20StreamingEnforcer',
+    params,
+    environment,
+  );
+
+  const result = await client.readContract({
+    address: enforcerAddress,
+    abi: ERC20StreamingEnforcer.abi,
+    functionName: 'getAvailableAmount',
+    args: [delegationManager, params.delegationHash],
+  });
+
+  return {
+    availableAmount: result,
+  };
+}
+
+/**
+ * Gets available amount for NativeTokenStreamingEnforcer
+ */
+export async function getNativeTokenStreamingAvailableAmountAction(
+  client: PublicClient,
+  params: StreamingParams,
+  config?: CaveatUtilsConfig,
+): Promise<StreamingResult> {
+  const environment = getEnvironmentFromClientOrConfig(client, config);
+  const delegationManager = resolveDelegationManager(params, environment);
+  const enforcerAddress = resolveEnforcerAddress(
+    'NativeTokenStreamingEnforcer',
+    params,
+    environment,
+  );
+
+  const result = await client.readContract({
+    address: enforcerAddress,
+    abi: NativeTokenStreamingEnforcer.abi,
+    functionName: 'getAvailableAmount',
+    args: [delegationManager, params.delegationHash],
+  });
+
+  return {
+    availableAmount: result,
+  };
+}
+
+/**
+ * Generic action to get available amount for any supported caveat enforcer
+ */
+export async function getCaveatAvailableAmountAction<
+  T extends CaveatEnforcerName,
+>(
+  client: PublicClient,
   caveatName: T,
   params: CaveatEnforcerParams[T],
-  config: CaveatUtilsConfig,
+  config?: CaveatUtilsConfig,
 ): Promise<CaveatEnforcerResult[T]> {
-  const utils = createCaveatUtils(config);
-  return utils.getAvailableAmount(caveatName, params);
+  switch (caveatName) {
+    case 'ERC20PeriodTransferEnforcer':
+      return getERC20PeriodTransferAvailableAmountAction(
+        client,
+        params as PeriodTransferParams,
+        config,
+      ) as Promise<CaveatEnforcerResult[T]>;
+
+    case 'MultiTokenPeriodEnforcer':
+      return getMultiTokenPeriodAvailableAmountAction(
+        client,
+        params as MultiTokenPeriodParams,
+        config,
+      ) as Promise<CaveatEnforcerResult[T]>;
+
+    case 'NativeTokenPeriodTransferEnforcer':
+      return getNativeTokenPeriodTransferAvailableAmountAction(
+        client,
+        params as PeriodTransferParams,
+        config,
+      ) as Promise<CaveatEnforcerResult[T]>;
+
+    case 'ERC20StreamingEnforcer':
+      return getERC20StreamingAvailableAmountAction(
+        client,
+        params as StreamingParams,
+        config,
+      ) as Promise<CaveatEnforcerResult[T]>;
+
+    case 'NativeTokenStreamingEnforcer':
+      return getNativeTokenStreamingAvailableAmountAction(
+        client,
+        params as StreamingParams,
+        config,
+      ) as Promise<CaveatEnforcerResult[T]>;
+
+    default:
+      throw new Error(`Unsupported caveat enforcer: ${caveatName}`);
+  }
 }
+
+/**
+ * Viem actions builder for caveat utilities
+ * Returns actions that can be used to extend a PublicClient
+ */
+export const caveatUtilsActions =
+  (config?: CaveatUtilsConfig) => (client: Client) => ({
+    /**
+     * Gets available amount for ERC20PeriodTransferEnforcer
+     */
+    getERC20PeriodTransferAvailableAmount: async (
+      params: PeriodTransferParams,
+    ): Promise<PeriodTransferResult> =>
+      getERC20PeriodTransferAvailableAmountAction(
+        client as PublicClient,
+        params,
+        config,
+      ),
+
+    /**
+     * Gets available amount for MultiTokenPeriodEnforcer
+     */
+    getMultiTokenPeriodAvailableAmount: async (
+      params: MultiTokenPeriodParams,
+    ): Promise<PeriodTransferResult> =>
+      getMultiTokenPeriodAvailableAmountAction(
+        client as PublicClient,
+        params,
+        config,
+      ),
+
+    /**
+     * Gets available amount for NativeTokenPeriodTransferEnforcer
+     */
+    getNativeTokenPeriodTransferAvailableAmount: async (
+      params: PeriodTransferParams,
+    ): Promise<PeriodTransferResult> =>
+      getNativeTokenPeriodTransferAvailableAmountAction(
+        client as PublicClient,
+        params,
+        config,
+      ),
+
+    /**
+     * Gets available amount for ERC20StreamingEnforcer
+     */
+    getERC20StreamingAvailableAmount: async (
+      params: StreamingParams,
+    ): Promise<StreamingResult> =>
+      getERC20StreamingAvailableAmountAction(
+        client as PublicClient,
+        params,
+        config,
+      ),
+
+    /**
+     * Gets available amount for NativeTokenStreamingEnforcer
+     */
+    getNativeTokenStreamingAvailableAmount: async (
+      params: StreamingParams,
+    ): Promise<StreamingResult> =>
+      getNativeTokenStreamingAvailableAmountAction(
+        client as PublicClient,
+        params,
+        config,
+      ),
+
+    /**
+     * Generic method to get available amount for any supported caveat enforcer
+     */
+    getCaveatAvailableAmount: async <T extends CaveatEnforcerName>(
+      caveatName: T,
+      params: CaveatEnforcerParams[T],
+    ): Promise<CaveatEnforcerResult[T]> =>
+      getCaveatAvailableAmountAction(
+        client as PublicClient,
+        caveatName,
+        params,
+        config,
+      ),
+  });
