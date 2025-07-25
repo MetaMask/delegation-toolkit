@@ -389,10 +389,11 @@ describe('ERC20StreamingEnforcer', () => {
     const beforeResult =
       await caveatClient.getErc20StreamingEnforcerAvailableAmount({
         delegationHash,
+        terms: delegation.caveats[0].terms,
       });
 
-    // @note: This enforcer shows 0 before first use.
-    expect(beforeResult.availableAmount).toBe(0n);
+    // @note: This enforcer now simulates available amount before first use.
+    expect(beforeResult.availableAmount).toBe(initialAmount);
 
     // Create execution to transfer tokens
     const execution = createExecution({
@@ -437,6 +438,7 @@ describe('ERC20StreamingEnforcer', () => {
     const afterResult =
       await caveatClient.getErc20StreamingEnforcerAvailableAmount({
         delegationHash,
+        terms: delegation.caveats[0].terms,
       });
 
     expect(afterResult.availableAmount).toBeGreaterThanOrEqual(
@@ -485,6 +487,7 @@ describe('ERC20StreamingEnforcer', () => {
     const beforeResult =
       await caveatClient.getErc20StreamingEnforcerAvailableAmount({
         delegationHash,
+        terms: delegation.caveats[0].terms,
       });
 
     expect(beforeResult.availableAmount).toBe(0n);
@@ -520,6 +523,7 @@ describe('ERC20StreamingEnforcer', () => {
     const afterResult =
       await caveatClient.getErc20StreamingEnforcerAvailableAmount({
         delegationHash,
+        terms: delegation.caveats[0].terms,
       });
 
     expect(afterResult.availableAmount).toBe(0n);
@@ -565,10 +569,14 @@ describe('ERC20StreamingEnforcer', () => {
     const beforeResult =
       await caveatClient.getErc20StreamingEnforcerAvailableAmount({
         delegationHash,
+        terms: delegation.caveats[0].terms,
       });
 
-    // @note: This enforcer shows 0 before first use.
-    expect(beforeResult.availableAmount).toBe(0n);
+    // @note: This enforcer now simulates available amount before first use.
+    // Since startTime is 20 seconds ago: initialAmount + (20 * amountPerSecond) = 1 + (20 * 0.1) = 3 ETH
+    const expectedAmountBeforeUse =
+      initialAmount + amountPerSecond * BigInt(20);
+    expect(beforeResult.availableAmount).toBe(expectedAmountBeforeUse);
 
     const execution = createExecution({
       target: erc20TokenAddress,
@@ -610,6 +618,7 @@ describe('ERC20StreamingEnforcer', () => {
     const afterResult =
       await caveatClient.getErc20StreamingEnforcerAvailableAmount({
         delegationHash,
+        terms: delegation.caveats[0].terms,
       });
 
     const expectedAmount =
@@ -1196,10 +1205,11 @@ describe('NativeTokenStreamingEnforcer', () => {
     const beforeResult =
       await caveatClient.getNativeTokenStreamingEnforcerAvailableAmount({
         delegationHash,
+        terms: delegation.caveats[0].terms,
       });
 
-    // @note: This enforcer shows 0 before first use.
-    expect(beforeResult.availableAmount).toBe(0n);
+    // @note: This enforcer now simulates available amount before first use.
+    expect(beforeResult.availableAmount).toBe(initialAmount);
 
     // Create execution to transfer native tokens
     const execution = createExecution({
@@ -1240,6 +1250,7 @@ describe('NativeTokenStreamingEnforcer', () => {
     const afterResult =
       await caveatClient.getNativeTokenStreamingEnforcerAvailableAmount({
         delegationHash,
+        terms: delegation.caveats[0].terms,
       });
 
     expect(afterResult.availableAmount).toBeGreaterThanOrEqual(
@@ -1286,6 +1297,7 @@ describe('NativeTokenStreamingEnforcer', () => {
     const beforeResult =
       await caveatClient.getNativeTokenStreamingEnforcerAvailableAmount({
         delegationHash,
+        terms: delegation.caveats[0].terms,
       });
 
     expect(beforeResult.availableAmount).toBe(0n);
@@ -1317,6 +1329,7 @@ describe('NativeTokenStreamingEnforcer', () => {
     const afterResult =
       await caveatClient.getNativeTokenStreamingEnforcerAvailableAmount({
         delegationHash,
+        terms: delegation.caveats[0].terms,
       });
 
     expect(afterResult.availableAmount).toBe(0n);
@@ -1360,10 +1373,14 @@ describe('NativeTokenStreamingEnforcer', () => {
     const beforeResult =
       await caveatClient.getNativeTokenStreamingEnforcerAvailableAmount({
         delegationHash,
+        terms: delegation.caveats[0].terms,
       });
 
-    // @note: This enforcer shows 0 before first use.
-    expect(beforeResult.availableAmount).toBe(0n);
+    // @note: This enforcer now simulates available amount before first use.
+    // Since startTime is 20 seconds ago: initialAmount + (20 * amountPerSecond) = 1 + (20 * 0.1) = 3 ETH
+    const expectedAmountBeforeUse =
+      initialAmount + amountPerSecond * BigInt(20);
+    expect(beforeResult.availableAmount).toBe(expectedAmountBeforeUse);
 
     const execution = createExecution({
       target: charlieAddress,
@@ -1401,6 +1418,7 @@ describe('NativeTokenStreamingEnforcer', () => {
     const afterResult =
       await caveatClient.getNativeTokenStreamingEnforcerAvailableAmount({
         delegationHash,
+        terms: delegation.caveats[0].terms,
       });
 
     const expectedAmount =

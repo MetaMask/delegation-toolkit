@@ -15,53 +15,41 @@ export interface CaveatEnforcerClientConfig {
 }
 
 /**
- * Parameters for ERC20 period transfer enforcer
+ * Shared base params for all enforcer actions
  */
-export interface ERC20PeriodTransferParams {
+export interface BaseCaveatParams {
   delegationHash: Hex;
   delegationManager?: Address;
   enforcerAddress?: Address;
   terms: Hex;
 }
+
+/**
+ * Parameters for ERC20 period transfer enforcer
+ */
+export interface ERC20PeriodTransferParams extends BaseCaveatParams {}
 
 /**
  * Parameters for ERC20 streaming enforcer
  */
-export interface ERC20StreamingParams {
-  delegationHash: Hex;
-  delegationManager?: Address;
-  enforcerAddress?: Address;
-}
+export interface ERC20StreamingParams extends BaseCaveatParams {}
 
 /**
  * Parameters for MultiTokenPeriodEnforcer
  */
-export interface MultiTokenPeriodParams {
-  delegationHash: Hex;
-  delegationManager?: Address;
-  enforcerAddress?: Address;
-  terms: Hex;
+export interface MultiTokenPeriodParams extends BaseCaveatParams {
   args: Hex;
 }
 
 /**
  * Parameters for native token period transfer enforcer
  */
-export interface NativeTokenPeriodTransferParams {
-  delegationHash: Hex;
-  delegationManager?: Address;
-  enforcerAddress?: Address;
-  terms: Hex;
-}
+export interface NativeTokenPeriodTransferParams extends BaseCaveatParams {}
 
 /**
  * Parameters for native token streaming enforcer
  */
-export interface NativeTokenStreamingParams {
-  delegationHash: Hex;
-  delegationManager?: Address;
-  enforcerAddress?: Address;
-}
+export interface NativeTokenStreamingParams extends BaseCaveatParams {}
 
 /**
  * Return type for period-based transfer enforcers
@@ -123,22 +111,6 @@ export const caveatEnforcerActions =
   (config: CaveatEnforcerClientConfig) => (client: PublicClient) => ({
     /**
      * Get available amount for ERC20 period transfer enforcer
-     *
-     * @example
-     * ```ts
-     * // Using environment delegation manager
-     * const result = await client.getErc20PeriodTransferEnforcerAvailableAmount({
-     *   delegationHash: '0x...',
-     *   terms: '0x...',
-     * });
-     *
-     * // Overriding delegation manager
-     * const result2 = await client.getErc20PeriodTransferEnforcerAvailableAmount({
-     *   delegationHash: '0x...',
-     *   terms: '0x...',
-     *   delegationManager: '0x...', // Custom delegation manager
-     * });
-     * ```
      */
     getErc20PeriodTransferEnforcerAvailableAmount: async (
       params: ERC20PeriodTransferParams,
@@ -164,13 +136,6 @@ export const caveatEnforcerActions =
 
     /**
      * Get available amount for ERC20 streaming enforcer
-     *
-     * @example
-     * ```ts
-     * const result = await client.getErc20StreamingEnforcerAvailableAmount({
-     *   delegationHash: '0x...',
-     * });
-     * ```
      */
     getErc20StreamingEnforcerAvailableAmount: async (
       params: ERC20StreamingParams,
@@ -190,20 +155,12 @@ export const caveatEnforcerActions =
         contractAddress: enforcerAddress,
         delegationManager,
         delegationHash: params.delegationHash,
+        terms: params.terms,
       });
     },
 
     /**
      * Get available amount for multi-token period enforcer
-     *
-     * @example
-     * ```ts
-     * const result = await client.getMultiTokenPeriodEnforcerAvailableAmount({
-     *   delegationHash: '0x...',
-     *   terms: '0x...',
-     *   args: '0x...',
-     * });
-     * ```
      */
     getMultiTokenPeriodEnforcerAvailableAmount: async (
       params: MultiTokenPeriodParams,
@@ -230,14 +187,6 @@ export const caveatEnforcerActions =
 
     /**
      * Get available amount for native token period transfer enforcer
-     *
-     * @example
-     * ```ts
-     * const result = await client.getNativeTokenPeriodTransferEnforcerAvailableAmount({
-     *   delegationHash: '0x...',
-     *   terms: '0x...',
-     * });
-     * ```
      */
     getNativeTokenPeriodTransferEnforcerAvailableAmount: async (
       params: NativeTokenPeriodTransferParams,
@@ -263,13 +212,6 @@ export const caveatEnforcerActions =
 
     /**
      * Get available amount for native token streaming enforcer
-     *
-     * @example
-     * ```ts
-     * const result = await client.getNativeTokenStreamingEnforcerAvailableAmount({
-     *   delegationHash: '0x...',
-     * });
-     * ```
      */
     getNativeTokenStreamingEnforcerAvailableAmount: async (
       params: NativeTokenStreamingParams,
@@ -289,6 +231,7 @@ export const caveatEnforcerActions =
         contractAddress: enforcerAddress,
         delegationManager,
         delegationHash: params.delegationHash,
+        terms: params.terms,
       });
     },
   });

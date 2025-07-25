@@ -186,12 +186,14 @@ describe('Caveat Contract Methods', () => {
       const contractAddress = randomAddress();
       const delegationManager = randomAddress();
       const delegationHash = randomBytes32();
+      const terms = '0x1234' as Hex;
 
       const result = await ERC20StreamingEnforcer.read.getAvailableAmount({
         client: publicClient,
         contractAddress,
         delegationManager,
         delegationHash,
+        terms,
       });
 
       expect(getAvailableAmountSpy).toHaveBeenCalledWith({
@@ -199,6 +201,7 @@ describe('Caveat Contract Methods', () => {
         contractAddress,
         delegationManager,
         delegationHash,
+        terms,
       });
 
       expect(result).toEqual(mockResult);
@@ -208,7 +211,7 @@ describe('Caveat Contract Methods', () => {
   describe('NativeTokenStreamingEnforcer', () => {
     it('should call getAvailableAmount with correct parameters', async () => {
       const mockResult = {
-        availableAmount: 600n,
+        availableAmount: 300n,
       };
 
       const getAvailableAmountSpy = vi
@@ -218,6 +221,7 @@ describe('Caveat Contract Methods', () => {
       const contractAddress = randomAddress();
       const delegationManager = randomAddress();
       const delegationHash = randomBytes32();
+      const terms = '0x1234' as Hex;
 
       const result = await NativeTokenStreamingEnforcer.read.getAvailableAmount(
         {
@@ -225,6 +229,7 @@ describe('Caveat Contract Methods', () => {
           contractAddress,
           delegationManager,
           delegationHash,
+          terms,
         },
       );
 
@@ -233,6 +238,7 @@ describe('Caveat Contract Methods', () => {
         contractAddress,
         delegationManager,
         delegationHash,
+        terms,
       });
 
       expect(result).toEqual(mockResult);
@@ -317,6 +323,7 @@ describe('Caveat Contract Methods', () => {
 
       const params = {
         delegationHash: randomBytes32(),
+        terms: '0x1234' as Hex,
       };
 
       const result =
@@ -327,6 +334,7 @@ describe('Caveat Contract Methods', () => {
         contractAddress: mockEnvironment.caveatEnforcers.ERC20StreamingEnforcer,
         delegationManager: mockEnvironment.DelegationManager,
         delegationHash: params.delegationHash,
+        terms: params.terms,
       });
 
       expect(result).toEqual(mockResult);
@@ -376,6 +384,7 @@ describe('Caveat Contract Methods', () => {
 
       const params = {
         delegationHash: randomBytes32(),
+        terms: '0x1234' as Hex,
       };
 
       const result =
@@ -389,6 +398,7 @@ describe('Caveat Contract Methods', () => {
           mockEnvironment.caveatEnforcers.NativeTokenStreamingEnforcer,
         delegationManager: mockEnvironment.DelegationManager,
         delegationHash: params.delegationHash,
+        terms: params.terms,
       });
 
       expect(result).toEqual(mockResult);
