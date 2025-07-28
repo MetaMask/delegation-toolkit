@@ -28,7 +28,7 @@ export type NativeTokenStreamPermission = Permission & {
   data: {
     initialAmount?: bigint;
     amountPerSecond: bigint;
-    startTime: number;
+    startTime?: number;
     maxAmount?: number;
     justification: string;
   };
@@ -392,10 +392,6 @@ function formatNativeTokenStreamPermission(
     permission.data.justification,
     'Invalid parameters: justification is required',
   );
-  assertIsDefined(
-    permission.data.startTime,
-    'Invalid parameters: startTime is required',
-  );
 
   const isInitialAmountSpecified =
     permission.data.initialAmount !== undefined &&
@@ -405,12 +401,19 @@ function formatNativeTokenStreamPermission(
     permission.data.maxAmount !== undefined &&
     permission.data.maxAmount !== null;
 
+  const isStartTimeSpecified =
+    permission.data.startTime !== undefined &&
+    permission.data.startTime !== null;
+
   const optionalFields = {
     ...(isInitialAmountSpecified && {
       initialAmount: toHexOrThrow(permission.data.initialAmount),
     }),
     ...(isMaxAmountSpecified && {
       maxAmount: toHexOrThrow(permission.data.maxAmount),
+    }),
+    ...(isStartTimeSpecified && {
+      startTime: Number(permission.data.startTime),
     }),
   };
 
@@ -421,7 +424,6 @@ function formatNativeTokenStreamPermission(
         permission.data.amountPerSecond,
         'Invalid parameters: amountPerSecond is required',
       ),
-      startTime: Number(permission.data.startTime),
       justification: permission.data.justification,
       ...optionalFields,
     },

@@ -137,31 +137,6 @@ describe('erc7715GrantPermissionsAction', () => {
       ).rejects.toThrow('Invalid parameters: amountPerSecond is required');
     });
 
-    it('should throw an error when startTime is undefined', async () => {
-      const parameters = [
-        {
-          chainId: 31337,
-          address: bob.address,
-          expiry: 1234567890,
-          permission: {
-            type: 'native-token-stream',
-            data: {
-              amountPerSecond: '0x1',
-              maxAmount: '0x2',
-              startTime: undefined,
-              justification: 'Test justification',
-            },
-          },
-          isAdjustmentAllowed: false,
-          signer: { type: 'account', data: { address: alice.address } },
-        },
-      ];
-
-      await expect(
-        erc7715GrantPermissionsAction(mockClient, parameters),
-      ).rejects.toThrow('Invalid parameters: startTime is required');
-    });
-
     it('should throw an error when justification is undefined', async () => {
       const parameters = [
         {
