@@ -35,7 +35,7 @@ export const read = async ({
   // Check if state exists (startTime != 0)
   if (startTime !== 0n) {
     // State exists, calculate available amount using the stored state
-    const availableAmount = _getAvailableAmount({
+    const availableAmount = getAvailableAmount({
       initialAmount,
       maxAmount,
       amountPerSecond,
@@ -66,7 +66,7 @@ export const read = async ({
   ] = decodedTerms;
 
   // Simulate using decoded terms with spent = 0
-  const availableAmount = _getAvailableAmount({
+  const availableAmount = getAvailableAmount({
     initialAmount: decodedInitialAmount,
     maxAmount: decodedMaxAmount,
     amountPerSecond: decodedAmountPerSecond,
@@ -81,9 +81,18 @@ export const read = async ({
 };
 
 /**
- * Replicates the internal _getAvailableAmount logic from the smart contract
+ * Replicates the internal _getAvailableAmount logic from the smart contract.
+ *
+ * @param allowance - The allowance object containing all parameters.
+ * @param allowance.initialAmount - The initial amount available.
+ * @param allowance.maxAmount - The maximum amount allowed.
+ * @param allowance.amountPerSecond - The amount streamed per second.
+ * @param allowance.startTime - The start time of the streaming.
+ * @param allowance.spent - The amount already spent.
+ * @param allowance.currentTimestamp - The current timestamp.
+ * @returns The available amount that can be spent.
  */
-function _getAvailableAmount(allowance: {
+function getAvailableAmount(allowance: {
   initialAmount: bigint;
   maxAmount: bigint;
   amountPerSecond: bigint;

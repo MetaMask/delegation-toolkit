@@ -1,12 +1,12 @@
-import { describe, expect, it } from 'vitest';
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { isStrictHexString } from '@metamask/utils';
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { describe, expect, it } from 'vitest';
 
-import { createDelegation } from '../../../src/delegation';
 import { createCaveatBuilder } from '../../../src/caveatBuilder';
+import { createDelegation } from '../../../src/delegation';
 import * as DelegationManager from '../../../src/DelegationFramework/DelegationManager';
-import type { DeleGatorEnvironment } from '../../../src/types';
 import { ExecutionMode, createExecution } from '../../../src/executions';
+import type { DeleGatorEnvironment } from '../../../src/types';
 import { randomAddress } from '../../utils';
 
 describe('DelegationManager - Delegation Management', () => {

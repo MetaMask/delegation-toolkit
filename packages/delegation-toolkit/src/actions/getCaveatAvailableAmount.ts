@@ -2,80 +2,88 @@ import type { Address, Hex, PublicClient } from 'viem';
 
 import * as ERC20PeriodTransferEnforcer from '../DelegationFramework/ERC20PeriodTransferEnforcer';
 import * as ERC20StreamingEnforcer from '../DelegationFramework/ERC20StreamingEnforcer';
+import * as MultiTokenPeriodEnforcer from '../DelegationFramework/MultiTokenPeriodEnforcer';
 import * as NativeTokenPeriodTransferEnforcer from '../DelegationFramework/NativeTokenPeriodTransferEnforcer';
 import * as NativeTokenStreamingEnforcer from '../DelegationFramework/NativeTokenStreamingEnforcer';
-import * as MultiTokenPeriodEnforcer from '../DelegationFramework/MultiTokenPeriodEnforcer';
 import type { DeleGatorEnvironment } from '../types';
 
 /**
  * Configuration for caveat enforcer client
  */
-export interface CaveatEnforcerClientConfig {
+export type CaveatEnforcerClientConfig = {
   environment: DeleGatorEnvironment;
-}
+};
 
 /**
  * Shared base params for all enforcer actions
  */
-export interface BaseCaveatParams {
+export type BaseCaveatParams = {
   delegationHash: Hex;
   delegationManager?: Address;
   enforcerAddress?: Address;
   terms: Hex;
-}
+};
 
 /**
- * Parameters for ERC20 period transfer enforcer
+ * Parameters for ERC20 period transfer enforcer.
  */
-export interface ERC20PeriodTransferParams extends BaseCaveatParams {}
+export type ERC20PeriodTransferParams = Record<string, never> &
+  BaseCaveatParams;
 
 /**
- * Parameters for ERC20 streaming enforcer
+ * Parameters for ERC20 streaming enforcer.
  */
-export interface ERC20StreamingParams extends BaseCaveatParams {}
+export type ERC20StreamingParams = Record<string, never> & BaseCaveatParams;
 
 /**
- * Parameters for MultiTokenPeriodEnforcer
+ * Parameters for MultiTokenPeriodEnforcer.
  */
-export interface MultiTokenPeriodParams extends BaseCaveatParams {
+export type MultiTokenPeriodParams = {
   args: Hex;
-}
+} & BaseCaveatParams;
 
 /**
- * Parameters for native token period transfer enforcer
+ * Parameters for native token period transfer enforcer.
  */
-export interface NativeTokenPeriodTransferParams extends BaseCaveatParams {}
+export type NativeTokenPeriodTransferParams = Record<string, never> &
+  BaseCaveatParams;
 
 /**
- * Parameters for native token streaming enforcer
+ * Parameters for native token streaming enforcer.
  */
-export interface NativeTokenStreamingParams extends BaseCaveatParams {}
+export type NativeTokenStreamingParams = Record<string, never> &
+  BaseCaveatParams;
 
 /**
  * Return type for period-based transfer enforcers
  */
-export interface PeriodTransferResult {
+export type PeriodTransferResult = {
   availableAmount: bigint;
   isNewPeriod: boolean;
   currentPeriod: bigint;
-}
+};
 
 /**
  * Return type for streaming enforcers
  */
-export interface StreamingResult {
+export type StreamingResult = {
   availableAmount: bigint;
-}
+};
 
 /**
- * Resolves the delegation manager address from parameters or environment
+ * Resolves the delegation manager address from parameters or environment.
+ *
+ * @param params - The parameters object.
+ * @param params.delegationManager - The delegation manager address.
+ * @param environment - The delegator environment.
+ * @returns The resolved delegation manager address.
  */
 function resolveDelegationManager(
   params: { delegationManager?: Address },
   environment: DeleGatorEnvironment,
 ): Address {
   const delegationManager =
-    params.delegationManager || environment.DelegationManager;
+    params.delegationManager ?? environment.DelegationManager;
 
   if (!delegationManager) {
     throw new Error('Delegation manager address not found');
@@ -85,7 +93,13 @@ function resolveDelegationManager(
 }
 
 /**
- * Resolves the enforcer address from parameters or environment
+ * Resolves the enforcer address from parameters or environment.
+ *
+ * @param enforcerName - The name of the enforcer.
+ * @param params - The parameters object.
+ * @param params.enforcerAddress - The enforcer address.
+ * @param environment - The delegator environment.
+ * @returns The resolved enforcer address.
  */
 function resolveEnforcerAddress(
   enforcerName: keyof DeleGatorEnvironment['caveatEnforcers'],
@@ -105,12 +119,18 @@ function resolveEnforcerAddress(
 }
 
 /**
- * Caveat enforcer actions for extending viem clients
+ * Caveat enforcer actions for extending viem clients.
+ *
+ * @param config - The configuration for caveat enforcers.
+ * @returns The client extension with caveat enforcer actions.
  */
 export const caveatEnforcerActions =
   (config: CaveatEnforcerClientConfig) => (client: PublicClient) => ({
     /**
-     * Get available amount for ERC20 period transfer enforcer
+     * Get available amount for ERC20 period transfer enforcer.
+     *
+     * @param params - The parameters for the ERC20 period transfer enforcer.
+     * @returns Promise resolving to the period transfer result.
      */
     getErc20PeriodTransferEnforcerAvailableAmount: async (
       params: ERC20PeriodTransferParams,
@@ -135,7 +155,10 @@ export const caveatEnforcerActions =
     },
 
     /**
-     * Get available amount for ERC20 streaming enforcer
+     * Get available amount for ERC20 streaming enforcer.
+     *
+     * @param params - The parameters for the ERC20 streaming enforcer.
+     * @returns Promise resolving to the streaming result.
      */
     getErc20StreamingEnforcerAvailableAmount: async (
       params: ERC20StreamingParams,
@@ -160,7 +183,10 @@ export const caveatEnforcerActions =
     },
 
     /**
-     * Get available amount for multi-token period enforcer
+     * Get available amount for multi-token period enforcer.
+     *
+     * @param params - The parameters for the multi-token period enforcer.
+     * @returns Promise resolving to the period transfer result.
      */
     getMultiTokenPeriodEnforcerAvailableAmount: async (
       params: MultiTokenPeriodParams,
@@ -186,7 +212,10 @@ export const caveatEnforcerActions =
     },
 
     /**
-     * Get available amount for native token period transfer enforcer
+     * Get available amount for native token period transfer enforcer.
+     *
+     * @param params - The parameters for the native token period transfer enforcer.
+     * @returns Promise resolving to the period transfer result.
      */
     getNativeTokenPeriodTransferEnforcerAvailableAmount: async (
       params: NativeTokenPeriodTransferParams,
@@ -211,7 +240,10 @@ export const caveatEnforcerActions =
     },
 
     /**
-     * Get available amount for native token streaming enforcer
+     * Get available amount for native token streaming enforcer.
+     *
+     * @param params - The parameters for the native token streaming enforcer.
+     * @returns Promise resolving to the streaming result.
      */
     getNativeTokenStreamingEnforcerAvailableAmount: async (
       params: NativeTokenStreamingParams,
@@ -237,13 +269,17 @@ export const caveatEnforcerActions =
   });
 
 /**
- * Type for client extended with caveat enforcer actions
+ * Type for client extended with caveat enforcer actions.
  */
 export type CaveatEnforcerClient = PublicClient &
   ReturnType<ReturnType<typeof caveatEnforcerActions>>;
 
 /**
- * Create a viem client extended with caveat enforcer actions
+ * Create a viem client extended with caveat enforcer actions.
+ *
+ * @param client - The viem public client.
+ * @param config - The configuration for caveat enforcers.
+ * @returns The extended client with caveat enforcer actions.
  */
 export function createCaveatEnforcerClient(
   client: PublicClient,

@@ -19,14 +19,15 @@ export const read = async ({
   terms,
   args,
 }: ReadGetAvailableAmountParameters) => {
-  const result = await readContract(client, {
-    address: contractAddress,
-    abi: MultiTokenPeriodEnforcer.abi,
-    functionName: 'getAvailableAmount',
-    args: [delegationHash, delegationManager, terms, args],
-  });
-
-  const [availableAmount, isNewPeriod, currentPeriod] = result;
+  const [availableAmount, isNewPeriod, currentPeriod] = await readContract(
+    client,
+    {
+      address: contractAddress,
+      abi: MultiTokenPeriodEnforcer.abi,
+      functionName: 'getAvailableAmount',
+      args: [delegationHash, delegationManager, terms, args],
+    },
+  );
 
   return {
     availableAmount,

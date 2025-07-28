@@ -17,14 +17,15 @@ export const read = async ({
   delegationManager,
   terms,
 }: ReadGetAvailableAmountParameters) => {
-  const result = await readContract(client, {
-    address: contractAddress,
-    abi: ERC20PeriodTransferEnforcer.abi,
-    functionName: 'getAvailableAmount',
-    args: [delegationHash, delegationManager, terms],
-  });
-
-  const [availableAmount, isNewPeriod, currentPeriod] = result;
+  const [availableAmount, isNewPeriod, currentPeriod] = await readContract(
+    client,
+    {
+      address: contractAddress,
+      abi: ERC20PeriodTransferEnforcer.abi,
+      functionName: 'getAvailableAmount',
+      args: [delegationHash, delegationManager, terms],
+    },
+  );
 
   return {
     availableAmount,
