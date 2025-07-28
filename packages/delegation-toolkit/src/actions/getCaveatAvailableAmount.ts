@@ -27,13 +27,12 @@ export type BaseCaveatParams = {
 /**
  * Parameters for ERC20 period transfer enforcer.
  */
-export type ERC20PeriodTransferParams = Record<string, never> &
-  BaseCaveatParams;
+export type ERC20PeriodTransferParams = BaseCaveatParams;
 
 /**
  * Parameters for ERC20 streaming enforcer.
  */
-export type ERC20StreamingParams = Record<string, never> & BaseCaveatParams;
+export type ERC20StreamingParams = BaseCaveatParams;
 
 /**
  * Parameters for MultiTokenPeriodEnforcer.
@@ -45,14 +44,12 @@ export type MultiTokenPeriodParams = {
 /**
  * Parameters for native token period transfer enforcer.
  */
-export type NativeTokenPeriodTransferParams = Record<string, never> &
-  BaseCaveatParams;
+export type NativeTokenPeriodTransferParams = BaseCaveatParams;
 
 /**
  * Parameters for native token streaming enforcer.
  */
-export type NativeTokenStreamingParams = Record<string, never> &
-  BaseCaveatParams;
+export type NativeTokenStreamingParams = BaseCaveatParams;
 
 /**
  * Return type for period-based transfer enforcers

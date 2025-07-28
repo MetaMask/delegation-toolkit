@@ -50,5 +50,5 @@ export function isValidHex(
   }
 
   // Check if all characters are valid hex (0-9, a-f, A-F)
-  return /^[0-9a-fA-F]*$/.test(hexContent);
+  return /^[0-9a-fA-F]*$/u.test(hexContent);
 }

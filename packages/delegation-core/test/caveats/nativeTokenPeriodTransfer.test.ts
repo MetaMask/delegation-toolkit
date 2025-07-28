@@ -1,7 +1,7 @@
+import { isStrictHexString } from '@metamask/utils';
 import { describe, it, expect } from 'vitest';
 
 import { createNativeTokenPeriodTransferTerms } from '../../src/caveats/nativeTokenPeriodTransfer';
-import { isValidHex } from '../../src/utils';
 
 describe('createNativeTokenPeriodTransferTerms', () => {
   const EXPECTED_BYTE_LENGTH = 96; // 32 bytes for each of the 3 parameters
@@ -54,7 +54,8 @@ describe('createNativeTokenPeriodTransferTerms', () => {
     });
 
     expect(result).toHaveLength(194);
-    expect(isValidHex(result, { exactLength: 192 })).toBe(true);
+    expect(isStrictHexString(result)).toBe(true);
+    expect(result.length).toBe(194); // Additional length validation
   });
 
   it('creates valid terms for maximum safe values', () => {
@@ -69,7 +70,8 @@ describe('createNativeTokenPeriodTransferTerms', () => {
     });
 
     expect(result).toHaveLength(194);
-    expect(isValidHex(result, { exactLength: 192 })).toBe(true);
+    expect(isStrictHexString(result)).toBe(true);
+    expect(result.length).toBe(194); // Additional length validation
   });
 
   it('throws an error for zero period amount', () => {
@@ -226,8 +228,9 @@ describe('createNativeTokenPeriodTransferTerms', () => {
       startDate,
     });
 
-    expect(isValidHex(result, { exactLength: 192 })).toBe(true);
+    expect(isStrictHexString(result)).toBe(true);
     expect(result).toHaveLength(194);
+    expect(result.length).toBe(194); // Additional length validation
   });
 
   // Tests for bytes return type
