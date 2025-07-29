@@ -20,35 +20,3 @@ export const toHexString = ({
 }): string => {
   return value.toString(16).padStart(size * 2, '0');
 };
-
-/**
- * Validates if a string is a properly formatted hex string.
- * @param value - The string to validate.
- * @param options - Optional validation options.
- * @param options.minLength - Minimum length after '0x' prefix (default: 1).
- * @param options.exactLength - Exact length after '0x' prefix (optional).
- * @returns True if the string is a valid hex string, false otherwise.
- */
-export function isValidHex(
-  value: string,
-  options: { minLength?: number; exactLength?: number } = {},
-): boolean {
-  const { minLength = 1, exactLength } = options;
-
-  if (typeof value !== 'string' || !value.startsWith('0x')) {
-    return false;
-  }
-
-  const hexContent = value.slice(2); // Remove '0x' prefix
-
-  if (exactLength !== undefined && hexContent.length !== exactLength) {
-    return false;
-  }
-
-  if (hexContent.length < minLength) {
-    return false;
-  }
-
-  // Check if all characters are valid hex (0-9, a-f, A-F)
-  return /^[0-9a-fA-F]*$/u.test(hexContent);
-}
