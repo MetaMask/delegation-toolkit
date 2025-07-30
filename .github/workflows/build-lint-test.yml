@@ -26,7 +26,7 @@ jobs:
         uses: MetaMask/action-checkout-and-setup@v1
         with:
           is-high-risk-environment: false
-          cache-node-modules: ${{ matrix.node-version == '22.x' }}
+          cache-node-modules: true
           submodules: 'recursive'
 
       - name: Install Foundry
