@@ -16,6 +16,11 @@ import {
 import {
   createCaveatEnforcerClient,
   type CaveatEnforcerClient,
+  getErc20PeriodTransferEnforcerAvailableAmount,
+  getErc20StreamingEnforcerAvailableAmount,
+  getMultiTokenPeriodEnforcerAvailableAmount,
+  getNativeTokenPeriodTransferEnforcerAvailableAmount,
+  getNativeTokenStreamingEnforcerAvailableAmount,
 } from '@metamask/delegation-toolkit/actions';
 import {
   transport,
@@ -96,8 +101,11 @@ beforeEach(async () => {
   currentTime = Number(timestamp);
 
   // Create extended client with caveat enforcer actions
-  caveatClient = createCaveatEnforcerClient(publicClient, {
-    environment: aliceSmartAccount.environment,
+  caveatClient = createCaveatEnforcerClient({
+    client: publicClient,
+    config: {
+      environment: aliceSmartAccount.environment,
+    },
   });
 });
 
@@ -1518,5 +1526,279 @@ describe('Generic caveat utils functionality', () => {
     expect(result).toHaveProperty('availableAmount');
     expect(result).toHaveProperty('isNewPeriod');
     expect(result).toHaveProperty('currentPeriod');
+  });
+});
+
+describe('Individual action functions vs client extension methods', () => {
+  test('ERC20PeriodTransferEnforcer: both approaches should return identical results', async () => {
+    const periodAmount = parseEther('4');
+    const periodDuration = 3600; // 1 hour
+
+    const delegation = createDelegation({
+      to: bobSmartAccount.address,
+      from: aliceSmartAccount.address,
+      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
+        'erc20PeriodTransfer',
+        {
+          tokenAddress: erc20TokenAddress,
+          periodAmount,
+          periodDuration,
+          startDate: currentTime,
+        },
+      ),
+    });
+
+    const signedDelegation = {
+      ...delegation,
+      signature: await aliceSmartAccount.signDelegation({ delegation }),
+    };
+
+    const delegationHash = getDelegationHashOffchain(signedDelegation);
+    const params = {
+      delegationHash,
+      terms: delegation.caveats[0].terms,
+    };
+
+    // Test both approaches
+    const [clientResult, functionResult] = await Promise.all([
+      caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(params),
+      getErc20PeriodTransferEnforcerAvailableAmount(
+        publicClient,
+        { environment: aliceSmartAccount.environment },
+        params,
+      ),
+    ]);
+
+    expect(clientResult).toEqual(functionResult);
+    expect(clientResult.availableAmount).toBe(periodAmount);
+    expect(clientResult.isNewPeriod).toBe(true);
+  });
+
+  test('ERC20StreamingEnforcer: both approaches should return identical results', async () => {
+    const initialAmount = parseEther('2');
+    const maxAmount = parseEther('20');
+    const amountPerSecond = parseEther('0.2');
+
+    const delegation = createDelegation({
+      to: bobSmartAccount.address,
+      from: aliceSmartAccount.address,
+      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
+        'erc20Streaming',
+        {
+          tokenAddress: erc20TokenAddress,
+          initialAmount,
+          maxAmount,
+          amountPerSecond,
+          startTime: currentTime,
+        },
+      ),
+    });
+
+    const signedDelegation = {
+      ...delegation,
+      signature: await aliceSmartAccount.signDelegation({ delegation }),
+    };
+
+    const delegationHash = getDelegationHashOffchain(signedDelegation);
+    const params = {
+      delegationHash,
+      terms: delegation.caveats[0].terms,
+    };
+
+    // Test both approaches
+    const [clientResult, functionResult] = await Promise.all([
+      caveatClient.getErc20StreamingEnforcerAvailableAmount(params),
+      getErc20StreamingEnforcerAvailableAmount(
+        publicClient,
+        { environment: aliceSmartAccount.environment },
+        params,
+      ),
+    ]);
+
+    expect(clientResult).toEqual(functionResult);
+    expect(clientResult.availableAmount).toBe(initialAmount);
+  });
+
+  test('MultiTokenPeriodEnforcer: both approaches should return identical results', async () => {
+    const periodAmount = parseEther('6');
+    const periodDuration = 3600; // 1 hour
+
+    const delegation = createDelegation({
+      to: bobSmartAccount.address,
+      from: aliceSmartAccount.address,
+      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
+        'multiTokenPeriod',
+        [
+          {
+            token: erc20TokenAddress,
+            periodAmount,
+            periodDuration,
+            startDate: currentTime,
+          },
+        ],
+      ),
+    });
+
+    const signedDelegation = {
+      ...delegation,
+      signature: await aliceSmartAccount.signDelegation({ delegation }),
+    };
+
+    const delegationHash = getDelegationHashOffchain(signedDelegation);
+    const args = encodePacked(['uint256'], [BigInt(0)]); // token index 0
+    const params = {
+      delegationHash,
+      terms: delegation.caveats[0].terms,
+      args,
+    };
+
+    // Test both approaches
+    const [clientResult, functionResult] = await Promise.all([
+      caveatClient.getMultiTokenPeriodEnforcerAvailableAmount(params),
+      getMultiTokenPeriodEnforcerAvailableAmount(
+        publicClient,
+        { environment: aliceSmartAccount.environment },
+        params,
+      ),
+    ]);
+
+    expect(clientResult).toEqual(functionResult);
+    expect(clientResult.availableAmount).toBe(periodAmount);
+    expect(clientResult.isNewPeriod).toBe(true);
+  });
+
+  test('NativeTokenPeriodTransferEnforcer: both approaches should return identical results', async () => {
+    const periodAmount = parseEther('3');
+    const periodDuration = 3600; // 1 hour
+
+    const delegation = createDelegation({
+      to: bobSmartAccount.address,
+      from: aliceSmartAccount.address,
+      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
+        'nativeTokenPeriodTransfer',
+        {
+          periodAmount,
+          periodDuration,
+          startDate: currentTime,
+        },
+      ),
+    });
+
+    const signedDelegation = {
+      ...delegation,
+      signature: await aliceSmartAccount.signDelegation({ delegation }),
+    };
+
+    const delegationHash = getDelegationHashOffchain(signedDelegation);
+    const params = {
+      delegationHash,
+      terms: delegation.caveats[0].terms,
+    };
+
+    // Test both approaches
+    const [clientResult, functionResult] = await Promise.all([
+      caveatClient.getNativeTokenPeriodTransferEnforcerAvailableAmount(params),
+      getNativeTokenPeriodTransferEnforcerAvailableAmount(
+        publicClient,
+        { environment: aliceSmartAccount.environment },
+        params,
+      ),
+    ]);
+
+    expect(clientResult).toEqual(functionResult);
+    expect(clientResult.availableAmount).toBe(periodAmount);
+    expect(clientResult.isNewPeriod).toBe(true);
+  });
+
+  test('NativeTokenStreamingEnforcer: both approaches should return identical results', async () => {
+    const initialAmount = parseEther('1.5');
+    const maxAmount = parseEther('15');
+    const amountPerSecond = parseEther('0.15');
+
+    const delegation = createDelegation({
+      to: bobSmartAccount.address,
+      from: aliceSmartAccount.address,
+      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
+        'nativeTokenStreaming',
+        {
+          initialAmount,
+          maxAmount,
+          amountPerSecond,
+          startTime: currentTime,
+        },
+      ),
+    });
+
+    const signedDelegation = {
+      ...delegation,
+      signature: await aliceSmartAccount.signDelegation({ delegation }),
+    };
+
+    const delegationHash = getDelegationHashOffchain(signedDelegation);
+    const params = {
+      delegationHash,
+      terms: delegation.caveats[0].terms,
+    };
+
+    // Test both approaches
+    const [clientResult, functionResult] = await Promise.all([
+      caveatClient.getNativeTokenStreamingEnforcerAvailableAmount(params),
+      getNativeTokenStreamingEnforcerAvailableAmount(
+        publicClient,
+        { environment: aliceSmartAccount.environment },
+        params,
+      ),
+    ]);
+
+    expect(clientResult).toEqual(functionResult);
+    expect(clientResult.availableAmount).toBe(initialAmount);
+  });
+
+  test('should work with custom parameters (delegation manager and enforcer address)', async () => {
+    const periodAmount = parseEther('2.5');
+    const periodDuration = 3600;
+
+    const delegation = createDelegation({
+      to: bobSmartAccount.address,
+      from: aliceSmartAccount.address,
+      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
+        'erc20PeriodTransfer',
+        {
+          tokenAddress: erc20TokenAddress,
+          periodAmount,
+          periodDuration,
+          startDate: currentTime,
+        },
+      ),
+    });
+
+    const signedDelegation = {
+      ...delegation,
+      signature: await aliceSmartAccount.signDelegation({ delegation }),
+    };
+
+    const delegationHash = getDelegationHashOffchain(signedDelegation);
+    const customParams = {
+      delegationHash,
+      terms: delegation.caveats[0].terms,
+      delegationManager: aliceSmartAccount.environment.DelegationManager,
+      enforcerAddress:
+        aliceSmartAccount.environment.caveatEnforcers
+          .ERC20PeriodTransferEnforcer,
+    };
+
+    // Test both approaches with custom parameters
+    const [clientResult, functionResult] = await Promise.all([
+      caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(customParams),
+      getErc20PeriodTransferEnforcerAvailableAmount(
+        publicClient,
+        { environment: aliceSmartAccount.environment },
+        customParams,
+      ),
+    ]);
+
+    expect(clientResult).toEqual(functionResult);
+    expect(clientResult.availableAmount).toBe(periodAmount);
+    expect(clientResult.isNewPeriod).toBe(true);
   });
 });

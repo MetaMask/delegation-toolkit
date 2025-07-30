@@ -6,6 +6,11 @@ import { randomAddress, randomBytes } from './utils';
 import {
   createCaveatEnforcerClient,
   type CaveatEnforcerClient,
+  getErc20PeriodTransferEnforcerAvailableAmount,
+  getErc20StreamingEnforcerAvailableAmount,
+  getMultiTokenPeriodEnforcerAvailableAmount,
+  getNativeTokenPeriodTransferEnforcerAvailableAmount,
+  getNativeTokenStreamingEnforcerAvailableAmount,
 } from '../src/actions';
 import {
   ERC20PeriodTransferEnforcer,
@@ -50,8 +55,11 @@ describe('Caveat Contract Methods', () => {
     } as DeleGatorEnvironment;
 
     // Create caveat client for tests
-    caveatClient = createCaveatEnforcerClient(publicClient as any, {
-      environment: mockEnvironment,
+    caveatClient = createCaveatEnforcerClient({
+      client: publicClient as any,
+      config: {
+        environment: mockEnvironment,
+      },
     });
 
     // Clear all mocks before each test
@@ -470,12 +478,12 @@ describe('Caveat Contract Methods', () => {
           DelegationManager: undefined,
         } as any;
 
-        const clientWithoutDelegationManager = createCaveatEnforcerClient(
-          publicClient as any,
-          {
+        const clientWithoutDelegationManager = createCaveatEnforcerClient({
+          client: publicClient as any,
+          config: {
             environment: environmentWithoutDelegationManager,
           },
-        );
+        });
 
         const params = {
           delegationHash: randomBytes32(),
@@ -498,12 +506,12 @@ describe('Caveat Contract Methods', () => {
           },
         } as any;
 
-        const clientWithoutEnforcer = createCaveatEnforcerClient(
-          publicClient as any,
-          {
+        const clientWithoutEnforcer = createCaveatEnforcerClient({
+          client: publicClient as any,
+          config: {
             environment: environmentWithoutEnforcer,
           },
-        );
+        });
 
         const params = {
           delegationHash: randomBytes32(),
@@ -518,6 +526,233 @@ describe('Caveat Contract Methods', () => {
           'ERC20PeriodTransferEnforcer not found in environment',
         );
       });
+    });
+  });
+
+  describe('Individual Functions vs Client Extension', () => {
+    it('should return identical results for ERC20PeriodTransferEnforcer', async () => {
+      const mockResult = {
+        availableAmount: 100n,
+        isNewPeriod: true,
+        currentPeriod: 1n,
+      };
+
+      const getAvailableAmountSpy = vi
+        .spyOn(ERC20PeriodTransferEnforcer.read, 'getAvailableAmount')
+        .mockResolvedValue(mockResult);
+
+      const params = {
+        delegationHash: randomBytes32(),
+        terms: '0x1234' as Hex,
+      };
+
+      // Test both approaches
+      const [clientResult, functionResult] = await Promise.all([
+        caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(params),
+        getErc20PeriodTransferEnforcerAvailableAmount(
+          publicClient as any,
+          { environment: mockEnvironment },
+          params,
+        ),
+      ]);
+
+      expect(clientResult).toEqual(functionResult);
+      expect(clientResult).toEqual(mockResult);
+      expect(getAvailableAmountSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should return identical results for ERC20StreamingEnforcer', async () => {
+      const mockResult = {
+        availableAmount: 500n,
+      };
+
+      const getAvailableAmountSpy = vi
+        .spyOn(ERC20StreamingEnforcer.read, 'getAvailableAmount')
+        .mockResolvedValue(mockResult);
+
+      const params = {
+        delegationHash: randomBytes32(),
+        terms: '0x1234' as Hex,
+      };
+
+      // Test both approaches
+      const [clientResult, functionResult] = await Promise.all([
+        caveatClient.getErc20StreamingEnforcerAvailableAmount(params),
+        getErc20StreamingEnforcerAvailableAmount(
+          publicClient as any,
+          { environment: mockEnvironment },
+          params,
+        ),
+      ]);
+
+      expect(clientResult).toEqual(functionResult);
+      expect(clientResult).toEqual(mockResult);
+      expect(getAvailableAmountSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should return identical results for MultiTokenPeriodEnforcer', async () => {
+      const mockResult = {
+        availableAmount: 200n,
+        isNewPeriod: false,
+        currentPeriod: 2n,
+      };
+
+      const getAvailableAmountSpy = vi
+        .spyOn(MultiTokenPeriodEnforcer.read, 'getAvailableAmount')
+        .mockResolvedValue(mockResult);
+
+      const params = {
+        delegationHash: randomBytes32(),
+        terms: '0x1234' as Hex,
+        args: '0x5678' as Hex,
+      };
+
+      // Test both approaches
+      const [clientResult, functionResult] = await Promise.all([
+        caveatClient.getMultiTokenPeriodEnforcerAvailableAmount(params),
+        getMultiTokenPeriodEnforcerAvailableAmount(
+          publicClient as any,
+          { environment: mockEnvironment },
+          params,
+        ),
+      ]);
+
+      expect(clientResult).toEqual(functionResult);
+      expect(clientResult).toEqual(mockResult);
+      expect(getAvailableAmountSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should return identical results for NativeTokenPeriodTransferEnforcer', async () => {
+      const mockResult = {
+        availableAmount: 300n,
+        isNewPeriod: true,
+        currentPeriod: 3n,
+      };
+
+      const getAvailableAmountSpy = vi
+        .spyOn(NativeTokenPeriodTransferEnforcer.read, 'getAvailableAmount')
+        .mockResolvedValue(mockResult);
+
+      const params = {
+        delegationHash: randomBytes32(),
+        terms: '0x9abc' as Hex,
+      };
+
+      // Test both approaches
+      const [clientResult, functionResult] = await Promise.all([
+        caveatClient.getNativeTokenPeriodTransferEnforcerAvailableAmount(
+          params,
+        ),
+        getNativeTokenPeriodTransferEnforcerAvailableAmount(
+          publicClient as any,
+          { environment: mockEnvironment },
+          params,
+        ),
+      ]);
+
+      expect(clientResult).toEqual(functionResult);
+      expect(clientResult).toEqual(mockResult);
+      expect(getAvailableAmountSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should return identical results for NativeTokenStreamingEnforcer', async () => {
+      const mockResult = {
+        availableAmount: 600n,
+      };
+
+      const getAvailableAmountSpy = vi
+        .spyOn(NativeTokenStreamingEnforcer.read, 'getAvailableAmount')
+        .mockResolvedValue(mockResult);
+
+      const params = {
+        delegationHash: randomBytes32(),
+        terms: '0x1234' as Hex,
+      };
+
+      // Test both approaches
+      const [clientResult, functionResult] = await Promise.all([
+        caveatClient.getNativeTokenStreamingEnforcerAvailableAmount(params),
+        getNativeTokenStreamingEnforcerAvailableAmount(
+          publicClient as any,
+          { environment: mockEnvironment },
+          params,
+        ),
+      ]);
+
+      expect(clientResult).toEqual(functionResult);
+      expect(clientResult).toEqual(mockResult);
+      expect(getAvailableAmountSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should work identically with custom parameters', async () => {
+      const mockResult = {
+        availableAmount: 150n,
+        isNewPeriod: true,
+        currentPeriod: 1n,
+      };
+
+      const getAvailableAmountSpy = vi
+        .spyOn(ERC20PeriodTransferEnforcer.read, 'getAvailableAmount')
+        .mockResolvedValue(mockResult);
+
+      const customDelegationManager = randomAddress();
+      const customEnforcerAddress = randomAddress();
+      const params = {
+        delegationHash: randomBytes32(),
+        terms: '0x1234' as Hex,
+        delegationManager: customDelegationManager,
+        enforcerAddress: customEnforcerAddress,
+      };
+
+      // Test both approaches with custom parameters
+      const [clientResult, functionResult] = await Promise.all([
+        caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(params),
+        getErc20PeriodTransferEnforcerAvailableAmount(
+          publicClient as any,
+          { environment: mockEnvironment },
+          params,
+        ),
+      ]);
+
+      expect(clientResult).toEqual(functionResult);
+      expect(clientResult).toEqual(mockResult);
+      expect(getAvailableAmountSpy).toHaveBeenCalledTimes(2);
+
+      // Verify both calls used the custom parameters
+      expect(getAvailableAmountSpy).toHaveBeenCalledWith({
+        client: publicClient,
+        contractAddress: customEnforcerAddress,
+        delegationHash: params.delegationHash,
+        delegationManager: customDelegationManager,
+        terms: params.terms,
+      });
+    });
+
+    it('should handle errors identically', async () => {
+      const mockError = new Error('Contract call failed');
+
+      vi.spyOn(
+        ERC20PeriodTransferEnforcer.read,
+        'getAvailableAmount',
+      ).mockRejectedValue(mockError);
+
+      const params = {
+        delegationHash: randomBytes32(),
+        terms: '0x1234' as Hex,
+      };
+
+      // Both approaches should throw the same error
+      await expect(
+        caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(params),
+      ).rejects.toThrow('Contract call failed');
+
+      await expect(
+        getErc20PeriodTransferEnforcerAvailableAmount(
+          publicClient as any,
+          { environment: mockEnvironment },
+          params,
+        ),
+      ).rejects.toThrow('Contract call failed');
     });
   });
 });

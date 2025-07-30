@@ -1,4 +1,4 @@
-import { isStrictHexString } from '@metamask/utils';
+import { isHex } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { describe, expect, it } from 'vitest';
 
@@ -95,7 +95,7 @@ describe('DelegationManager - Delegation Management', () => {
         delegation,
       });
 
-      expect(isStrictHexString(encodedData)).toBe(true);
+      expect(isHex(encodedData, { strict: true })).toBe(true);
       expect(encodedData.length).toBe(1034);
     });
   });
@@ -117,7 +117,7 @@ describe('DelegationManager - Delegation Management', () => {
         delegation,
       });
 
-      expect(isStrictHexString(encodedData)).toBe(true);
+      expect(isHex(encodedData, { strict: true })).toBe(true);
       expect(encodedData.length).toBe(1034);
     });
   });
@@ -145,7 +145,7 @@ describe('DelegationManager - Delegation Management', () => {
         executions: [[execution]],
       });
 
-      expect(isStrictHexString(encodedData)).toBe(true);
+      expect(isHex(encodedData, { strict: true })).toBe(true);
       expect(encodedData.length).toBe(1994);
     });
   });

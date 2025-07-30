@@ -4,6 +4,12 @@
 // signDelegation action will be added here
 
 export {
+  // Individual action functions
+  getErc20PeriodTransferEnforcerAvailableAmount,
+  getErc20StreamingEnforcerAvailableAmount,
+  getMultiTokenPeriodEnforcerAvailableAmount,
+  getNativeTokenPeriodTransferEnforcerAvailableAmount,
+  getNativeTokenStreamingEnforcerAvailableAmount,
   // Client extension exports
   createCaveatEnforcerClient,
   caveatEnforcerActions,
