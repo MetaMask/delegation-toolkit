@@ -69,7 +69,7 @@ export function createNonceTerms(
   // Remove '0x' prefix for padding, then add it back
   const nonceWithoutPrefix = nonce.slice(2);
   const paddedNonce = nonceWithoutPrefix.padStart(64, '0'); // 64 hex chars = 32 bytes
-  const hexValue = `0x${paddedNonce}` as Hex;
+  const hexValue = `0x${paddedNonce}`;
 
   return prepareResult(hexValue, encodingOptions);
 }
