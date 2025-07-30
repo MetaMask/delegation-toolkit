@@ -20,7 +20,6 @@ import {
   publicClient,
   fundAddress,
   randomAddress,
-  stringToUnprefixedHex,
 } from '../utils/helpers';
 import { encodeFunctionData, Hex, parseEther } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
@@ -365,7 +364,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 test('Bob attempts to redeem with invalid max amount', async () => {
@@ -435,7 +434,7 @@ test('Bob attempts to redeem with invalid max amount', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 test('Bob attempts to redeem with zero start time', async () => {
@@ -506,7 +505,7 @@ test('Bob attempts to redeem with zero start time', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 const runTest_expectSuccess = async (
@@ -652,7 +651,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 
   const recipientBalanceAfter = await publicClient.getBalance({
     address: recipient,

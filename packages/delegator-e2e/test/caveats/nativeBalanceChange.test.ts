@@ -21,7 +21,6 @@ import {
   publicClient,
   randomAddress,
   fundAddress,
-  stringToUnprefixedHex,
 } from '../utils/helpers';
 import { concat, encodeFunctionData, parseEther } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
@@ -173,7 +172,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 const testRun_expectSuccess = async (
@@ -324,5 +323,5 @@ const testRun_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 };

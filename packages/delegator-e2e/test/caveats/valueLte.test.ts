@@ -19,7 +19,6 @@ import {
   sponsoredBundlerClient,
   deploySmartAccount,
   publicClient,
-  stringToUnprefixedHex,
 } from '../utils/helpers';
 import { encodeFunctionData, parseEther } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
@@ -182,5 +181,5 @@ const runTest_expectFailure = async (
 ) => {
   await expect(
     submitUserOperationForTest(maxValue, executionValue),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 };

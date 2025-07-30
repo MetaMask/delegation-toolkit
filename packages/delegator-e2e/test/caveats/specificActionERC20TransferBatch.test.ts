@@ -24,7 +24,6 @@ import {
   deployErc20Token,
   getErc20Balance,
   fundAddressWithErc20Token,
-  stringToUnprefixedHex,
   publicClient,
 } from '../utils/helpers';
 import { expectUserOperationToSucceed } from '../utils/assertions';
@@ -208,7 +207,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 
   const recipientBalanceAfter = await getErc20Balance(recipient, tokenAddress);
   expect(recipientBalanceAfter - recipientBalanceBefore).toBe(0n);

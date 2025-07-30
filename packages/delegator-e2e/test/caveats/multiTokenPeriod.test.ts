@@ -21,7 +21,6 @@ import {
   deployErc20Token,
   fundAddressWithErc20Token,
   getErc20Balance,
-  stringToUnprefixedHex,
 } from '../utils/helpers';
 import {
   encodeFunctionData,
@@ -268,7 +267,7 @@ const runTest_expectFailure = async (
       calls: [call],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 };
 
 test('maincase: Bob redeems the delegation within period limit', async () => {

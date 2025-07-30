@@ -21,7 +21,6 @@ import {
   CounterContract,
   randomBytes,
   fundAddress,
-  stringToUnprefixedHex,
   publicClient,
 } from '../utils/helpers';
 import { encodeFunctionData, type Hex, parseEther } from 'viem';
@@ -165,7 +164,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 };
 
 test('maincase: Bob redeems the delegation with exact matching batch executions', async () => {

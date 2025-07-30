@@ -21,7 +21,6 @@ import {
   CounterContract,
   publicClient,
   randomBytes,
-  stringToUnprefixedHex,
 } from '../utils/helpers';
 import { encodeFunctionData, hexToBigInt } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
@@ -222,7 +221,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 
   const countAfter = await publicClient.readContract({
     address: aliceCounter.address,

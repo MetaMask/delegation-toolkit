@@ -23,7 +23,6 @@ import {
   fundAddressWithErc20Token,
   deployErc20Token,
   getErc20Balance,
-  stringToUnprefixedHex,
 } from '../utils/helpers';
 import { concat, encodeFunctionData, Hex, parseEther } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
@@ -440,7 +439,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 test('Bob attempts to redeem with maxAmount less than initialAmount', async () => {
@@ -519,7 +518,7 @@ test('Bob attempts to redeem with maxAmount less than initialAmount', async () =
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 test('Bob attempts to redeem with zero start time', async () => {
@@ -598,7 +597,7 @@ test('Bob attempts to redeem with zero start time', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 const runTest_expectSuccess = async (
@@ -760,7 +759,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 
   const recipientBalanceAfter = await getErc20Balance(
     recipient,

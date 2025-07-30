@@ -21,7 +21,6 @@ import {
   fundAddress,
   deployCounter,
   publicClient,
-  stringToUnprefixedHex,
 } from '../utils/helpers';
 import CounterMetadata from '../utils/counter/metadata.json';
 
@@ -224,7 +223,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 
   const countAfter = await publicClient.readContract({
     address: aliceCounterAddress,

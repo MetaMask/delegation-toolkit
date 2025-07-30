@@ -18,7 +18,6 @@ import {
   deploySmartAccount,
   publicClient,
   fundAddress,
-  stringToUnprefixedHex,
 } from '../utils/helpers';
 import { encodeFunctionData, parseEther } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
@@ -199,7 +198,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 
   const balanceAfter = await publicClient.getBalance({
     address: bobAddress,

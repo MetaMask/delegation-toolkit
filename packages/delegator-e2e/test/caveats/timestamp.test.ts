@@ -20,7 +20,6 @@ import {
   publicClient,
   fundAddress,
   deployCounter,
-  stringToUnprefixedHex,
 } from '../utils/helpers';
 import CounterMetadata from '../utils/counter/metadata.json';
 import { type Address, encodeFunctionData, parseEther } from 'viem';
@@ -288,7 +287,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 
   const countAfter = await publicClient.readContract({
     address: aliceCounterAddress,

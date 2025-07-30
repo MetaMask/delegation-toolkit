@@ -22,7 +22,6 @@ import {
   publicClient,
   randomAddress,
   fundAddress,
-  stringToUnprefixedHex,
 } from '../utils/helpers';
 import {
   Address,
@@ -312,7 +311,7 @@ const runTest_expectFailure = async (
   ).rejects;
 
   if (expectedError) {
-    await rejects.toThrow(stringToUnprefixedHex(expectedError));
+    await rejects.toThrow(expectedError);
   } else {
     await rejects.toThrow();
   }

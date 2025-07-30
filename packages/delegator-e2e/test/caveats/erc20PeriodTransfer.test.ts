@@ -21,7 +21,6 @@ import {
   deployErc20Token,
   fundAddressWithErc20Token,
   getErc20Balance,
-  stringToUnprefixedHex,
 } from '../utils/helpers';
 import { encodeFunctionData, type Hex, parseEther, concat } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
@@ -229,7 +228,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 
   const recipientBalanceAfter = await getErc20Balance(
     recipient,
@@ -378,7 +377,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 test('Bob attempts to redeem with invalid execution length', async () => {
@@ -448,7 +447,7 @@ test('Bob attempts to redeem with invalid execution length', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 test('Bob attempts to redeem with invalid contract', async () => {
@@ -516,7 +515,7 @@ test('Bob attempts to redeem with invalid contract', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 test('Bob attempts to redeem with invalid method', async () => {
@@ -583,7 +582,7 @@ test('Bob attempts to redeem with invalid method', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 test('Bob attempts to redeem with zero start date', async () => {
@@ -657,7 +656,7 @@ test('Bob attempts to redeem with zero start date', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 test('Bob attempts to redeem with zero period amount', async () => {
@@ -732,7 +731,7 @@ test('Bob attempts to redeem with zero period amount', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 test('Bob attempts to redeem with zero period duration', async () => {
@@ -807,7 +806,7 @@ test('Bob attempts to redeem with zero period duration', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });
 
 test('Bob attempts to redeem before start date', async () => {
@@ -873,5 +872,5 @@ test('Bob attempts to redeem before start date', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 });

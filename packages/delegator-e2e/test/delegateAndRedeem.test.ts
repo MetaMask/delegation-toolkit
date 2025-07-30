@@ -6,7 +6,6 @@ import {
   gasPrice,
   sponsoredBundlerClient,
   deploySmartAccount,
-  stringToUnprefixedHex,
 } from './utils/helpers';
 import { expectCodeAt, expectUserOperationToSucceed } from './utils/assertions';
 
@@ -184,7 +183,7 @@ test('Bob attempts to increment the counter without a delegation', async () => {
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 
   const countAfter = await counterContract.read.count();
   expect(countAfter, 'Expected final count to be 0n').toEqual(0n);
@@ -249,7 +248,7 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 
   const countAfter = await counterContract.read.count();
   expect(countAfter, 'Expected final count to be 0n').toEqual(0n);

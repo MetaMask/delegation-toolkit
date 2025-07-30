@@ -231,7 +231,3 @@ export const randomAddress = (lowerCase: boolean = false) => {
 
   return address.toLowerCase() as Hex;
 };
-
-export const stringToUnprefixedHex = (value: string) => {
-  return stringToHex(value).slice(2);
-};

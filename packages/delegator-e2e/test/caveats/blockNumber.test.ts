@@ -19,7 +19,6 @@ import {
   deployCounter,
   CounterContract,
   publicClient,
-  stringToUnprefixedHex,
 } from '../utils/helpers';
 import { encodeFunctionData } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
@@ -294,7 +293,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 
   const countAfter = await aliceCounter.read.count();
   expect(countAfter, 'Expected count to remain 0n').toEqual(0n);

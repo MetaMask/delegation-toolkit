@@ -18,7 +18,6 @@ import {
   deploySmartAccount,
   publicClient,
   randomBytes,
-  stringToUnprefixedHex,
 } from '../utils/helpers';
 import {
   encodeFunctionData,
@@ -285,7 +284,7 @@ const runTest_expectFailure = async (
       ],
       ...gasPrice,
     }),
-  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+  ).rejects.toThrow(expectedError);
 
   const counterCodeAfter = await publicClient.getCode({
     address: deployedAddress,
