@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0-rc.1]
+
 ### Uncategorized
 
 - make startTime in native-token-stream optional
@@ -20,4 +22,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove hardhat and replace with vitest ([#27](https://github.com/MetaMask/delegation-toolkit/pull/27))
 - Bump the npm_and_yarn group across 4 directories with 2 updates ([#12](https://github.com/MetaMask/delegation-toolkit/pull/12))
 
-[Unreleased]: https://github.com/MetaMask/delegation-toolkit/
+[Unreleased]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.1...HEAD
+[0.13.0-rc.1]: https://github.com/MetaMask/delegation-toolkit/releases/tag/@metamask/delegation-toolkit@0.13.0-rc.1
