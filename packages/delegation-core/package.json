@@ -1,6 +1,6 @@
 {
   "name": "@metamask/delegation-core",
-  "version": "0.1.0",
+  "version": "0.2.0-rc.1",
   "description": "Low level core functionality for interacting with the Delegation Framework",
   "license": "(MIT-0 OR Apache-2.0)",
   "type": "module",
@@ -20,7 +20,7 @@
   "sideEffects": false,
   "contributors": [],
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist/**",
@@ -34,7 +34,7 @@
       },
       "import": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "default": "./dist/index.mjs"
       }
     },
     "./package.json": "./package.json"

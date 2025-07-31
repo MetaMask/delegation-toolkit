@@ -41,4 +41,9 @@ export default defineConfig({
   bundle: true,
   skipNodeModulesBundle: true,
   outDir: 'dist',
+  outExtension({ format }) {
+    return {
+      js: `.${format === 'cjs' ? 'cjs' : 'mjs'}`,
+    };
+  },
 });

@@ -1,6 +1,6 @@
 {
   "name": "@metamask/delegation-toolkit",
-  "version": "0.12.0",
+  "version": "0.13.0-rc.1",
   "type": "module",
   "description": "The Delegation Toolkit built on top of Viem - a library for interacting with DeleGator Smart Accounts",
   "license": "(MIT-0 OR Apache-2.0)",
@@ -20,57 +20,58 @@
     "dist/**",
     "dist/"
   ],
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "require": {
-        "types": "./dist/index.d.ts",
+        "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       },
       "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
       }
     },
     "./utils": {
       "require": {
-        "types": "./dist/utils/index.d.ts",
+        "types": "./dist/utils/index.d.cts",
         "default": "./dist/utils/index.cjs"
       },
       "import": {
-        "types": "./dist/utils/index.d.mts",
-        "default": "./dist/utils/index.js"
+        "types": "./dist/utils/index.d.ts",
+        "default": "./dist/utils/index.mjs"
       }
     },
     "./contracts": {
       "require": {
-        "types": "./dist/contracts/index.d.ts",
+        "types": "./dist/contracts/index.d.cts",
         "default": "./dist/contracts/index.cjs"
       },
       "import": {
-        "types": "./dist/contracts/index.d.mts",
-        "default": "./dist/contracts/index.js"
+        "types": "./dist/contracts/index.d.ts",
+        "default": "./dist/contracts/index.mjs"
       }
     },
     "./actions": {
       "require": {
-        "types": "./dist/actions/index.d.ts",
+        "types": "./dist/actions/index.d.cts",
         "default": "./dist/actions/index.cjs"
       },
       "import": {
-        "types": "./dist/actions/index.d.mts",
-        "default": "./dist/actions/index.js"
+        "types": "./dist/actions/index.d.ts",
+        "default": "./dist/actions/index.mjs"
       }
     },
     "./experimental": {
       "require": {
-        "types": "./dist/experimental/index.d.ts",
+        "types": "./dist/experimental/index.d.cts",
         "default": "./dist/experimental/index.cjs"
       },
       "import": {
-        "types": "./dist/experimental/index.d.mts",
-        "default": "./dist/experimental/index.js"
+        "types": "./dist/experimental/index.d.ts",
+        "default": "./dist/experimental/index.mjs"
       }
     },
     "./package.json": "./package.json"
@@ -113,7 +114,7 @@
   },
   "dependencies": {
     "@metamask/delegation-abis": "^0.11.0",
-    "@metamask/delegation-core": "^0.1.0",
+    "@metamask/delegation-core": "^0.2.0-rc.1",
     "@metamask/delegation-deployments": "^0.12.0",
     "buffer": "^6.0.3",
     "webauthn-p256": "^0.0.10"

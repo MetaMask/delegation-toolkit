@@ -3,6 +3,7 @@
   "version": "0.11.0",
   "description": "ABIs mapped to versions of the Delegation Framework contracts",
   "license": "(MIT-0 OR Apache-2.0)",
+  "type": "module",
   "keywords": [
     "MetaMask",
     "Ethereum"
@@ -18,7 +19,7 @@
   "author": "MetaMask <hello@metamask.io>",
   "sideEffects": false,
   "contributors": [],
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
@@ -28,11 +29,11 @@
   "exports": {
     ".": {
       "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
       },
       "import": {
-        "types": "./dist/index.d.mts",
+        "types": "./dist/index.d.ts",
         "default": "./dist/index.mjs"
       }
     },

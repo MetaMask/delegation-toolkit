@@ -1,6 +1,6 @@
 {
   "name": "delegator-sdk-monorepo",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "license": "(MIT-0 OR Apache-2.0)",
   "private": true,
   "repository": {
@@ -51,7 +51,7 @@
     "prettier": "^3.3.3",
     "turbo": "latest",
     "typescript": "5.0.4",
-    "viem": "^2.31.4",
+    "viem": "2.31.4",
     "webauthn-p256": "^0.0.10"
   },
   "packageManager": "yarn@4.2.2",
