@@ -20,19 +20,19 @@ describe('nonceBuilder()', () => {
   describe('validation', () => {
     it('should fail with an empty nonce', () => {
       expect(() => buildWithNonce('0x')).to.throw(
-        'Invalid nonce: must be a non-empty hex string',
+        'Invalid nonce: must not be empty',
       );
     });
 
     it('should fail with a null nonce', () => {
       expect(() => buildWithNonce(null as any as Hex)).to.throw(
-        'Invalid nonce: must be a non-empty hex string',
+        'Value must be a Uint8Array',
       );
     });
 
     it('should fail with an invalid hex string', () => {
       expect(() => buildWithNonce('0xinvalid' as Hex)).to.throw(
-        'Invalid nonce: must be a valid hex string',
+        'Invalid nonce: must be a valid BytesLike value',
       );
     });
 
