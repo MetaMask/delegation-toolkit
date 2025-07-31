@@ -1,11 +1,9 @@
-import { type Hex, isHex, pad } from 'viem';
+import { createNonceTerms } from '@metamask/delegation-core';
+import { type Hex } from 'viem';
 
 import type { DeleGatorEnvironment, Caveat } from '../types';
 
 export const nonce = 'nonce';
-
-// char length of 32 byte hex string
-const MAX_NONCE_STRING_LENGTH = 66;
 
 export type NonceBuilderConfig = {
   /**
@@ -28,19 +26,7 @@ export const nonceBuilder = (
 ): Caveat => {
   const { nonce: nonceValue } = config;
 
-  if (!nonceValue || nonceValue === '0x') {
-    throw new Error('Invalid nonce: must be a non-empty hex string');
-  }
-
-  if (!isHex(nonceValue)) {
-    throw new Error('Invalid nonce: must be a valid hex string');
-  }
-
-  if (nonceValue.length > MAX_NONCE_STRING_LENGTH) {
-    throw new Error('Invalid nonce: must be 32 bytes or less in length');
-  }
-
-  const terms = pad(nonceValue, { size: 32 });
+  const terms = createNonceTerms({ nonce: nonceValue });
 
   const {
     caveatEnforcers: { NonceEnforcer },

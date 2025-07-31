@@ -12,6 +12,7 @@ export {
   createNativeTokenStreamingTerms,
   createERC20StreamingTerms,
   createERC20TokenPeriodTransferTerms,
+  createNonceTerms,
 } from './caveats';
 
 export {
