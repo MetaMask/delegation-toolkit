@@ -1,4 +1,1 @@
-/* eslint-disable */
-// experimental actions will be moved here once they have stabilized
-
-// signDelegation action will be added here
+export { isEip7702StatelessDelegatedAccount } from './isEip7702StatelessDelegatedAccount';

@@ -57,3 +57,5 @@ export type { AggregateSignatureParams } from './signatures';
 export { signUserOperation } from './userOp';
 
 export { redeemDelegations } from './write';
+
+export { isEip7702StatelessDelegatedAccount } from './actions';
