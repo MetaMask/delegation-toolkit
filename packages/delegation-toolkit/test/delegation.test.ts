@@ -3,7 +3,6 @@ import { getAddress } from 'viem';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import { randomAddress } from './utils';
-import { resolveCaveats } from '../src/caveatBuilder';
 import {
   type DelegationStruct,
   ROOT_AUTHORITY,
@@ -17,12 +16,39 @@ import {
   decodePermissionContexts,
   signDelegation,
 } from '../src/delegation';
-import type { Caveat, Delegation } from '../src/types';
+import type { Caveat, Delegation, DeleGatorEnvironment } from '../src/types';
 
 const mockDelegate = '0x1234567890123456789012345678901234567890' as const;
 const mockDelegator = '0x0987654321098765432109876543210987654321' as const;
 const mockSignature =
   '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890' as const;
+
+const erc20Scope = {
+  type: 'erc20',
+  tokenAddress: '0x1234567890123456789012345678901234567890',
+  maxAmount: 100n,
+} as const;
+
+const delegatorEnvironment: DeleGatorEnvironment = {
+  caveatEnforcers: {
+    ValueLteEnforcer: '0x1234567890123456789012345678901234567890',
+    ERC20TransferAmountEnforcer: '0x1234567890123456789012345678901234567890',
+  },
+} as unknown as DeleGatorEnvironment;
+
+const erc20ScopeCaveats = [
+  {
+    enforcer: delegatorEnvironment.caveatEnforcers.ValueLteEnforcer,
+    terms: '0x0000000000000000000000000000000000000000000000000000000000000000',
+    args: '0x',
+  },
+  {
+    enforcer: delegatorEnvironment.caveatEnforcers.ERC20TransferAmountEnforcer,
+    terms:
+      '0x12345678901234567890123456789012345678900000000000000000000000000000000000000000000000000000000000000064',
+    args: '0x',
+  },
+];
 
 // delegation encoding in @metamask/delegation-core will lowercase any Hex strings
 const mockCaveat: Caveat = {
@@ -137,6 +163,8 @@ describe('resolveAuthority', () => {
 describe('createDelegation', () => {
   it('should create a basic delegation with root authority', () => {
     const result = createDelegation({
+      environment: delegatorEnvironment,
+      scope: erc20Scope,
       to: mockDelegate,
       from: mockDelegator,
       caveats: [mockCaveat],
@@ -146,7 +174,7 @@ describe('createDelegation', () => {
       delegate: mockDelegate,
       delegator: mockDelegator,
       authority: ROOT_AUTHORITY,
-      caveats: [mockCaveat],
+      caveats: [...erc20ScopeCaveats, mockCaveat],
       salt: '0x',
       signature: '0x',
     });
@@ -156,6 +184,8 @@ describe('createDelegation', () => {
     const parentHash =
       '0x1234567890123456789012345678901234567890123456789012345678901234' as const;
     const result = createDelegation({
+      environment: delegatorEnvironment,
+      scope: erc20Scope,
       to: mockDelegate,
       from: mockDelegator,
       caveats: [mockCaveat],
@@ -166,7 +196,7 @@ describe('createDelegation', () => {
       delegate: mockDelegate,
       delegator: mockDelegator,
       authority: parentHash,
-      caveats: [mockCaveat],
+      caveats: [...erc20ScopeCaveats, mockCaveat],
       salt: '0x',
       signature: '0x',
     });
@@ -182,6 +212,8 @@ describe('createDelegation', () => {
     ];
 
     const result = createDelegation({
+      environment: delegatorEnvironment,
+      scope: erc20Scope,
       to: mockDelegate,
       from: mockDelegator,
       caveats,
@@ -192,6 +224,7 @@ describe('createDelegation', () => {
       delegator: mockDelegator,
       authority: ROOT_AUTHORITY,
       caveats: [
+        ...erc20ScopeCaveats,
         {
           enforcer: '0x1111111111111111111111111111111111111111',
           terms: '0x',
@@ -203,9 +236,30 @@ describe('createDelegation', () => {
     });
   });
 
+  it('should create a delegation with no additional caveats', () => {
+    const result = createDelegation({
+      environment: delegatorEnvironment,
+      to: mockDelegate,
+      from: mockDelegator,
+      scope: erc20Scope,
+      caveats: [],
+    });
+
+    expect(result).to.deep.equal({
+      delegate: mockDelegate,
+      delegator: mockDelegator,
+      authority: ROOT_AUTHORITY,
+      caveats: [...erc20ScopeCaveats],
+      salt: '0x',
+      signature: '0x',
+    });
+  });
+
   it('should use the provided salt when specified', () => {
     const customSalt = '0xdeadbeef';
     const result = createDelegation({
+      environment: delegatorEnvironment,
+      scope: erc20Scope,
       to: mockDelegate,
       from: mockDelegator,
       caveats: [mockCaveat],
@@ -215,7 +269,7 @@ describe('createDelegation', () => {
       delegate: mockDelegate,
       delegator: mockDelegator,
       authority: ROOT_AUTHORITY,
-      caveats: [mockCaveat],
+      caveats: [...erc20ScopeCaveats, mockCaveat],
       salt: customSalt,
       signature: '0x',
     });
@@ -225,6 +279,8 @@ describe('createDelegation', () => {
 describe('createOpenDelegation', () => {
   it('should create a basic open delegation with root authority', () => {
     const result = createOpenDelegation({
+      environment: delegatorEnvironment,
+      scope: erc20Scope,
       from: mockDelegator,
       caveats: [mockCaveat],
     });
@@ -233,7 +289,7 @@ describe('createOpenDelegation', () => {
       delegate: '0x0000000000000000000000000000000000000a11',
       delegator: mockDelegator,
       authority: ROOT_AUTHORITY,
-      caveats: [mockCaveat],
+      caveats: [...erc20ScopeCaveats, mockCaveat],
       salt: '0x',
       signature: '0x',
     });
@@ -243,6 +299,8 @@ describe('createOpenDelegation', () => {
     const parentHash =
       '0x1234567890123456789012345678901234567890123456789012345678901234' as const;
     const result = createOpenDelegation({
+      environment: delegatorEnvironment,
+      scope: erc20Scope,
       from: mockDelegator,
       caveats: [mockCaveat],
       parentDelegation: parentHash,
@@ -252,7 +310,7 @@ describe('createOpenDelegation', () => {
       delegate: '0x0000000000000000000000000000000000000a11',
       delegator: mockDelegator,
       authority: parentHash,
-      caveats: [mockCaveat],
+      caveats: [...erc20ScopeCaveats, mockCaveat],
       salt: '0x',
       signature: '0x',
     });
@@ -268,6 +326,8 @@ describe('createOpenDelegation', () => {
     ];
 
     const result = createOpenDelegation({
+      environment: delegatorEnvironment,
+      scope: erc20Scope,
       from: mockDelegator,
       caveats,
     });
@@ -277,6 +337,7 @@ describe('createOpenDelegation', () => {
       delegator: mockDelegator,
       authority: ROOT_AUTHORITY,
       caveats: [
+        ...erc20ScopeCaveats,
         {
           enforcer: '0x1111111111111111111111111111111111111111',
           terms: '0x',
@@ -291,6 +352,8 @@ describe('createOpenDelegation', () => {
   it('should use the provided salt when specified', () => {
     const customSalt = '0xdeadbeef';
     const result = createOpenDelegation({
+      environment: delegatorEnvironment,
+      scope: erc20Scope,
       from: mockDelegator,
       caveats: [mockCaveat],
       salt: customSalt,
@@ -299,88 +362,10 @@ describe('createOpenDelegation', () => {
       delegate: '0x0000000000000000000000000000000000000a11',
       delegator: mockDelegator,
       authority: ROOT_AUTHORITY,
-      caveats: [mockCaveat],
+      caveats: [...erc20ScopeCaveats, mockCaveat],
       salt: customSalt,
       signature: '0x',
     });
-  });
-
-  it('should throw an error if no caveats are provided', () => {
-    expect(() =>
-      createOpenDelegation({
-        from: mockDelegator,
-        caveats: [],
-      }),
-    ).to.throw(
-      'No caveats found. If you definitely want to create an empty caveat collection, set `allowInsecureUnrestrictedDelegation` to `true`.',
-    );
-  });
-
-  it('should throw an error if no caveats are provided and allowInsecureUnrestrictedDelegation is false', () => {
-    expect(() =>
-      createOpenDelegation({
-        from: mockDelegator,
-        caveats: [],
-      }),
-    ).to.throw(
-      'No caveats found. If you definitely want to create an empty caveat collection, set `allowInsecureUnrestrictedDelegation` to `true`.',
-    );
-  });
-
-  it('should not throw an error if no caveats are provided and allowInsecureUnrestrictedDelegation is true', () => {
-    expect(() =>
-      createOpenDelegation({
-        from: mockDelegator,
-        caveats: [],
-        allowInsecureUnrestrictedDelegation: true,
-      }),
-    ).to.not.throw();
-  });
-});
-
-describe('resolveCaveats', () => {
-  it('should return the same array when given a Caveat array', () => {
-    const caveats: Caveat[] = [
-      {
-        enforcer: '0x1111111111111111111111111111111111111111',
-        terms: '0x',
-        args: '0x',
-      },
-    ];
-
-    const result = resolveCaveats({ caveats });
-    expect(result).to.equal(caveats);
-    expect(result).to.deep.equal(caveats);
-  });
-
-  it('should call build() and return result when given a CaveatBuilder', () => {
-    const mockCaveats: Caveat[] = [
-      {
-        enforcer: '0x1111111111111111111111111111111111111111',
-        terms: '0x',
-        args: '0x',
-      },
-    ];
-
-    const mockBuilder = {
-      build: stub().returns(mockCaveats),
-    };
-
-    const result = resolveCaveats({ caveats: mockBuilder as any });
-
-    expect(mockBuilder.build.calledOnce).to.equal(true);
-    expect(result).to.deep.equal(mockCaveats);
-  });
-
-  it('should handle build() throwing an error', () => {
-    const mockBuilder = {
-      build: stub().throws(new Error('Build failed')),
-    };
-
-    expect(() => resolveCaveats({ caveats: mockBuilder as any })).to.throw(
-      'Build failed',
-    );
-    expect(mockBuilder.build.calledOnce).to.equal(true);
   });
 });
 

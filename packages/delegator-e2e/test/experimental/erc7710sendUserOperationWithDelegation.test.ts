@@ -27,10 +27,7 @@ import {
   Hex,
   encodeFunctionData,
 } from 'viem';
-import {
-  encodeDelegations,
-  createCaveatBuilder,
-} from '@metamask/delegation-toolkit/utils';
+import { encodeDelegations } from '@metamask/delegation-toolkit/utils';
 import CounterMetadata from '../utils/counter/metadata.json';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 
@@ -67,15 +64,16 @@ beforeEach(async () => {
   const aliceCounter = await deployCounter(aliceSmartAccount.address);
   aliceCounterContractAddress = aliceCounter.address;
 
-  const caveats = createCaveatBuilder(aliceSmartAccount.environment)
-    .addCaveat('allowedTargets', { targets: [aliceCounterContractAddress] })
-    .addCaveat('allowedMethods', { selectors: ['increment()'] })
-    .addCaveat('valueLte', { maxValue: 0n });
-
   const delegation = createDelegation({
+    environment: aliceSmartAccount.environment,
+    scope: {
+      type: 'functionCall',
+      targets: [aliceCounterContractAddress],
+      selectors: ['increment()'],
+    },
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
-    caveats,
+    caveats: [{ type: 'valueLte', maxValue: 0n }],
   });
 
   signedDelegation = {
