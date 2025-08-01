@@ -24,3 +24,5 @@ export {
   type PeriodTransferResult,
   type StreamingResult,
 } from './getCaveatAvailableAmount';
+
+export { isEip7702StatelessDelegatedAccount } from './isEip7702StatelessDelegatedAccount';
