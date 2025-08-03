@@ -10,7 +10,7 @@ import {
   toSmartAccount,
 } from 'viem/account-abstraction';
 
-import { isEip7702StatelessDelegatedAccount } from './actions/isEip7702StatelessDelegatedAccount';
+import { isValidImplementation } from './actions/isValidImplementation';
 import { Implementation } from './constants';
 import { getCounterfactualAccountData } from './counterfactualAccountData';
 import {
@@ -198,17 +198,14 @@ export async function toMetaMaskSmartAccount<
     ...signatory,
   });
 
-  // For Stateless7702, override isDeployed to check specific delegation
-  if (implementation === Implementation.Stateless7702) {
-    return {
-      ...smartAccount,
-      isDeployed: async () =>
-        isEip7702StatelessDelegatedAccount({
-          client,
-          accountAddress: address,
-        }),
-    };
-  }
-
-  return smartAccount;
+  // Override isDeployed for all implementations to check proper implementation code
+  return {
+    ...smartAccount,
+    isDeployed: async () =>
+      isValidImplementation({
+        client,
+        accountAddress: address,
+        implementation,
+      }),
+  };
 }

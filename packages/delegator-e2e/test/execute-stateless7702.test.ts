@@ -402,35 +402,6 @@ test('Alice can check the contract version and name', async () => {
   expect(domainVersion, 'Domain version should be 1').toBe('1');
 });
 
-test('isEip7702StatelessDelegatedAccount correctly identifies delegated accounts', async () => {
-  const { isEip7702StatelessDelegatedAccount } = await import(
-    '@metamask/delegation-toolkit'
-  );
-
-  // Test that Alice's account (which is delegated to EIP7702StatelessDeleGator) returns true
-  const isDelegated = await isEip7702StatelessDelegatedAccount({
-    client: publicClient,
-    accountAddress: aliceSmartAccount.address,
-  });
-
-  expect(
-    isDelegated,
-    'Alice account should be delegated to EIP7702StatelessDeleGator',
-  ).toBe(true);
-
-  // Test with a random non-delegated address
-  const randomAddress = '0x1234567890123456789012345678901234567890';
-  const isRandomDelegated = await isEip7702StatelessDelegatedAccount({
-    client: publicClient,
-    accountAddress: randomAddress,
-  });
-
-  expect(
-    isRandomDelegated,
-    'Random address should not be delegated to EIP7702StatelessDeleGator',
-  ).toBe(false);
-});
-
 test('isDeployed() method correctly identifies EIP7702 delegation for Stateless7702 accounts', async () => {
   // Test that Alice's smart account's isDeployed() method returns true
   // because her EOA is properly delegated to EIP7702StatelessDeleGator
@@ -501,17 +472,73 @@ test('isDeployed() returns false for addresses with code that are not delegated 
   ).toBe(false);
 
   // Also test with the standalone function to show it would return false too
-  const { isEip7702StatelessDelegatedAccount } = await import(
+  const { isValidImplementation } = await import(
     '@metamask/delegation-toolkit'
   );
 
-  const isContractDelegated = await isEip7702StatelessDelegatedAccount({
+  const isContractDelegated = await isValidImplementation({
     client: publicClient,
     accountAddress: counterContract.address,
+    implementation: Implementation.Stateless7702,
   });
 
   expect(
     isContractDelegated,
     'Contract address should not be identified as EIP7702StatelessDeleGator delegation',
+  ).toBe(false);
+});
+
+test('isValidImplementation works with different implementations', async () => {
+  const { isValidImplementation } = await import(
+    '@metamask/delegation-toolkit'
+  );
+
+  // Test that Alice's account (which is delegated to EIP7702StatelessDeleGator) returns true
+  // when checked with the correct implementation
+  const isValidStateless = await isValidImplementation({
+    client: publicClient,
+    accountAddress: aliceSmartAccount.address,
+    implementation: Implementation.Stateless7702,
+  });
+
+  expect(
+    isValidStateless,
+    'Alice account should be valid for Stateless7702 implementation',
+  ).toBe(true);
+
+  // Test that the same account returns false when checked with wrong implementation
+  const isValidHybrid = await isValidImplementation({
+    client: publicClient,
+    accountAddress: aliceSmartAccount.address,
+    implementation: Implementation.Hybrid,
+  });
+
+  expect(
+    isValidHybrid,
+    'Alice account should not be valid for Hybrid implementation',
+  ).toBe(false);
+
+  const isValidMultiSig = await isValidImplementation({
+    client: publicClient,
+    accountAddress: aliceSmartAccount.address,
+    implementation: Implementation.MultiSig,
+  });
+
+  expect(
+    isValidMultiSig,
+    'Alice account should not be valid for MultiSig implementation',
+  ).toBe(false);
+
+  // Test with a random non-delegated address
+  const randomAddress = '0x1234567890123456789012345678901234567890';
+  const isRandomValid = await isValidImplementation({
+    client: publicClient,
+    accountAddress: randomAddress,
+    implementation: Implementation.Stateless7702,
+  });
+
+  expect(
+    isRandomValid,
+    'Random address should not be valid for any implementation',
   ).toBe(false);
 });

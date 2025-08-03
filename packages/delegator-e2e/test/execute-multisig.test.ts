@@ -470,3 +470,131 @@ test('Alice executes multiple calls, including a call to a function directly on 
     `Expected code to be deployed to gator address: ${address}`,
   );
 });
+
+test('isDeployed() returns false for addresses with code that are not delegated to MultiSigDeleGator', async () => {
+  // Deploy a regular contract to get an address with code
+  const counterContract = await deployCounter(aliceSmartAccount.address);
+
+  // Verify the contract has code
+  const contractCode = await publicClient.getCode({
+    address: counterContract.address,
+  });
+  expect(contractCode, 'Contract should have code deployed').toBeDefined();
+  expect(
+    contractCode!.length,
+    'Contract code should not be empty',
+  ).toBeGreaterThan(2); // More than just '0x'
+
+  // Create a MultiSig smart account pointing to this contract address
+  const contractAccount = privateKeyToAccount(generatePrivateKey());
+
+  const contractSmartAccount = await toMetaMaskSmartAccount({
+    client: publicClient,
+    implementation: Implementation.MultiSig,
+    deployParams: [[contractAccount.address], 1n],
+    deploySalt: '0x',
+    address: counterContract.address, // Point to the contract address
+    signatory: [{ account: contractAccount }],
+  });
+
+  // Test that isDeployed() returns false even though there is code at the address
+  // because the code is not a MultiSigDeleGator delegation
+  const isContractDeployed = await contractSmartAccount.isDeployed();
+
+  expect(
+    isContractDeployed,
+    'Smart account should report as not deployed when address has non-MultiSigDeleGator code',
+  ).toBe(false);
+
+  // Also test with the standalone function to show it would return false too
+  const { isValidImplementation } = await import(
+    '@metamask/delegation-toolkit'
+  );
+
+  const isContractDelegated = await isValidImplementation({
+    client: publicClient,
+    accountAddress: counterContract.address,
+    implementation: Implementation.MultiSig,
+  });
+
+  expect(
+    isContractDelegated,
+    'Contract address should not be identified as MultiSigDeleGator delegation',
+  ).toBe(false);
+});
+
+test('isValidImplementation works with different implementations', async () => {
+  const { isValidImplementation } = await import(
+    '@metamask/delegation-toolkit'
+  );
+
+  // First deploy Alice's account so it has the proper delegation
+  const { address } = aliceSmartAccount;
+  await fundAddress(address, parseEther('0.1'));
+
+  // Execute a transaction to deploy the account
+  const userOpHash = await sponsoredBundlerClient.sendUserOperation({
+    account: aliceSmartAccount,
+    calls: [
+      {
+        to: randomAddress(),
+        data: '0x',
+        value: 1n,
+      },
+    ],
+    ...gasPrice,
+  });
+
+  await sponsoredBundlerClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  });
+
+  // Test that Alice's account (which is delegated to MultiSigDeleGator) returns true
+  // when checked with the correct implementation
+  const isValidMultiSig = await isValidImplementation({
+    client: publicClient,
+    accountAddress: aliceSmartAccount.address,
+    implementation: Implementation.MultiSig,
+  });
+
+  expect(
+    isValidMultiSig,
+    'Alice account should be valid for MultiSig implementation',
+  ).toBe(true);
+
+  // Test that the same account returns false when checked with wrong implementation
+  const isValidStateless = await isValidImplementation({
+    client: publicClient,
+    accountAddress: aliceSmartAccount.address,
+    implementation: Implementation.Stateless7702,
+  });
+
+  expect(
+    isValidStateless,
+    'Alice account should not be valid for Stateless7702 implementation',
+  ).toBe(false);
+
+  const isValidHybrid = await isValidImplementation({
+    client: publicClient,
+    accountAddress: aliceSmartAccount.address,
+    implementation: Implementation.Hybrid,
+  });
+
+  expect(
+    isValidHybrid,
+    'Alice account should not be valid for Hybrid implementation',
+  ).toBe(false);
+
+  // Test with a random non-delegated address
+  const randomAddr = '0x1234567890123456789012345678901234567890';
+  const isRandomValid = await isValidImplementation({
+    client: publicClient,
+    accountAddress: randomAddr,
+    implementation: Implementation.MultiSig,
+  });
+
+  expect(
+    isRandomValid,
+    'Random address should not be valid for any implementation',
+  ).toBe(false);
+});

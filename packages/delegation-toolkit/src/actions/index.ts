@@ -26,3 +26,4 @@ export {
 } from './getCaveatAvailableAmount';
 
 export { isEip7702StatelessDelegatedAccount } from './isEip7702StatelessDelegatedAccount';
+export { isValidImplementation } from './isValidImplementation';
