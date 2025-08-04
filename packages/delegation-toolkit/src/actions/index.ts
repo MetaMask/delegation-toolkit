@@ -27,3 +27,4 @@ export {
 
 export { isEip7702StatelessDelegatedAccount } from './isEip7702StatelessDelegatedAccount';
 export { isValidImplementation } from './isValidImplementation';
+export { isValid7702Implementation } from './isValid7702Implementation';

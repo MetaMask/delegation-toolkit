@@ -472,14 +472,14 @@ test('isDeployed() returns false for addresses with code that are not delegated 
   ).toBe(false);
 
   // Also test with the standalone function to show it would return false too
-  const { isValidImplementation } = await import(
+  const { isValid7702Implementation } = await import(
     '@metamask/delegation-toolkit'
   );
 
-  const isContractDelegated = await isValidImplementation({
+  const isContractDelegated = await isValid7702Implementation({
     client: publicClient,
     accountAddress: counterContract.address,
-    implementation: Implementation.Stateless7702,
+    environment: aliceSmartAccount.environment,
   });
 
   expect(
@@ -488,57 +488,33 @@ test('isDeployed() returns false for addresses with code that are not delegated 
   ).toBe(false);
 });
 
-test('isValidImplementation works with different implementations', async () => {
-  const { isValidImplementation } = await import(
+test('isValid7702Implementation works with EIP-7702 delegations', async () => {
+  const { isValid7702Implementation } = await import(
     '@metamask/delegation-toolkit'
   );
 
   // Test that Alice's account (which is delegated to EIP7702StatelessDeleGator) returns true
-  // when checked with the correct implementation
-  const isValidStateless = await isValidImplementation({
+  const isValidStateless = await isValid7702Implementation({
     client: publicClient,
     accountAddress: aliceSmartAccount.address,
-    implementation: Implementation.Stateless7702,
+    environment: aliceSmartAccount.environment,
   });
 
   expect(
     isValidStateless,
-    'Alice account should be valid for Stateless7702 implementation',
+    'Alice account should be valid for EIP-7702 implementation',
   ).toBe(true);
-
-  // Test that the same account returns false when checked with wrong implementation
-  const isValidHybrid = await isValidImplementation({
-    client: publicClient,
-    accountAddress: aliceSmartAccount.address,
-    implementation: Implementation.Hybrid,
-  });
-
-  expect(
-    isValidHybrid,
-    'Alice account should not be valid for Hybrid implementation',
-  ).toBe(false);
-
-  const isValidMultiSig = await isValidImplementation({
-    client: publicClient,
-    accountAddress: aliceSmartAccount.address,
-    implementation: Implementation.MultiSig,
-  });
-
-  expect(
-    isValidMultiSig,
-    'Alice account should not be valid for MultiSig implementation',
-  ).toBe(false);
 
   // Test with a random non-delegated address
   const randomAddress = '0x1234567890123456789012345678901234567890';
-  const isRandomValid = await isValidImplementation({
+  const isRandomValid = await isValid7702Implementation({
     client: publicClient,
     accountAddress: randomAddress,
-    implementation: Implementation.Stateless7702,
+    environment: aliceSmartAccount.environment,
   });
 
   expect(
     isRandomValid,
-    'Random address should not be valid for any implementation',
+    'Random address should not be valid for EIP-7702 implementation',
   ).toBe(false);
 });
