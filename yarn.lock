@@ -683,6 +683,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/permission-types@workspace:packages/permission-types":
+  version: 0.0.0-use.local
+  resolution: "@metamask/permission-types@workspace:packages/permission-types"
+  dependencies:
+    "@metamask/auto-changelog": "npm:^5.0.2"
+    compare-versions: "npm:^6.1.1"
+    tsup: "npm:^8.5.0"
+    typescript: "npm:5.0.4"
+  languageName: unknown
+  linkType: soft
+
 "@metamask/superstruct@npm:^3.1.0":
   version: 3.2.1
   resolution: "@metamask/superstruct@npm:3.2.1"

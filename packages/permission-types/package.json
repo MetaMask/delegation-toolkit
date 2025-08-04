@@ -1,0 +1,59 @@
+{
+  "name": "@metamask/permission-types",
+  "version": "0.1.0",
+  "description": "Permission types for the ERC-7715",
+  "license": "(MIT-0 OR Apache-2.0)",
+  "type": "module",
+  "keywords": [
+    "MetaMask",
+    "Ethereum"
+  ],
+  "homepage": "https://github.com/metamask/delegation-toolkit/tree/main/packages/permission-types#readme",
+  "bugs": {
+    "url": "https://github.com/metamask/delegation-toolkit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/metamask/delegation-toolkit.git"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**",
+    "dist/"
+  ],
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      },
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": "^18.18 || >=20"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "yarn typecheck && tsup",
+    "typecheck": "tsc --noEmit",
+    "changelog:update": "../../scripts/update-changelog.sh @metamask/permission-types",
+    "changelog:validate": "../../scripts/validate-changelog.sh @metamask/permission-types"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "@metamask/auto-changelog": "^5.0.2",
+    "compare-versions": "^6.1.1",
+    "tsup": "^8.5.0",
+    "typescript": "5.0.4"
+  }
+}
