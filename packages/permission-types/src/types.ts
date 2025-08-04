@@ -92,7 +92,7 @@ export type PermissionRequest = {
     signer: Signer;
     permission: Permission;
     rules?: Rule[];
-}[];
+};
 
 /**
  * Response from the `wallet_requestExecutionPermissions` JSON-RPC method.
