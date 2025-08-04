@@ -18,7 +18,6 @@ import {
   DelegationManager,
 } from '@metamask/delegation-toolkit/contracts';
 import {
-  transport,
   gasPrice,
   sponsoredBundlerClient,
   deploySmartAccount,
@@ -28,9 +27,8 @@ import {
   fundAddress,
 } from './utils/helpers';
 import { expectUserOperationToSucceed } from './utils/assertions';
-import { createClient, encodeFunctionData, parseEther, type Hex } from 'viem';
+import { encodeFunctionData, parseEther } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { chain } from '../src/config';
 import CounterMetadata from './utils/counter/metadata.json';
 
 let aliceSmartAccount: MetaMaskSmartAccount<Implementation.Hybrid>;
@@ -53,12 +51,11 @@ let aliceCounter: CounterContract;
  */
 
 beforeEach(async () => {
-  const client = createClient({ transport, chain });
   const alice = privateKeyToAccount(generatePrivateKey());
   const bob = privateKeyToAccount(generatePrivateKey());
 
   aliceSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x1',
@@ -69,7 +66,7 @@ beforeEach(async () => {
   await fundAddress(aliceSmartAccount.address, parseEther('10'));
 
   bobSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [bob.address, [], [], []],
     deploySalt: '0x1',

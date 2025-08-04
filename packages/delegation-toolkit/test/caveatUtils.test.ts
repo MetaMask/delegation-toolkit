@@ -57,9 +57,7 @@ describe('Caveat Contract Methods', () => {
     // Create caveat client for tests
     caveatClient = createCaveatEnforcerClient({
       client: publicClient as any,
-      config: {
-        environment: mockEnvironment,
-      },
+      environment: mockEnvironment,
     });
 
     // Clear all mocks before each test
@@ -480,9 +478,7 @@ describe('Caveat Contract Methods', () => {
 
         const clientWithoutDelegationManager = createCaveatEnforcerClient({
           client: publicClient as any,
-          config: {
-            environment: environmentWithoutDelegationManager,
-          },
+          environment: environmentWithoutDelegationManager,
         });
 
         const params = {
@@ -508,9 +504,7 @@ describe('Caveat Contract Methods', () => {
 
         const clientWithoutEnforcer = createCaveatEnforcerClient({
           client: publicClient as any,
-          config: {
-            environment: environmentWithoutEnforcer,
-          },
+          environment: environmentWithoutEnforcer,
         });
 
         const params = {
@@ -551,7 +545,7 @@ describe('Caveat Contract Methods', () => {
         caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(params),
         getErc20PeriodTransferEnforcerAvailableAmount(
           publicClient as any,
-          { environment: mockEnvironment },
+          mockEnvironment,
           params,
         ),
       ]);
@@ -580,7 +574,7 @@ describe('Caveat Contract Methods', () => {
         caveatClient.getErc20StreamingEnforcerAvailableAmount(params),
         getErc20StreamingEnforcerAvailableAmount(
           publicClient as any,
-          { environment: mockEnvironment },
+          mockEnvironment,
           params,
         ),
       ]);
@@ -612,7 +606,7 @@ describe('Caveat Contract Methods', () => {
         caveatClient.getMultiTokenPeriodEnforcerAvailableAmount(params),
         getMultiTokenPeriodEnforcerAvailableAmount(
           publicClient as any,
-          { environment: mockEnvironment },
+          mockEnvironment,
           params,
         ),
       ]);
@@ -645,7 +639,7 @@ describe('Caveat Contract Methods', () => {
         ),
         getNativeTokenPeriodTransferEnforcerAvailableAmount(
           publicClient as any,
-          { environment: mockEnvironment },
+          mockEnvironment,
           params,
         ),
       ]);
@@ -674,7 +668,7 @@ describe('Caveat Contract Methods', () => {
         caveatClient.getNativeTokenStreamingEnforcerAvailableAmount(params),
         getNativeTokenStreamingEnforcerAvailableAmount(
           publicClient as any,
-          { environment: mockEnvironment },
+          mockEnvironment,
           params,
         ),
       ]);
@@ -709,7 +703,7 @@ describe('Caveat Contract Methods', () => {
         caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(params),
         getErc20PeriodTransferEnforcerAvailableAmount(
           publicClient as any,
-          { environment: mockEnvironment },
+          mockEnvironment,
           params,
         ),
       ]);
@@ -749,7 +743,7 @@ describe('Caveat Contract Methods', () => {
       await expect(
         getErc20PeriodTransferEnforcerAvailableAmount(
           publicClient as any,
-          { environment: mockEnvironment },
+          mockEnvironment,
           params,
         ),
       ).rejects.toThrow('Contract call failed');

@@ -103,9 +103,7 @@ beforeEach(async () => {
   // Create extended client with caveat enforcer actions
   caveatClient = createCaveatEnforcerClient({
     client: publicClient,
-    config: {
-      environment: aliceSmartAccount.environment,
-    },
+    environment: aliceSmartAccount.environment,
   });
 });
 
@@ -1564,7 +1562,7 @@ describe('Individual action functions vs client extension methods', () => {
       caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(params),
       getErc20PeriodTransferEnforcerAvailableAmount(
         publicClient,
-        { environment: aliceSmartAccount.environment },
+        aliceSmartAccount.environment,
         params,
       ),
     ]);
@@ -1610,7 +1608,7 @@ describe('Individual action functions vs client extension methods', () => {
       caveatClient.getErc20StreamingEnforcerAvailableAmount(params),
       getErc20StreamingEnforcerAvailableAmount(
         publicClient,
-        { environment: aliceSmartAccount.environment },
+        aliceSmartAccount.environment,
         params,
       ),
     ]);
@@ -1657,7 +1655,7 @@ describe('Individual action functions vs client extension methods', () => {
       caveatClient.getMultiTokenPeriodEnforcerAvailableAmount(params),
       getMultiTokenPeriodEnforcerAvailableAmount(
         publicClient,
-        { environment: aliceSmartAccount.environment },
+        aliceSmartAccount.environment,
         params,
       ),
     ]);
@@ -1700,7 +1698,7 @@ describe('Individual action functions vs client extension methods', () => {
       caveatClient.getNativeTokenPeriodTransferEnforcerAvailableAmount(params),
       getNativeTokenPeriodTransferEnforcerAvailableAmount(
         publicClient,
-        { environment: aliceSmartAccount.environment },
+        aliceSmartAccount.environment,
         params,
       ),
     ]);
@@ -1745,7 +1743,7 @@ describe('Individual action functions vs client extension methods', () => {
       caveatClient.getNativeTokenStreamingEnforcerAvailableAmount(params),
       getNativeTokenStreamingEnforcerAvailableAmount(
         publicClient,
-        { environment: aliceSmartAccount.environment },
+        aliceSmartAccount.environment,
         params,
       ),
     ]);
@@ -1792,7 +1790,7 @@ describe('Individual action functions vs client extension methods', () => {
       caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(customParams),
       getErc20PeriodTransferEnforcerAvailableAmount(
         publicClient,
-        { environment: aliceSmartAccount.environment },
+        aliceSmartAccount.environment,
         customParams,
       ),
     ]);
