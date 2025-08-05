@@ -472,9 +472,8 @@ test('isDeployed() returns false for addresses with code that are not delegated 
   ).toBe(false);
 
   // Also test with the standalone function to show it would return false too
-  const { isValid7702Implementation } = await import(
-    '@metamask/delegation-toolkit'
-  );
+  const { actions } = await import('@metamask/delegation-toolkit');
+  const { isValid7702Implementation } = actions;
 
   const isContractDelegated = await isValid7702Implementation({
     client: publicClient,
@@ -489,9 +488,8 @@ test('isDeployed() returns false for addresses with code that are not delegated 
 });
 
 test('isValid7702Implementation works with EIP-7702 delegations', async () => {
-  const { isValid7702Implementation } = await import(
-    '@metamask/delegation-toolkit'
-  );
+  const { actions } = await import('@metamask/delegation-toolkit');
+  const { isValid7702Implementation } = actions;
 
   // Test that Alice's account (which is delegated to EIP7702StatelessDeleGator) returns true
   const isValidStateless = await isValid7702Implementation({
