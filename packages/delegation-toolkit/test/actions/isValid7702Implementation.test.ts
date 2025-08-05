@@ -76,9 +76,9 @@ describe('isValid7702Implementation', () => {
       expect(result).toBe(true);
     });
 
-    it('should return false when delegation prefix uses different case (case-sensitive prefix)', async () => {
+    it('should return true when delegation prefix uses different case (case-insensitive prefix)', async () => {
       const testAddress = '0xdddddddddddddddddddddddddddddddddddddddd';
-      // Use uppercase delegation prefix - this should fail because startsWith is case-sensitive
+      // Use uppercase delegation prefix - this should now pass because we handle case-insensitivity
       const delegationCode = '0xEF01004000000000000000000000000000000000000000';
       mockGetCode.mockResolvedValue(delegationCode);
 
@@ -88,7 +88,22 @@ describe('isValid7702Implementation', () => {
         environment: mockEnvironment,
       });
 
-      expect(result).toBe(false);
+      expect(result).toBe(true);
+    });
+
+    it('should return true when delegation prefix uses mixed case', async () => {
+      const testAddress = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+      // Use mixed case delegation prefix to test case-insensitivity thoroughly
+      const delegationCode = '0xEf01004000000000000000000000000000000000000000';
+      mockGetCode.mockResolvedValue(delegationCode);
+
+      const result = await isValid7702Implementation({
+        client: publicClient,
+        accountAddress: testAddress,
+        environment: mockEnvironment,
+      });
+
+      expect(result).toBe(true);
     });
   });
 

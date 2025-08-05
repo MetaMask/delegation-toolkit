@@ -26,12 +26,12 @@ export type IsValid7702ImplementationParameters = {
  * @returns The delegated contract address or null if not a valid delegation.
  */
 function extractDelegatedAddress(code: Hex | undefined): Address | null {
-  if (!code || code.length !== 48) {
+  if (code?.length !== 48) {
     // 0x (2 chars) + ef0100 (6 chars) + address (40 chars) = 48 chars
     return null;
   }
 
-  if (!code.startsWith(DELEGATION_PREFIX)) {
+  if (!code.toLowerCase().startsWith(DELEGATION_PREFIX.toLowerCase())) {
     return null;
   }
 
