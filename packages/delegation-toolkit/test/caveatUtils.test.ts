@@ -1,4 +1,4 @@
-import { createPublicClient, http, type Hex } from 'viem';
+import { type PublicClient, createPublicClient, http, type Hex } from 'viem';
 import { sepolia } from 'viem/chains';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -25,7 +25,7 @@ import type { DeleGatorEnvironment } from '../src/types';
 const randomBytes32 = (): Hex => randomBytes(32);
 
 describe('Caveat Contract Methods', () => {
-  let publicClient: ReturnType<typeof createPublicClient>;
+  let publicClient: PublicClient;
   let mockEnvironment: DeleGatorEnvironment;
   let caveatClient: CaveatEnforcerClient;
 
@@ -56,7 +56,7 @@ describe('Caveat Contract Methods', () => {
 
     // Create caveat client for tests
     caveatClient = createCaveatEnforcerClient({
-      client: publicClient as any,
+      client: publicClient,
       environment: mockEnvironment,
     });
 
@@ -474,10 +474,10 @@ describe('Caveat Contract Methods', () => {
         const environmentWithoutDelegationManager = {
           ...mockEnvironment,
           DelegationManager: undefined,
-        } as any;
+        } as unknown as DeleGatorEnvironment;
 
         const clientWithoutDelegationManager = createCaveatEnforcerClient({
-          client: publicClient as any,
+          client: publicClient,
           environment: environmentWithoutDelegationManager,
         });
 
@@ -500,10 +500,10 @@ describe('Caveat Contract Methods', () => {
             ...mockEnvironment.caveatEnforcers,
             ERC20PeriodTransferEnforcer: undefined,
           },
-        } as any;
+        } as unknown as DeleGatorEnvironment;
 
         const clientWithoutEnforcer = createCaveatEnforcerClient({
-          client: publicClient as any,
+          client: publicClient,
           environment: environmentWithoutEnforcer,
         });
 
@@ -544,7 +544,7 @@ describe('Caveat Contract Methods', () => {
       const [clientResult, functionResult] = await Promise.all([
         caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(params),
         getErc20PeriodTransferEnforcerAvailableAmount(
-          publicClient as any,
+          publicClient,
           mockEnvironment,
           params,
         ),
@@ -573,7 +573,7 @@ describe('Caveat Contract Methods', () => {
       const [clientResult, functionResult] = await Promise.all([
         caveatClient.getErc20StreamingEnforcerAvailableAmount(params),
         getErc20StreamingEnforcerAvailableAmount(
-          publicClient as any,
+          publicClient,
           mockEnvironment,
           params,
         ),
@@ -605,7 +605,7 @@ describe('Caveat Contract Methods', () => {
       const [clientResult, functionResult] = await Promise.all([
         caveatClient.getMultiTokenPeriodEnforcerAvailableAmount(params),
         getMultiTokenPeriodEnforcerAvailableAmount(
-          publicClient as any,
+          publicClient,
           mockEnvironment,
           params,
         ),
@@ -638,7 +638,7 @@ describe('Caveat Contract Methods', () => {
           params,
         ),
         getNativeTokenPeriodTransferEnforcerAvailableAmount(
-          publicClient as any,
+          publicClient,
           mockEnvironment,
           params,
         ),
@@ -667,7 +667,7 @@ describe('Caveat Contract Methods', () => {
       const [clientResult, functionResult] = await Promise.all([
         caveatClient.getNativeTokenStreamingEnforcerAvailableAmount(params),
         getNativeTokenStreamingEnforcerAvailableAmount(
-          publicClient as any,
+          publicClient,
           mockEnvironment,
           params,
         ),
@@ -702,7 +702,7 @@ describe('Caveat Contract Methods', () => {
       const [clientResult, functionResult] = await Promise.all([
         caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(params),
         getErc20PeriodTransferEnforcerAvailableAmount(
-          publicClient as any,
+          publicClient,
           mockEnvironment,
           params,
         ),
@@ -742,7 +742,7 @@ describe('Caveat Contract Methods', () => {
 
       await expect(
         getErc20PeriodTransferEnforcerAvailableAmount(
-          publicClient as any,
+          publicClient,
           mockEnvironment,
           params,
         ),
