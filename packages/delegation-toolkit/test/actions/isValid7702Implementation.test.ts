@@ -60,12 +60,12 @@ describe('isValid7702Implementation', () => {
 
     it('should return true when delegation code uses different case but matches implementation', async () => {
       const testAddress = '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd';
-      const delegationCode = '0xef01004000000000000000000000000000000000000000';
+      const delegationCode = '0xef0100abcdef1234567890abcdef1234567890abcdef00';
       mockGetCode.mockResolvedValue(delegationCode);
 
-      // Update environment with uppercase address
+      // Update environment with uppercase address to test case insensitivity
       mockEnvironment.implementations.EIP7702StatelessDeleGatorImpl =
-        '0x4000000000000000000000000000000000000000';
+        '0xABCDEF1234567890ABCDEF1234567890ABCDEF00';
 
       const result = await isValid7702Implementation({
         client: publicClient,
@@ -74,6 +74,21 @@ describe('isValid7702Implementation', () => {
       });
 
       expect(result).toBe(true);
+    });
+
+    it('should return false when delegation prefix uses different case (case-sensitive prefix)', async () => {
+      const testAddress = '0xdddddddddddddddddddddddddddddddddddddddd';
+      // Use uppercase delegation prefix - this should fail because startsWith is case-sensitive
+      const delegationCode = '0xEF01004000000000000000000000000000000000000000';
+      mockGetCode.mockResolvedValue(delegationCode);
+
+      const result = await isValid7702Implementation({
+        client: publicClient,
+        accountAddress: testAddress,
+        environment: mockEnvironment,
+      });
+
+      expect(result).toBe(false);
     });
   });
 

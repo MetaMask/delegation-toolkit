@@ -1,4 +1,5 @@
 import type { Client, Address, Hex } from 'viem';
+import { isAddressEqual } from 'viem';
 import { getCode } from 'viem/actions';
 
 import type { DeleGatorEnvironment } from '../types';
@@ -92,9 +93,7 @@ export async function isValid7702Implementation({
       return false;
     }
 
-    return (
-      delegatedAddress.toLowerCase() === expectedImplementation.toLowerCase()
-    );
+    return isAddressEqual(delegatedAddress, expectedImplementation);
   } catch (error) {
     // If the call fails (e.g., no code at address, network error),
     // then it's not properly delegated to our implementation
