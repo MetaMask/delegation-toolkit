@@ -10,6 +10,12 @@ export {
   getMultiTokenPeriodEnforcerAvailableAmount,
   getNativeTokenPeriodTransferEnforcerAvailableAmount,
   getNativeTokenStreamingEnforcerAvailableAmount,
+  // New delegation-based action functions
+  getErc20PeriodTransferEnforcerAvailableAmountFromDelegation,
+  getErc20StreamingEnforcerAvailableAmountFromDelegation,
+  getMultiTokenPeriodEnforcerAvailableAmountFromDelegation,
+  getNativeTokenPeriodTransferEnforcerAvailableAmountFromDelegation,
+  getNativeTokenStreamingEnforcerAvailableAmountFromDelegation,
   // Client extension exports
   createCaveatEnforcerClient,
   caveatEnforcerActions,
@@ -20,9 +26,18 @@ export {
   type MultiTokenPeriodParams,
   type NativeTokenPeriodTransferParams,
   type NativeTokenStreamingParams,
+  // New delegation-based parameter types
+  type ERC20PeriodTransferDelegationParams,
+  type ERC20StreamingDelegationParams,
+  type MultiTokenPeriodDelegationParams,
+  type NativeTokenPeriodTransferDelegationParams,
+  type NativeTokenStreamingDelegationParams,
   // Result types
   type PeriodTransferResult,
   type StreamingResult,
+  // Error types
+  type NoMatchingCaveatError,
+  type MultipleMatchingCaveatsError,
 } from './getCaveatAvailableAmount';
 
 export { isValid7702Implementation } from './isValid7702Implementation';

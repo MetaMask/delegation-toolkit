@@ -5,7 +5,8 @@ import * as ERC20StreamingEnforcer from '../DelegationFramework/ERC20StreamingEn
 import * as MultiTokenPeriodEnforcer from '../DelegationFramework/MultiTokenPeriodEnforcer';
 import * as NativeTokenPeriodTransferEnforcer from '../DelegationFramework/NativeTokenPeriodTransferEnforcer';
 import * as NativeTokenStreamingEnforcer from '../DelegationFramework/NativeTokenStreamingEnforcer';
-import type { DeleGatorEnvironment } from '../types';
+import { hashDelegation } from '@metamask/delegation-core';
+import type { DeleGatorEnvironment, Delegation } from '../types';
 
 /**
  * Shared base params for all enforcer actions
@@ -45,6 +46,21 @@ export type NativeTokenPeriodTransferParams = BaseCaveatParams;
 export type NativeTokenStreamingParams = BaseCaveatParams;
 
 /**
+ * New parameter types that accept the entire delegation
+ */
+export type BaseDelegationParams = {
+  delegation: Delegation;
+  delegationManager?: Address;
+  enforcerAddress?: Address;
+};
+
+export type ERC20PeriodTransferDelegationParams = BaseDelegationParams;
+export type ERC20StreamingDelegationParams = BaseDelegationParams;
+export type MultiTokenPeriodDelegationParams = BaseDelegationParams;
+export type NativeTokenPeriodTransferDelegationParams = BaseDelegationParams;
+export type NativeTokenStreamingDelegationParams = BaseDelegationParams;
+
+/**
  * Return type for period-based transfer enforcers
  */
 export type PeriodTransferResult = {
@@ -59,6 +75,56 @@ export type PeriodTransferResult = {
 export type StreamingResult = {
   availableAmount: bigint;
 };
+
+/**
+ * Error thrown when no matching caveat is found
+ */
+export class NoMatchingCaveatError extends Error {
+  constructor(enforcerName: string) {
+    super(`No caveat found with enforcer matching ${enforcerName}`);
+    this.name = 'NoMatchingCaveatError';
+  }
+}
+
+/**
+ * Error thrown when multiple matching caveats are found
+ */
+export class MultipleMatchingCaveatsError extends Error {
+  constructor(enforcerName: string) {
+    super(`Multiple caveats found with enforcer matching ${enforcerName}`);
+    this.name = 'MultipleMatchingCaveatsError';
+  }
+}
+
+/**
+ * Finds a caveat that matches the specified enforcer address
+ * @param delegation - The delegation to search
+ * @param enforcerAddress - The enforcer address to match
+ * @returns The matching caveat
+ * @throws NoMatchingCaveatError if no matching caveat is found
+ * @throws MultipleMatchingCaveatsError if multiple matching caveats are found
+ */
+function findMatchingCaveat(
+  delegation: Delegation,
+  enforcerAddress: Address,
+): { terms: Hex; args: Hex } {
+  const matchingCaveats = delegation.caveats.filter(
+    (caveat) => caveat.enforcer.toLowerCase() === enforcerAddress.toLowerCase(),
+  );
+
+  if (matchingCaveats.length === 0) {
+    throw new NoMatchingCaveatError(enforcerAddress);
+  }
+
+  if (matchingCaveats.length > 1) {
+    throw new MultipleMatchingCaveatsError(enforcerAddress);
+  }
+
+  return {
+    terms: matchingCaveats[0].terms,
+    args: matchingCaveats[0].args,
+  };
+}
 
 /**
  * Resolves the delegation manager address from parameters or environment.
@@ -255,6 +321,167 @@ export async function getNativeTokenStreamingEnforcerAvailableAmount(
 }
 
 /**
+ * Get available amount for ERC20 period transfer enforcer using delegation.
+ *
+ * @param client - The viem public client.
+ * @param environment - The delegator environment.
+ * @param params - The parameters for the ERC20 period transfer enforcer.
+ * @returns Promise resolving to the period transfer result.
+ */
+export async function getErc20PeriodTransferEnforcerAvailableAmountFromDelegation(
+  client: PublicClient,
+  environment: DeleGatorEnvironment,
+  params: ERC20PeriodTransferDelegationParams,
+): Promise<PeriodTransferResult> {
+  const delegationManager = resolveDelegationManager(params, environment);
+  const enforcerAddress = resolveEnforcerAddress(
+    'ERC20PeriodTransferEnforcer',
+    params,
+    environment,
+  );
+
+  const delegationHash = hashDelegation(params.delegation);
+  const { terms } = findMatchingCaveat(params.delegation, enforcerAddress);
+
+  return ERC20PeriodTransferEnforcer.read.getAvailableAmount({
+    client,
+    contractAddress: enforcerAddress,
+    delegationHash,
+    delegationManager,
+    terms,
+  });
+}
+
+/**
+ * Get available amount for ERC20 streaming enforcer using delegation.
+ *
+ * @param client - The viem public client.
+ * @param environment - The delegator environment.
+ * @param params - The parameters for the ERC20 streaming enforcer.
+ * @returns Promise resolving to the streaming result.
+ */
+export async function getErc20StreamingEnforcerAvailableAmountFromDelegation(
+  client: PublicClient,
+  environment: DeleGatorEnvironment,
+  params: ERC20StreamingDelegationParams,
+): Promise<StreamingResult> {
+  const delegationManager = resolveDelegationManager(params, environment);
+  const enforcerAddress = resolveEnforcerAddress(
+    'ERC20StreamingEnforcer',
+    params,
+    environment,
+  );
+
+  const delegationHash = hashDelegation(params.delegation);
+  const { terms } = findMatchingCaveat(params.delegation, enforcerAddress);
+
+  return ERC20StreamingEnforcer.read.getAvailableAmount({
+    client,
+    contractAddress: enforcerAddress,
+    delegationManager,
+    delegationHash,
+    terms,
+  });
+}
+
+/**
+ * Get available amount for multi-token period enforcer using delegation.
+ *
+ * @param client - The viem public client.
+ * @param environment - The delegator environment.
+ * @param params - The parameters for the multi-token period enforcer.
+ * @returns Promise resolving to the period transfer result.
+ */
+export async function getMultiTokenPeriodEnforcerAvailableAmountFromDelegation(
+  client: PublicClient,
+  environment: DeleGatorEnvironment,
+  params: MultiTokenPeriodDelegationParams,
+): Promise<PeriodTransferResult> {
+  const delegationManager = resolveDelegationManager(params, environment);
+  const enforcerAddress = resolveEnforcerAddress(
+    'MultiTokenPeriodEnforcer',
+    params,
+    environment,
+  );
+
+  const delegationHash = hashDelegation(params.delegation);
+  const { terms, args } = findMatchingCaveat(params.delegation, enforcerAddress);
+
+  return MultiTokenPeriodEnforcer.read.getAvailableAmount({
+    client,
+    contractAddress: enforcerAddress,
+    delegationHash,
+    delegationManager,
+    terms,
+    args,
+  });
+}
+
+/**
+ * Get available amount for native token period transfer enforcer using delegation.
+ *
+ * @param client - The viem public client.
+ * @param environment - The delegator environment.
+ * @param params - The parameters for the native token period transfer enforcer.
+ * @returns Promise resolving to the period transfer result.
+ */
+export async function getNativeTokenPeriodTransferEnforcerAvailableAmountFromDelegation(
+  client: PublicClient,
+  environment: DeleGatorEnvironment,
+  params: NativeTokenPeriodTransferDelegationParams,
+): Promise<PeriodTransferResult> {
+  const delegationManager = resolveDelegationManager(params, environment);
+  const enforcerAddress = resolveEnforcerAddress(
+    'NativeTokenPeriodTransferEnforcer',
+    params,
+    environment,
+  );
+
+  const delegationHash = hashDelegation(params.delegation);
+  const { terms } = findMatchingCaveat(params.delegation, enforcerAddress);
+
+  return NativeTokenPeriodTransferEnforcer.read.getAvailableAmount({
+    client,
+    contractAddress: enforcerAddress,
+    delegationManager,
+    delegationHash,
+    terms,
+  });
+}
+
+/**
+ * Get available amount for native token streaming enforcer using delegation.
+ *
+ * @param client - The viem public client.
+ * @param environment - The delegator environment.
+ * @param params - The parameters for the native token streaming enforcer.
+ * @returns Promise resolving to the streaming result.
+ */
+export async function getNativeTokenStreamingEnforcerAvailableAmountFromDelegation(
+  client: PublicClient,
+  environment: DeleGatorEnvironment,
+  params: NativeTokenStreamingDelegationParams,
+): Promise<StreamingResult> {
+  const delegationManager = resolveDelegationManager(params, environment);
+  const enforcerAddress = resolveEnforcerAddress(
+    'NativeTokenStreamingEnforcer',
+    params,
+    environment,
+  );
+
+  const delegationHash = hashDelegation(params.delegation);
+  const { terms } = findMatchingCaveat(params.delegation, enforcerAddress);
+
+  return NativeTokenStreamingEnforcer.read.getAvailableAmount({
+    client,
+    contractAddress: enforcerAddress,
+    delegationManager,
+    delegationHash,
+    terms,
+  });
+}
+
+/**
  * Caveat enforcer actions for extending viem clients.
  *
  * @param params - The parameters object.
@@ -338,6 +565,86 @@ export const caveatEnforcerActions =
       params: NativeTokenStreamingParams,
     ): Promise<StreamingResult> => {
       return getNativeTokenStreamingEnforcerAvailableAmount(
+        client,
+        environment,
+        params,
+      );
+    },
+
+    /**
+     * Get available amount for ERC20 period transfer enforcer using delegation.
+     *
+     * @param params - The parameters for the ERC20 period transfer enforcer.
+     * @returns Promise resolving to the period transfer result.
+     */
+    getErc20PeriodTransferEnforcerAvailableAmountFromDelegation: async (
+      params: ERC20PeriodTransferDelegationParams,
+    ): Promise<PeriodTransferResult> => {
+      return getErc20PeriodTransferEnforcerAvailableAmountFromDelegation(
+        client,
+        environment,
+        params,
+      );
+    },
+
+    /**
+     * Get available amount for ERC20 streaming enforcer using delegation.
+     *
+     * @param params - The parameters for the ERC20 streaming enforcer.
+     * @returns Promise resolving to the streaming result.
+     */
+    getErc20StreamingEnforcerAvailableAmountFromDelegation: async (
+      params: ERC20StreamingDelegationParams,
+    ): Promise<StreamingResult> => {
+      return getErc20StreamingEnforcerAvailableAmountFromDelegation(
+        client,
+        environment,
+        params,
+      );
+    },
+
+    /**
+     * Get available amount for multi-token period enforcer using delegation.
+     *
+     * @param params - The parameters for the multi-token period enforcer.
+     * @returns Promise resolving to the period transfer result.
+     */
+    getMultiTokenPeriodEnforcerAvailableAmountFromDelegation: async (
+      params: MultiTokenPeriodDelegationParams,
+    ): Promise<PeriodTransferResult> => {
+      return getMultiTokenPeriodEnforcerAvailableAmountFromDelegation(
+        client,
+        environment,
+        params,
+      );
+    },
+
+    /**
+     * Get available amount for native token period transfer enforcer using delegation.
+     *
+     * @param params - The parameters for the native token period transfer enforcer.
+     * @returns Promise resolving to the period transfer result.
+     */
+    getNativeTokenPeriodTransferEnforcerAvailableAmountFromDelegation: async (
+      params: NativeTokenPeriodTransferDelegationParams,
+    ): Promise<PeriodTransferResult> => {
+      return getNativeTokenPeriodTransferEnforcerAvailableAmountFromDelegation(
+        client,
+        environment,
+        params,
+      );
+    },
+
+    /**
+     * Get available amount for native token streaming enforcer using delegation.
+     *
+     * @param params - The parameters for the native token streaming enforcer.
+     * @returns Promise resolving to the streaming result.
+     */
+    getNativeTokenStreamingEnforcerAvailableAmountFromDelegation: async (
+      params: NativeTokenStreamingDelegationParams,
+    ): Promise<StreamingResult> => {
+      return getNativeTokenStreamingEnforcerAvailableAmountFromDelegation(
         client,
         environment,
         params,
