@@ -1,3 +1,9 @@
+import type {
+  AccountSigner,
+  Hex,
+  NativeTokenPeriodicPermission,
+  NativeTokenStreamPermission,
+} from '@metamask/permission-types';
 import { stub } from 'sinon';
 import type { Account, Client } from 'viem';
 import { createClient, custom } from 'viem';
@@ -9,7 +15,6 @@ import {
   ensureSnapsAuthorized,
   erc7715GrantPermissionsAction,
 } from '../../src/experimental/erc7715GrantPermissionsAction';
-import { AccountSigner, Hex, NativeTokenPeriodicPermission, NativeTokenStreamPermission } from '@metamask/permission-types';
 
 describe('erc7715GrantPermissionsAction', () => {
   let alice: Account;
@@ -52,7 +57,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           } as NativeTokenStreamPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 
@@ -125,7 +133,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           } as NativeTokenStreamPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 
@@ -161,7 +172,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           } as unknown as NativeTokenStreamPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 
@@ -194,7 +208,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: undefined,
             },
           } as NativeTokenStreamPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 
@@ -266,7 +283,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: null,
             },
           } as NativeTokenStreamPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 
@@ -338,7 +358,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           } as NativeTokenStreamPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 
@@ -412,7 +435,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           } as NativeTokenStreamPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 
@@ -458,12 +484,15 @@ describe('erc7715GrantPermissionsAction', () => {
           permission: {
             type: 'native-token-periodic',
             isAdjustmentAllowed: false,
-            data: { 
+            data: {
               periodAmount: '0x1',
               periodDuration: 1000,
-             },
+            },
           } as NativeTokenPeriodicPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 
@@ -513,12 +542,15 @@ describe('erc7715GrantPermissionsAction', () => {
           permission: {
             type: 'native-token-periodic',
             isAdjustmentAllowed: false,
-            data: { 
+            data: {
               periodAmount: '0x1',
               periodDuration: 1000,
-             },
+            },
           } as NativeTokenPeriodicPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 
@@ -590,12 +622,15 @@ describe('erc7715GrantPermissionsAction', () => {
           permission: {
             type: 'native-token-periodic',
             isAdjustmentAllowed: false,
-            data: { 
+            data: {
               periodAmount: '0x1',
               periodDuration: 1000,
-             },
+            },
           } as NativeTokenPeriodicPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
         {
           chainId: '0x7a69' as Hex,
@@ -611,12 +646,15 @@ describe('erc7715GrantPermissionsAction', () => {
           permission: {
             type: 'native-token-periodic',
             isAdjustmentAllowed: false,
-            data: { 
+            data: {
               periodAmount: '0x1',
               periodDuration: 1000,
-             },
+            },
           } as NativeTokenPeriodicPermission,
-          signer: { type: 'account', data: { address: bob.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: bob.address },
+          } as AccountSigner,
         },
       ];
 
@@ -730,7 +768,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           } as NativeTokenStreamPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 
@@ -802,7 +843,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           } as NativeTokenStreamPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 
@@ -874,7 +918,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           } as unknown as NativeTokenStreamPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 
@@ -949,7 +996,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           } as NativeTokenStreamPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 
@@ -1051,7 +1101,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           } as NativeTokenStreamPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
       await client.grantPermissions(parameters);
@@ -1133,7 +1186,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           } as NativeTokenStreamPermission,
-          signer: { type: 'account', data: { address: alice.address } } as AccountSigner,
+          signer: {
+            type: 'account',
+            data: { address: alice.address },
+          } as AccountSigner,
         },
       ];
 

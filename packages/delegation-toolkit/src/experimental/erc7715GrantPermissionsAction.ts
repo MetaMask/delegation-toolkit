@@ -1,24 +1,34 @@
 import type {
-  Account,
-  Chain,
-  Client,
-  RpcSchema,
-  Transport,
-} from 'viem';
+  AccountSigner,
+  Erc20TokenPeriodicPermission,
+  Erc20TokenStreamPermission,
+  NativeTokenPeriodicPermission,
+  NativeTokenStreamPermission,
+  PermissionRequest,
+  PermissionResponse,
+  PermissionTypes,
+  Signer,
+} from '@metamask/permission-types';
+import type { Account, Chain, Client, RpcSchema, Transport } from 'viem';
 import { isHex, toHex } from 'viem';
-import type { AccountSigner, Erc20TokenPeriodicPermission,  Erc20TokenStreamPermission,  NativeTokenPeriodicPermission,  NativeTokenStreamPermission, PermissionRequest, PermissionResponse, PermissionTypes, Signer } from '@metamask/permission-types';
 
 /**
  * Parameters for granting permissions.
  *
  * @template Signer - The type of the signer, either an Address or Account.
  */
-export type GrantPermissionsParameters = PermissionRequest<Signer, PermissionTypes>[];
+export type GrantPermissionsParameters = PermissionRequest<
+  Signer,
+  PermissionTypes
+>[];
 
 /**
  * Return type for the grant permissions action.
  */
-export type GrantPermissionsReturnType = PermissionResponse<Signer, PermissionTypes>[];
+export type GrantPermissionsReturnType = PermissionResponse<
+  Signer,
+  PermissionTypes
+>[];
 /**
  * Represents the authorization status of installed MetaMask Snaps.
  *
@@ -214,12 +224,12 @@ export async function erc7715GrantPermissionsAction(
  * @returns The formatted permissions request.
  * @internal
  */
-function formatPermissionsRequest(parameters: PermissionRequest<Signer, PermissionTypes>) {
+function formatPermissionsRequest(
+  parameters: PermissionRequest<Signer, PermissionTypes>,
+) {
   const { chainId, address, permission, signer, rules } = parameters;
 
-  const permissionFormatter = getPermissionFormatter(
-    permission.type,
-  );
+  const permissionFormatter = getPermissionFormatter(permission.type);
 
   // only support account type for now
   if (typeof signer !== 'string' && signer.type !== 'account') {
@@ -227,9 +237,7 @@ function formatPermissionsRequest(parameters: PermissionRequest<Signer, Permissi
   }
 
   const signerAddress =
-    typeof signer === 'string'
-      ? signer
-      : signer.data.address;
+    typeof signer === 'string' ? signer : signer.data.address;
 
   const optionalFields = {
     ...(address ? { address } : {}),
@@ -256,7 +264,7 @@ function formatPermissionsRequest(parameters: PermissionRequest<Signer, Permissi
  * @param value - The value to check.
  * @returns A boolean indicating whether the value is defined.
  */
-function isDefined<T>(value: T | null | undefined): value is T {
+function isDefined<TValue>(value: TValue | null | undefined): value is TValue {
   return value !== undefined && value !== null;
 }
 
@@ -337,7 +345,6 @@ function getPermissionFormatter(
 function formatNativeTokenStreamPermission(
   permission: NativeTokenStreamPermission,
 ): NativeTokenStreamPermission {
-
   const optionalFields = {
     ...(isDefined(permission.data.initialAmount) && {
       initialAmount: toHexOrThrow(permission.data.initialAmount),
