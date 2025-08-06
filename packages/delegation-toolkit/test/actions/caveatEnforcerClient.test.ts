@@ -90,57 +90,7 @@ describe('CaveatEnforcerClient', () => {
       });
     });
 
-    it('should use custom delegation manager when provided', async () => {
-      const customDelegationManager = '0x9999999999999999999999999999999999999999';
-      const mockResult = {
-        availableAmount: 1000n,
-        isNewPeriod: true,
-        currentPeriod: 1n,
-      };
 
-      const { read } = await import('../../src/DelegationFramework/MultiTokenPeriodEnforcer/methods/getAvailableAmount');
-      vi.mocked(read).mockResolvedValue(mockResult);
-
-      await client.getMultiTokenPeriodEnforcerAvailableAmount({
-        delegation,
-        delegationManager: customDelegationManager,
-      });
-
-      expect(read).toHaveBeenCalledWith({
-        client: expect.any(Object),
-        contractAddress: environment.caveatEnforcers.MultiTokenPeriodEnforcer,
-        delegationHash: hashDelegation(delegation),
-        delegationManager: customDelegationManager,
-        terms: delegation.caveats[0].terms,
-        args: delegation.caveats[0].args,
-      });
-    });
-
-    it('should use custom enforcer address when provided', async () => {
-      const customEnforcerAddress = '0x9999999999999999999999999999999999999999';
-      const mockResult = {
-        availableAmount: 1000n,
-        isNewPeriod: true,
-        currentPeriod: 1n,
-      };
-
-      const { read } = await import('../../src/DelegationFramework/MultiTokenPeriodEnforcer/methods/getAvailableAmount');
-      vi.mocked(read).mockResolvedValue(mockResult);
-
-      await client.getMultiTokenPeriodEnforcerAvailableAmount({
-        delegation,
-        enforcerAddress: customEnforcerAddress,
-      });
-
-      expect(read).toHaveBeenCalledWith({
-        client: expect.any(Object),
-        contractAddress: customEnforcerAddress,
-        delegationHash: hashDelegation(delegation),
-        delegationManager: environment.DelegationManager,
-        terms: delegation.caveats[0].terms,
-        args: delegation.caveats[0].args,
-      });
-    });
   });
 
   describe('getErc20PeriodTransferEnforcerAvailableAmount with delegation', () => {
@@ -180,34 +130,7 @@ describe('CaveatEnforcerClient', () => {
     });
   });
 
-  describe('Legacy methods still work', () => {
-    it('should support legacy getMultiTokenPeriodEnforcerAvailableAmount method', async () => {
-      const mockResult = {
-        availableAmount: 1000n,
-        isNewPeriod: true,
-        currentPeriod: 1n,
-      };
 
-      const { read } = await import('../../src/DelegationFramework/MultiTokenPeriodEnforcer/methods/getAvailableAmount');
-      vi.mocked(read).mockResolvedValue(mockResult);
-
-      const result = await client.getMultiTokenPeriodEnforcerAvailableAmount({
-        delegationHash: hashDelegation(delegation),
-        terms: delegation.caveats[0].terms,
-        args: delegation.caveats[0].args,
-      });
-
-      expect(result).toEqual(mockResult);
-      expect(read).toHaveBeenCalledWith({
-        client: expect.any(Object),
-        contractAddress: environment.caveatEnforcers.MultiTokenPeriodEnforcer,
-        delegationHash: hashDelegation(delegation),
-        delegationManager: environment.DelegationManager,
-        terms: delegation.caveats[0].terms,
-        args: delegation.caveats[0].args,
-      });
-    });
-  });
 
   describe('Client type', () => {
     it('should have all expected methods', () => {

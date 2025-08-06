@@ -151,59 +151,7 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
       ).rejects.toThrow(MultipleMatchingCaveatsError);
     });
 
-    it('should use custom delegation manager when provided', async () => {
-      const customDelegationManager = '0x9999999999999999999999999999999999999999';
-      const mockResult = {
-        availableAmount: 1000n,
-        isNewPeriod: true,
-        currentPeriod: 1n,
-      };
 
-      const { read } = await import('../../src/DelegationFramework/MultiTokenPeriodEnforcer/methods/getAvailableAmount');
-      vi.mocked(read).mockResolvedValue(mockResult);
-
-      await getMultiTokenPeriodEnforcerAvailableAmount(
-        client,
-        environment,
-        { delegation, delegationManager: customDelegationManager },
-      );
-
-      expect(read).toHaveBeenCalledWith({
-        client,
-        contractAddress: environment.caveatEnforcers.MultiTokenPeriodEnforcer,
-        delegationHash: hashDelegation(delegation),
-        delegationManager: customDelegationManager,
-        terms: delegation.caveats[0].terms,
-        args: delegation.caveats[0].args,
-      });
-    });
-
-    it('should use custom enforcer address when provided', async () => {
-      const customEnforcerAddress = '0x9999999999999999999999999999999999999999';
-      const mockResult = {
-        availableAmount: 1000n,
-        isNewPeriod: true,
-        currentPeriod: 1n,
-      };
-
-      const { read } = await import('../../src/DelegationFramework/MultiTokenPeriodEnforcer/methods/getAvailableAmount');
-      vi.mocked(read).mockResolvedValue(mockResult);
-
-      await getMultiTokenPeriodEnforcerAvailableAmount(
-        client,
-        environment,
-        { delegation, enforcerAddress: customEnforcerAddress },
-      );
-
-      expect(read).toHaveBeenCalledWith({
-        client,
-        contractAddress: customEnforcerAddress,
-        delegationHash: hashDelegation(delegation),
-        delegationManager: environment.DelegationManager,
-        terms: delegation.caveats[0].terms,
-        args: delegation.caveats[0].args,
-      });
-    });
   });
 
   describe('getErc20PeriodTransferEnforcerAvailableAmount with delegation', () => {
