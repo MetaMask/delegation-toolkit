@@ -102,7 +102,7 @@ export type Rule = {
  * @property justification - is a human-readable explanation of why the permission is being requested.
  */
 export type MetaMaskBasePermissionData = {
-    justification?: string;
+    justification?: string | null;
 };
 
 /**
@@ -115,10 +115,10 @@ export type MetaMaskBasePermissionData = {
 export type NativeTokenStreamPermission = BasePermission & {
     type: 'native-token-stream';
     data: MetaMaskBasePermissionData & {
-      initialAmount?: Hex;
-      maxAmount?: Hex;
+      initialAmount?: Hex | null;
+      maxAmount?: Hex | null;
       amountPerSecond: Hex;
-      startTime?: number;
+      startTime?: number | null;
     };
 };
 
@@ -148,10 +148,10 @@ export type NativeTokenPeriodicPermission = BasePermission & {
 export type Erc20TokenStreamPermission = BasePermission & {
     type: 'erc20-token-stream';
     data: MetaMaskBasePermissionData & {
-      initialAmount?: Hex;
-      maxAmount?: Hex;
+      initialAmount?: Hex | null;
+      maxAmount?: Hex | null;
       amountPerSecond: Hex;
-      startTime?: number;
+      startTime?: number | null;
       tokenAddress: Hex;
     };
 };
@@ -168,7 +168,7 @@ export type Erc20TokenPeriodicPermission = BasePermission & {
     data: MetaMaskBasePermissionData & {
       periodAmount: Hex;
       periodDuration: number;
-      startTime?: number;
+      startTime?: number | null;
       tokenAddress: Hex;
     };
 };
@@ -209,10 +209,10 @@ export type PermissionRequest<
     TPermission extends PermissionTypes
 > = {
     chainId: Hex; // hex-encoding of uint256
-    address?: Hex;
+    address?: Hex | null;
     signer: TSigner;
     permission: TPermission;
-    rules?: Rule[];
+    rules?: Rule[] | null;
 };
 
 /**
