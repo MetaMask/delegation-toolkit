@@ -15,6 +15,7 @@ import {
   toMetaMaskSmartAccount,
   MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
+import { isValid7702Implementation } from '@metamask/delegation-toolkit/actions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { createClient, encodeFunctionData, parseEther } from 'viem';
 import { chain } from '../src/config';
@@ -400,4 +401,114 @@ test('Alice can check the contract version and name', async () => {
   expect(contractVersion, 'Contract version should be 1.3.0').toBe('1.3.0');
 
   expect(domainVersion, 'Domain version should be 1').toBe('1');
+});
+
+test('isDeployed() method correctly identifies EIP7702 delegation for Stateless7702 accounts', async () => {
+  // Test that Alice's smart account's isDeployed() method returns true
+  // because her EOA is properly delegated to EIP7702StatelessDeleGator
+  const isAliceDeployed = await aliceSmartAccount.isDeployed();
+
+  expect(
+    isAliceDeployed,
+    'Alice smart account should report as deployed when properly delegated to EIP7702StatelessDeleGator',
+  ).toBe(true);
+
+  // Create a smart account for a non-delegated EOA
+  const nonDelegatedAccount = privateKeyToAccount(generatePrivateKey());
+  const client = createClient({ transport, chain });
+
+  const nonDelegatedSmartAccount = await toMetaMaskSmartAccount({
+    client,
+    implementation: Implementation.Stateless7702,
+    address: nonDelegatedAccount.address,
+    signatory: { account: nonDelegatedAccount },
+  });
+
+  // Test that a non-delegated account's isDeployed() method returns false
+  const isNonDelegatedDeployed = await nonDelegatedSmartAccount.isDeployed();
+
+  expect(
+    isNonDelegatedDeployed,
+    'Non-delegated smart account should report as not deployed',
+  ).toBe(false);
+
+  // Verify that the non-delegated account has no code at all
+  const code = await publicClient.getCode({
+    address: nonDelegatedAccount.address,
+  });
+  expect(code, 'Non-delegated account should have no code').toBeUndefined();
+});
+
+test('isDeployed() returns false for addresses with code that are not delegated to EIP7702StatelessDeleGator', async () => {
+  // Deploy a regular contract to get an address with code
+  const counterContract = await deployCounter(aliceSmartAccount.address);
+
+  // Verify the contract has code
+  const contractCode = await publicClient.getCode({
+    address: counterContract.address,
+  });
+  expect(contractCode, 'Contract should have code deployed').toBeDefined();
+  expect(
+    contractCode!.length,
+    'Contract code should not be empty',
+  ).toBeGreaterThan(2); // More than just '0x'
+
+  // Create a Stateless7702 smart account pointing to this contract address
+  const contractAccount = privateKeyToAccount(generatePrivateKey());
+
+  const contractSmartAccount = await toMetaMaskSmartAccount({
+    client: publicClient,
+    implementation: Implementation.Stateless7702,
+    address: counterContract.address, // Point to the contract address
+    signatory: { account: contractAccount },
+  });
+
+  // Test that isDeployed() returns false even though there is code at the address
+  // because the code is not an EIP7702StatelessDeleGator delegation
+  const isContractDeployed = await contractSmartAccount.isDeployed();
+
+  expect(
+    isContractDeployed,
+    'Smart account should report as not deployed when address has non-EIP7702StatelessDeleGator code',
+  ).toBe(false);
+
+  // Also test with the standalone function to show it would return false too
+
+  const isContractDelegated = await isValid7702Implementation({
+    client: publicClient,
+    accountAddress: counterContract.address,
+    environment: aliceSmartAccount.environment,
+  });
+
+  expect(
+    isContractDelegated,
+    'Contract address should not be identified as EIP7702StatelessDeleGator delegation',
+  ).toBe(false);
+});
+
+test('isValid7702Implementation works with EIP-7702 delegations', async () => {
+  // Test that Alice's account (which is delegated to EIP7702StatelessDeleGator) returns true
+  const isValidStateless = await isValid7702Implementation({
+    client: publicClient,
+    accountAddress: aliceSmartAccount.address,
+    environment: aliceSmartAccount.environment,
+  });
+
+  expect(
+    isValidStateless,
+    'Alice account should be valid for EIP-7702 implementation',
+  ).toBe(true);
+
+  // Test with a random non-delegated address
+  const randomAddress = '0x1234567890123456789012345678901234567890';
+  const isRandomValid = await isValid7702Implementation({
+    client: publicClient,
+    accountAddress: randomAddress,
+    environment: aliceSmartAccount.environment,
+  });
+
+  expect(
+    isRandomValid,
+    'Random address should not be valid for EIP-7702 implementation',
+  ).toBe(false);
 });
