@@ -13,7 +13,6 @@ export type {
     NativeTokenPeriodicPermission,
     Erc20TokenStreamPermission,
     Erc20TokenPeriodicPermission,
-    CustomPermission,
     Rule,
     PermissionRequest,
     PermissionResponse,

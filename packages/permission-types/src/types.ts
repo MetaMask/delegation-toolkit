@@ -177,10 +177,11 @@ export type Erc20TokenPeriodicPermission = BasePermission & {
  * A custom permission.
  * @property data - is a record of the data that is associated with the permission, and the structure is defined by the ERCs.
  */
-export type CustomPermission = BasePermission & {
-    type: 'custom';
-    data: MetaMaskBasePermissionData & Record<string, unknown>;
-};
+// TODO: Consider openning up permission types with Custom / Unknown permissions in subseqential versions.
+// export type CustomPermission = BasePermission & {
+//     type: 'custom';
+//     data: MetaMaskBasePermissionData & Record<string, unknown>;
+// };
 
 /**
  * Represents the type of the ERC-7715 permissions that can be granted.
@@ -189,8 +190,7 @@ export type PermissionTypes =
     | NativeTokenStreamPermission
     | NativeTokenPeriodicPermission
     | Erc20TokenStreamPermission
-    | Erc20TokenPeriodicPermission
-    | CustomPermission;
+    | Erc20TokenPeriodicPermission;
 
 ////////////////////////////////////////////////////
 // Permission Requests
