@@ -8,8 +8,6 @@ import {
   getErc20StreamingEnforcerAvailableAmount,
   getNativeTokenPeriodTransferEnforcerAvailableAmount,
   getNativeTokenStreamingEnforcerAvailableAmount,
-  NoMatchingCaveatError,
-  MultipleMatchingCaveatsError,
   type DeleGatorEnvironment,
   type Delegation,
 } from '../../src';
@@ -104,7 +102,7 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
       });
     });
 
-    it('should throw NoMatchingCaveatError when no matching caveat is found', async () => {
+    it('should throw Error when no matching caveat is found', async () => {
       const delegationWithoutMatchingCaveat = {
         ...delegation,
         caveats: [
@@ -122,10 +120,10 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
           environment,
           { delegation: delegationWithoutMatchingCaveat },
         ),
-      ).rejects.toThrow(NoMatchingCaveatError);
+      ).rejects.toThrow('No caveat found with enforcer matching 0x4567890123456789012345678901234567890123');
     });
 
-    it('should throw MultipleMatchingCaveatsError when multiple matching caveats are found', async () => {
+    it('should throw Error when multiple matching caveats are found', async () => {
       const delegationWithMultipleMatchingCaveats = {
         ...delegation,
         caveats: [
@@ -148,7 +146,7 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
           environment,
           { delegation: delegationWithMultipleMatchingCaveats },
         ),
-      ).rejects.toThrow(MultipleMatchingCaveatsError);
+      ).rejects.toThrow('Multiple caveats found with enforcer matching 0x4567890123456789012345678901234567890123');
     });
 
 

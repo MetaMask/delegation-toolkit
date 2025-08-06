@@ -23,9 +23,7 @@ export {
   // Result types
   type PeriodTransferResult,
   type StreamingResult,
-  // Error types
-  type NoMatchingCaveatError,
-  type MultipleMatchingCaveatsError,
+
 } from './getCaveatAvailableAmount';
 
 export { isValid7702Implementation } from './isValid7702Implementation';

@@ -59,25 +59,7 @@ export type StreamingResult = {
   availableAmount: bigint;
 };
 
-/**
- * Error thrown when no matching caveat is found
- */
-export class NoMatchingCaveatError extends Error {
-  constructor(enforcerName: string) {
-    super(`No caveat found with enforcer matching ${enforcerName}`);
-    this.name = 'NoMatchingCaveatError';
-  }
-}
 
-/**
- * Error thrown when multiple matching caveats are found
- */
-export class MultipleMatchingCaveatsError extends Error {
-  constructor(enforcerName: string) {
-    super(`Multiple caveats found with enforcer matching ${enforcerName}`);
-    this.name = 'MultipleMatchingCaveatsError';
-  }
-}
 
 
 
@@ -86,8 +68,8 @@ export class MultipleMatchingCaveatsError extends Error {
  * @param delegation - The delegation to search
  * @param enforcerAddress - The enforcer address to match
  * @returns The matching caveat
- * @throws NoMatchingCaveatError if no matching caveat is found
- * @throws MultipleMatchingCaveatsError if multiple matching caveats are found
+ * @throws Error if no matching caveat is found
+ * @throws Error if multiple matching caveats are found
  */
 function findMatchingCaveat(
   delegation: Delegation,
@@ -98,11 +80,11 @@ function findMatchingCaveat(
   );
 
   if (matchingCaveats.length === 0) {
-    throw new NoMatchingCaveatError(enforcerAddress);
+    throw new Error(`No caveat found with enforcer matching ${enforcerAddress}`);
   }
 
   if (matchingCaveats.length > 1) {
-    throw new MultipleMatchingCaveatsError(enforcerAddress);
+    throw new Error(`Multiple caveats found with enforcer matching ${enforcerAddress}`);
   }
 
   return {
