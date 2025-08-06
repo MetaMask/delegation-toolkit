@@ -1,95 +1,24 @@
 import type {
   Account,
-  Address,
   Chain,
   Client,
-  Hex,
   RpcSchema,
   Transport,
 } from 'viem';
 import { isHex, toHex } from 'viem';
-
-/**
- * Represents a custom permission with arbitrary data.
- */
-export type Permission = {
-  data: Record<string, unknown>;
-  type: string;
-  rules?: Record<string, unknown>;
-  isRequired?: boolean;
-};
-
-/**
- * Represents a native token stream permission.
- * This allows for continuous token streaming with defined parameters.
- */
-export type NativeTokenStreamPermission = Permission & {
-  type: 'native-token-stream';
-  data: {
-    initialAmount?: bigint;
-    amountPerSecond: bigint;
-    startTime?: number;
-    maxAmount?: number;
-    justification: string;
-  };
-};
-
-export type SignerParam =
-  | Address
-  | { type: 'account'; data: { address: Address } }
-  | { type: string; data: Record<string, unknown> };
-
-/**
- * Parameters for a permission request.
- *
- * @template Signer - The type of the signer provided, either an Address or Account.
- */
-export type PermissionRequest<Signer extends SignerParam> = {
-  chainId: number;
-  // address to which the permission request is targetting
-  address?: Address;
-  // Timestamp (in seconds) that specifies the time by which this permission MUST expire.
-  expiry: number;
-  // The permission to grant to the user.
-  permission: Permission;
-  // Account to assign the permission to.
-  signer: Signer;
-  // Whether the caller allows the permission to be adjusted.
-  isAdjustmentAllowed?: boolean;
-};
-
-/**
- * Response from a permission request, including additional metadata.
- */
-export type PermissionResponse = PermissionRequest<Address> & {
-  // the PermissionsContext for the granted permission
-  context: Hex;
-
-  // ERC-4337 Factory and data to deploy smart contract account.
-  accountMeta?: {
-    factory: Hex;
-    factoryData: Hex;
-  }[];
-
-  // This is actually _either_ a userOpBuilder or a delegationManager, but the typings
-  // become complicated to consume if we encode it correctly.
-  signerMeta?: {
-    userOpBuilder?: Hex;
-    delegationManager?: Hex;
-  };
-};
+import type { AccountSigner, Erc20TokenPeriodicPermission,  Erc20TokenStreamPermission,  NativeTokenPeriodicPermission,  NativeTokenStreamPermission, PermissionRequest, PermissionResponse, PermissionTypes, Signer } from '@metamask/permission-types';
 
 /**
  * Parameters for granting permissions.
  *
  * @template Signer - The type of the signer, either an Address or Account.
  */
-export type GrantPermissionsParameters = PermissionRequest<SignerParam>[];
+export type GrantPermissionsParameters = PermissionRequest<Signer, PermissionTypes>[];
 
 /**
  * Return type for the grant permissions action.
  */
-export type GrantPermissionsReturnType = PermissionResponse[];
+export type GrantPermissionsReturnType = PermissionResponse<Signer, PermissionTypes>[];
 /**
  * Represents the authorization status of installed MetaMask Snaps.
  *
@@ -285,30 +214,31 @@ export async function erc7715GrantPermissionsAction(
  * @returns The formatted permissions request.
  * @internal
  */
-function formatPermissionsRequest(parameters: PermissionRequest<SignerParam>) {
-  const { chainId, address, expiry, isAdjustmentAllowed } = parameters;
+function formatPermissionsRequest(parameters: PermissionRequest<Signer, PermissionTypes>) {
+  const { chainId, address, permission, signer, rules } = parameters;
 
   const permissionFormatter = getPermissionFormatter(
-    parameters.permission.type,
+    permission.type,
   );
 
-  const signerAddress =
-    typeof parameters.signer === 'string'
-      ? parameters.signer
-      : parameters.signer.data.address;
+  // only support account type for now
+  if (typeof signer !== 'string' && signer.type !== 'account') {
+    throw new Error('Invalid parameters: signer is not an account');
+  }
 
-  const isAdjustmentAllowedSpecified =
-    isAdjustmentAllowed !== null && isAdjustmentAllowed !== undefined;
+  const signerAddress =
+    typeof signer === 'string'
+      ? signer
+      : signer.data.address;
 
   const optionalFields = {
-    ...(isAdjustmentAllowedSpecified ? { isAdjustmentAllowed } : {}),
     ...(address ? { address } : {}),
+    ...(rules ? { rules } : {}),
   };
 
   return {
     ...optionalFields,
-    chainId: toHex(chainId),
-    expiry,
+    chainId,
     permission: permissionFormatter(parameters.permission),
     signer: {
       // only support account type for now
@@ -316,7 +246,7 @@ function formatPermissionsRequest(parameters: PermissionRequest<SignerParam>) {
       data: {
         address: signerAddress,
       },
-    },
+    } as AccountSigner,
   };
 }
 
@@ -344,7 +274,7 @@ function assertIsDefined<TValue>(
  * @returns The value as a hex string.
  */
 function toHexOrThrow(
-  value: Parameters<typeof toHex>[0] | undefined,
+  value: Parameters<typeof toHex>[0] | undefined | null,
   message?: string,
 ) {
   assertIsDefined(value, message);
@@ -367,15 +297,24 @@ function toHexOrThrow(
  */
 function getPermissionFormatter(
   permissionType: string,
-): (permission: Permission) => Permission {
+): (permission: PermissionTypes) => PermissionTypes {
   switch (permissionType) {
     case 'native-token-stream':
-      return (permission: Permission) =>
+      return (permission: PermissionTypes) =>
         formatNativeTokenStreamPermission(
           permission as NativeTokenStreamPermission,
         );
+    case 'native-token-periodic':
+      return (permission: PermissionTypes) =>
+        ({ ...permission }) as NativeTokenPeriodicPermission;
+    case 'erc20-token-stream':
+      return (permission: PermissionTypes) =>
+        ({ ...permission }) as Erc20TokenStreamPermission;
+    case 'erc20-token-periodic':
+      return (permission: PermissionTypes) =>
+        ({ ...permission }) as Erc20TokenPeriodicPermission;
     default:
-      return (permission: Permission) => ({ ...permission });
+      throw new Error(`Unsupported permission type: ${permissionType}`);
   }
 }
 
@@ -387,33 +326,20 @@ function getPermissionFormatter(
  */
 function formatNativeTokenStreamPermission(
   permission: NativeTokenStreamPermission,
-): Permission {
-  assertIsDefined(
-    permission.data.justification,
-    'Invalid parameters: justification is required',
-  );
-
-  const isInitialAmountSpecified =
-    permission.data.initialAmount !== undefined &&
-    permission.data.initialAmount !== null;
-
-  const isMaxAmountSpecified =
-    permission.data.maxAmount !== undefined &&
-    permission.data.maxAmount !== null;
-
-  const isStartTimeSpecified =
-    permission.data.startTime !== undefined &&
-    permission.data.startTime !== null;
+): NativeTokenStreamPermission {
 
   const optionalFields = {
-    ...(isInitialAmountSpecified && {
+    ...(!!permission.data.initialAmount && {
       initialAmount: toHexOrThrow(permission.data.initialAmount),
     }),
-    ...(isMaxAmountSpecified && {
+    ...(!!permission.data.maxAmount && {
       maxAmount: toHexOrThrow(permission.data.maxAmount),
     }),
-    ...(isStartTimeSpecified && {
+    ...(!!permission.data.startTime && {
       startTime: Number(permission.data.startTime),
+    }),
+    ...(!!permission.data.justification && {
+      justification: permission.data.justification,
     }),
   };
 
@@ -424,7 +350,6 @@ function formatNativeTokenStreamPermission(
         permission.data.amountPerSecond,
         'Invalid parameters: amountPerSecond is required',
       ),
-      justification: permission.data.justification,
       ...optionalFields,
     },
   };

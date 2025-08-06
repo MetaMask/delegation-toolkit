@@ -607,6 +607,7 @@ __metadata:
     "@metamask/eslint-config": "npm:^12.0.0"
     "@metamask/eslint-config-nodejs": "npm:^12.0.0"
     "@metamask/eslint-config-typescript": "npm:^12.0.0"
+    "@metamask/permission-types": ../permission-types
     "@types/node": "npm:^20.10.6"
     "@types/sinon": "npm:^17.0.3"
     "@typescript-eslint/eslint-plugin": "npm:^5.42.1"
@@ -680,6 +681,13 @@ __metadata:
     eslint-plugin-promise: ^6.1.1
     prettier: ^2.7.1
   checksum: 10/6edbf4c2fce34ba8ccd873938501744d69cd13c02047655df596ab551f1aaa390513b8df855145d04c7fed6b5d91b9cfd0ce96ee082abf838292df761f50c520
+  languageName: node
+  linkType: hard
+
+"@metamask/permission-types@file:../permission-types::locator=%40metamask%2Fdelegation-toolkit%40workspace%3Apackages%2Fdelegation-toolkit":
+  version: 0.1.0
+  resolution: "@metamask/permission-types@file:../permission-types#../permission-types::hash=f33541&locator=%40metamask%2Fdelegation-toolkit%40workspace%3Apackages%2Fdelegation-toolkit"
+  checksum: 10/e893f51ebc6c6904191db59183b8f7d7ebc0878b5df13c9dfc2a44d8a4727dfb17b3e8a394cf963e3a3874dd85ab723dd4d6196d97a6c90b6de78a1578e671aa
   languageName: node
   linkType: hard
 
