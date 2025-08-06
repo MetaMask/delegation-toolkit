@@ -15,11 +15,7 @@ export {
   caveatEnforcerActions,
   type CaveatEnforcerClient,
   // Parameter types
-  type ERC20PeriodTransferParams,
-  type ERC20StreamingParams,
-  type MultiTokenPeriodParams,
-  type NativeTokenPeriodTransferParams,
-  type NativeTokenStreamingParams,
+  type CaveatEnforcerParams,
   // Result types
   type PeriodTransferResult,
   type StreamingResult,

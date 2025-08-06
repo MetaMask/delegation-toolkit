@@ -9,37 +9,9 @@ import { hashDelegation } from '../delegation';
 import type { DeleGatorEnvironment, Delegation } from '../types';
 
 /**
- * Parameters for ERC20 period transfer enforcer.
+ * Parameters for all caveat enforcer actions.
  */
-export type ERC20PeriodTransferParams = {
-  delegation: Delegation;
-};
-
-/**
- * Parameters for ERC20 streaming enforcer.
- */
-export type ERC20StreamingParams = {
-  delegation: Delegation;
-};
-
-/**
- * Parameters for MultiTokenPeriodEnforcer.
- */
-export type MultiTokenPeriodParams = {
-  delegation: Delegation;
-};
-
-/**
- * Parameters for native token period transfer enforcer.
- */
-export type NativeTokenPeriodTransferParams = {
-  delegation: Delegation;
-};
-
-/**
- * Parameters for native token streaming enforcer.
- */
-export type NativeTokenStreamingParams = {
+export type CaveatEnforcerParams = {
   delegation: Delegation;
 };
 
@@ -137,7 +109,7 @@ function getEnforcerAddress(
 export async function getErc20PeriodTransferEnforcerAvailableAmount(
   client: PublicClient,
   environment: DeleGatorEnvironment,
-  params: ERC20PeriodTransferParams,
+  params: CaveatEnforcerParams,
 ): Promise<PeriodTransferResult> {
   const delegationManager = getDelegationManager(environment);
   const enforcerAddress = getEnforcerAddress(
@@ -168,7 +140,7 @@ export async function getErc20PeriodTransferEnforcerAvailableAmount(
 export async function getErc20StreamingEnforcerAvailableAmount(
   client: PublicClient,
   environment: DeleGatorEnvironment,
-  params: ERC20StreamingParams,
+  params: CaveatEnforcerParams,
 ): Promise<StreamingResult> {
   const delegationManager = getDelegationManager(environment);
   const enforcerAddress = getEnforcerAddress(
@@ -199,7 +171,7 @@ export async function getErc20StreamingEnforcerAvailableAmount(
 export async function getMultiTokenPeriodEnforcerAvailableAmount(
   client: PublicClient,
   environment: DeleGatorEnvironment,
-  params: MultiTokenPeriodParams,
+  params: CaveatEnforcerParams,
 ): Promise<PeriodTransferResult> {
   const delegationManager = getDelegationManager(environment);
   const enforcerAddress = getEnforcerAddress(
@@ -231,7 +203,7 @@ export async function getMultiTokenPeriodEnforcerAvailableAmount(
 export async function getNativeTokenPeriodTransferEnforcerAvailableAmount(
   client: PublicClient,
   environment: DeleGatorEnvironment,
-  params: NativeTokenPeriodTransferParams,
+  params: CaveatEnforcerParams,
 ): Promise<PeriodTransferResult> {
   const delegationManager = getDelegationManager(environment);
   const enforcerAddress = getEnforcerAddress(
@@ -262,7 +234,7 @@ export async function getNativeTokenPeriodTransferEnforcerAvailableAmount(
 export async function getNativeTokenStreamingEnforcerAvailableAmount(
   client: PublicClient,
   environment: DeleGatorEnvironment,
-  params: NativeTokenStreamingParams,
+  params: CaveatEnforcerParams,
 ): Promise<StreamingResult> {
   const delegationManager = getDelegationManager(environment);
   const enforcerAddress = getEnforcerAddress(
@@ -299,7 +271,7 @@ export const caveatEnforcerActions =
      * @returns Promise resolving to the period transfer result.
      */
     getErc20PeriodTransferEnforcerAvailableAmount: async (
-      params: ERC20PeriodTransferParams,
+      params: CaveatEnforcerParams,
     ): Promise<PeriodTransferResult> => {
       return getErc20PeriodTransferEnforcerAvailableAmount(
         client,
@@ -315,7 +287,7 @@ export const caveatEnforcerActions =
      * @returns Promise resolving to the streaming result.
      */
     getErc20StreamingEnforcerAvailableAmount: async (
-      params: ERC20StreamingParams,
+      params: CaveatEnforcerParams,
     ): Promise<StreamingResult> => {
       return getErc20StreamingEnforcerAvailableAmount(
         client,
@@ -331,7 +303,7 @@ export const caveatEnforcerActions =
      * @returns Promise resolving to the period transfer result.
      */
     getMultiTokenPeriodEnforcerAvailableAmount: async (
-      params: MultiTokenPeriodParams,
+      params: CaveatEnforcerParams,
     ): Promise<PeriodTransferResult> => {
       return getMultiTokenPeriodEnforcerAvailableAmount(
         client,
@@ -347,7 +319,7 @@ export const caveatEnforcerActions =
      * @returns Promise resolving to the period transfer result.
      */
     getNativeTokenPeriodTransferEnforcerAvailableAmount: async (
-      params: NativeTokenPeriodTransferParams,
+      params: CaveatEnforcerParams,
     ): Promise<PeriodTransferResult> => {
       return getNativeTokenPeriodTransferEnforcerAvailableAmount(
         client,
@@ -363,7 +335,7 @@ export const caveatEnforcerActions =
      * @returns Promise resolving to the streaming result.
      */
     getNativeTokenStreamingEnforcerAvailableAmount: async (
-      params: NativeTokenStreamingParams,
+      params: CaveatEnforcerParams,
     ): Promise<StreamingResult> => {
       return getNativeTokenStreamingEnforcerAvailableAmount(
         client,
