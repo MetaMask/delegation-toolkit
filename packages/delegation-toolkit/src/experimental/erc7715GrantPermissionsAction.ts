@@ -251,6 +251,16 @@ function formatPermissionsRequest(parameters: PermissionRequest<Signer, Permissi
 }
 
 /**
+ * Checks if a value is defined (not null or undefined).
+ *
+ * @param value - The value to check.
+ * @returns A boolean indicating whether the value is defined.
+ */
+function isDefined<T>(value: T | null | undefined): value is T {
+  return value !== undefined && value !== null;
+}
+
+/**
  * Asserts that a value is defined (not null or undefined).
  *
  * @param value - The value to check.
@@ -261,7 +271,7 @@ function assertIsDefined<TValue>(
   value: TValue | null | undefined,
   message?: string,
 ): asserts value is TValue {
-  if (value === null || value === undefined) {
+  if (!isDefined(value)) {
     throw new Error(message ?? 'Invalid parameters: value is required');
   }
 }
@@ -329,16 +339,16 @@ function formatNativeTokenStreamPermission(
 ): NativeTokenStreamPermission {
 
   const optionalFields = {
-    ...(!!permission.data.initialAmount && {
+    ...(isDefined(permission.data.initialAmount) && {
       initialAmount: toHexOrThrow(permission.data.initialAmount),
     }),
-    ...(!!permission.data.maxAmount && {
+    ...(isDefined(permission.data.maxAmount) && {
       maxAmount: toHexOrThrow(permission.data.maxAmount),
     }),
-    ...(!!permission.data.startTime && {
+    ...(isDefined(permission.data.startTime) && {
       startTime: Number(permission.data.startTime),
     }),
-    ...(!!permission.data.justification && {
+    ...(isDefined(permission.data.justification) && {
       justification: permission.data.justification,
     }),
   };
