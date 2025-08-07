@@ -5,13 +5,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { randomAddress, randomBytes } from './utils';
 import {
   createCaveatEnforcerClient,
-  type CaveatEnforcerClient,
   getErc20PeriodTransferEnforcerAvailableAmount,
   getErc20StreamingEnforcerAvailableAmount,
   getMultiTokenPeriodEnforcerAvailableAmount,
   getNativeTokenPeriodTransferEnforcerAvailableAmount,
   getNativeTokenStreamingEnforcerAvailableAmount,
-} from '../src/actions';
+} from '../src/actions/getCaveatAvailableAmount';
+import type {
+  CaveatEnforcerParams,
+  type CaveatEnforcerClient,
+} from '../src/actions/getCaveatAvailableAmount';
 import {
   ERC20PeriodTransferEnforcer,
   MultiTokenPeriodEnforcer,
@@ -19,6 +22,7 @@ import {
   ERC20StreamingEnforcer,
   NativeTokenStreamingEnforcer,
 } from '../src/contracts';
+import { getDelegationHashOffchain } from '../src/delegation';
 import type { DeleGatorEnvironment } from '../src/types';
 
 // Helper function to generate random bytes32
@@ -28,6 +32,36 @@ describe('Caveat Contract Methods', () => {
   let publicClient: PublicClient;
   let mockEnvironment: DeleGatorEnvironment;
   let caveatClient: CaveatEnforcerClient;
+
+  const createParams = (caveat: {
+    enforcer: string;
+    terms: Hex;
+    args?: Hex;
+  }): CaveatEnforcerParams => {
+    const enforcer = mockEnvironment.caveatEnforcers[caveat.enforcer];
+    if (!enforcer) {
+      throw new Error(`Enforcer ${caveat.enforcer} not found`);
+    }
+
+    const { terms, args = '0x' } = caveat;
+
+    return {
+      delegation: {
+        delegator: randomAddress(),
+        delegate: randomAddress(),
+        authority: randomBytes32(),
+        caveats: [
+          {
+            enforcer,
+            terms,
+            args,
+          },
+        ],
+        salt: '0x00',
+        signature: randomBytes32(),
+      },
+    };
+  };
 
   beforeEach(() => {
     publicClient = createPublicClient({
@@ -263,10 +297,21 @@ describe('Caveat Contract Methods', () => {
         .spyOn(ERC20PeriodTransferEnforcer.read, 'getAvailableAmount')
         .mockResolvedValue(mockResult);
 
-      const params = {
-        delegationHash: randomBytes32(),
-        terms: '0x1234' as Hex,
-      };
+      const enforcer =
+        mockEnvironment.caveatEnforcers.ERC20PeriodTransferEnforcer;
+
+      if (!enforcer) {
+        throw new Error('ERC20PeriodTransferEnforcer not found');
+      }
+
+      const terms = '0x1234';
+
+      const params = createParams({
+        enforcer: 'ERC20PeriodTransferEnforcer',
+        terms,
+      });
+
+      const delegationHash = getDelegationHashOffchain(params.delegation);
 
       const result =
         await caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(
@@ -277,9 +322,9 @@ describe('Caveat Contract Methods', () => {
         client: publicClient,
         contractAddress:
           mockEnvironment.caveatEnforcers.ERC20PeriodTransferEnforcer,
-        delegationHash: params.delegationHash,
+        delegationHash,
         delegationManager: mockEnvironment.DelegationManager,
-        terms: params.terms,
+        terms,
       });
 
       expect(result).toEqual(mockResult);
@@ -296,11 +341,16 @@ describe('Caveat Contract Methods', () => {
         .spyOn(MultiTokenPeriodEnforcer.read, 'getAvailableAmount')
         .mockResolvedValue(mockResult);
 
-      const params = {
-        delegationHash: randomBytes32(),
-        terms: '0x1234' as Hex,
-        args: '0x5678' as Hex,
-      };
+      const terms = '0x1234';
+      const args = '0x5678';
+
+      const params = createParams({
+        enforcer: 'MultiTokenPeriodEnforcer',
+        terms,
+        args,
+      });
+
+      const delegationHash = getDelegationHashOffchain(params.delegation);
 
       const result =
         await caveatClient.getMultiTokenPeriodEnforcerAvailableAmount(params);
@@ -309,10 +359,10 @@ describe('Caveat Contract Methods', () => {
         client: publicClient,
         contractAddress:
           mockEnvironment.caveatEnforcers.MultiTokenPeriodEnforcer,
-        delegationHash: params.delegationHash,
+        delegationHash,
         delegationManager: mockEnvironment.DelegationManager,
-        terms: params.terms,
-        args: params.args,
+        terms,
+        args,
       });
 
       expect(result).toEqual(mockResult);
@@ -327,10 +377,17 @@ describe('Caveat Contract Methods', () => {
         .spyOn(ERC20StreamingEnforcer.read, 'getAvailableAmount')
         .mockResolvedValue(mockResult);
 
-      const params = {
-        delegationHash: randomBytes32(),
-        terms: '0x1234' as Hex,
-      };
+      const terms = '0x1234';
+
+      const params = createParams({
+        enforcer: 'ERC20StreamingEnforcer',
+        terms,
+      });
+
+      const delegationHash = getDelegationHashOffchain({
+        ...params.delegation,
+        salt: 0n,
+      });
 
       const result =
         await caveatClient.getErc20StreamingEnforcerAvailableAmount(params);
@@ -339,8 +396,8 @@ describe('Caveat Contract Methods', () => {
         client: publicClient,
         contractAddress: mockEnvironment.caveatEnforcers.ERC20StreamingEnforcer,
         delegationManager: mockEnvironment.DelegationManager,
-        delegationHash: params.delegationHash,
-        terms: params.terms,
+        delegationHash,
+        terms,
       });
 
       expect(result).toEqual(mockResult);
@@ -357,10 +414,14 @@ describe('Caveat Contract Methods', () => {
         .spyOn(NativeTokenPeriodTransferEnforcer.read, 'getAvailableAmount')
         .mockResolvedValue(mockResult);
 
-      const params = {
-        delegationHash: randomBytes32(),
-        terms: '0x9abc' as Hex,
-      };
+      const terms = '0x1234';
+
+      const params = createParams({
+        enforcer: 'NativeTokenPeriodTransferEnforcer',
+        terms,
+      });
+
+      const delegationHash = getDelegationHashOffchain(params.delegation);
 
       const result =
         await caveatClient.getNativeTokenPeriodTransferEnforcerAvailableAmount(
@@ -371,9 +432,9 @@ describe('Caveat Contract Methods', () => {
         client: publicClient,
         contractAddress:
           mockEnvironment.caveatEnforcers.NativeTokenPeriodTransferEnforcer,
-        delegationHash: params.delegationHash,
+        delegationHash,
         delegationManager: mockEnvironment.DelegationManager,
-        terms: params.terms,
+        terms,
       });
 
       expect(result).toEqual(mockResult);
@@ -388,10 +449,14 @@ describe('Caveat Contract Methods', () => {
         .spyOn(NativeTokenStreamingEnforcer.read, 'getAvailableAmount')
         .mockResolvedValue(mockResult);
 
-      const params = {
-        delegationHash: randomBytes32(),
-        terms: '0x1234' as Hex,
-      };
+      const terms = '0x1234';
+
+      const params = createParams({
+        enforcer: 'NativeTokenStreamingEnforcer',
+        terms,
+      });
+
+      const delegationHash = getDelegationHashOffchain(params.delegation);
 
       const result =
         await caveatClient.getNativeTokenStreamingEnforcerAvailableAmount(
@@ -403,70 +468,11 @@ describe('Caveat Contract Methods', () => {
         contractAddress:
           mockEnvironment.caveatEnforcers.NativeTokenStreamingEnforcer,
         delegationManager: mockEnvironment.DelegationManager,
-        delegationHash: params.delegationHash,
-        terms: params.terms,
+        delegationHash,
+        terms,
       });
 
       expect(result).toEqual(mockResult);
-    });
-
-    it('should use custom delegation manager when provided', async () => {
-      const mockResult = {
-        availableAmount: 100n,
-        isNewPeriod: true,
-        currentPeriod: 1n,
-      };
-
-      const getAvailableAmountSpy = vi
-        .spyOn(ERC20PeriodTransferEnforcer.read, 'getAvailableAmount')
-        .mockResolvedValue(mockResult);
-
-      const customDelegationManager = randomAddress();
-      const params = {
-        delegationHash: randomBytes32(),
-        terms: '0x1234' as Hex,
-        delegationManager: customDelegationManager,
-      };
-
-      await caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(params);
-
-      expect(getAvailableAmountSpy).toHaveBeenCalledWith({
-        client: publicClient,
-        contractAddress:
-          mockEnvironment.caveatEnforcers.ERC20PeriodTransferEnforcer,
-        delegationHash: params.delegationHash,
-        delegationManager: customDelegationManager,
-        terms: params.terms,
-      });
-    });
-
-    it('should use custom enforcer address when provided', async () => {
-      const mockResult = {
-        availableAmount: 100n,
-        isNewPeriod: true,
-        currentPeriod: 1n,
-      };
-
-      const getAvailableAmountSpy = vi
-        .spyOn(ERC20PeriodTransferEnforcer.read, 'getAvailableAmount')
-        .mockResolvedValue(mockResult);
-
-      const customEnforcerAddress = randomAddress();
-      const params = {
-        delegationHash: randomBytes32(),
-        terms: '0x1234' as Hex,
-        enforcerAddress: customEnforcerAddress,
-      };
-
-      await caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(params);
-
-      expect(getAvailableAmountSpy).toHaveBeenCalledWith({
-        client: publicClient,
-        contractAddress: customEnforcerAddress,
-        delegationHash: params.delegationHash,
-        delegationManager: mockEnvironment.DelegationManager,
-        terms: params.terms,
-      });
     });
 
     describe('Error handling', () => {
@@ -481,10 +487,10 @@ describe('Caveat Contract Methods', () => {
           environment: environmentWithoutDelegationManager,
         });
 
-        const params = {
-          delegationHash: randomBytes32(),
+        const params = createParams({
+          enforcer: 'ERC20PeriodTransferEnforcer',
           terms: '0x1234' as Hex,
-        };
+        });
 
         await expect(
           clientWithoutDelegationManager.getErc20PeriodTransferEnforcerAvailableAmount(
@@ -507,10 +513,10 @@ describe('Caveat Contract Methods', () => {
           environment: environmentWithoutEnforcer,
         });
 
-        const params = {
-          delegationHash: randomBytes32(),
+        const params = createParams({
+          enforcer: 'ERC20PeriodTransferEnforcer',
           terms: '0x1234' as Hex,
-        };
+        });
 
         await expect(
           clientWithoutEnforcer.getErc20PeriodTransferEnforcerAvailableAmount(
@@ -535,10 +541,12 @@ describe('Caveat Contract Methods', () => {
         .spyOn(ERC20PeriodTransferEnforcer.read, 'getAvailableAmount')
         .mockResolvedValue(mockResult);
 
-      const params = {
-        delegationHash: randomBytes32(),
-        terms: '0x1234' as Hex,
-      };
+      const terms = '0x1234';
+
+      const params = createParams({
+        enforcer: 'ERC20PeriodTransferEnforcer',
+        terms,
+      });
 
       // Test both approaches
       const [clientResult, functionResult] = await Promise.all([
@@ -564,10 +572,11 @@ describe('Caveat Contract Methods', () => {
         .spyOn(ERC20StreamingEnforcer.read, 'getAvailableAmount')
         .mockResolvedValue(mockResult);
 
-      const params = {
-        delegationHash: randomBytes32(),
+      const params = createParams({
+        enforcer: 'ERC20StreamingEnforcer',
         terms: '0x1234' as Hex,
-      };
+        args: '0x5678' as Hex,
+      });
 
       // Test both approaches
       const [clientResult, functionResult] = await Promise.all([
@@ -595,11 +604,11 @@ describe('Caveat Contract Methods', () => {
         .spyOn(MultiTokenPeriodEnforcer.read, 'getAvailableAmount')
         .mockResolvedValue(mockResult);
 
-      const params = {
-        delegationHash: randomBytes32(),
+      const params = createParams({
+        enforcer: 'MultiTokenPeriodEnforcer',
         terms: '0x1234' as Hex,
         args: '0x5678' as Hex,
-      };
+      });
 
       // Test both approaches
       const [clientResult, functionResult] = await Promise.all([
@@ -627,10 +636,10 @@ describe('Caveat Contract Methods', () => {
         .spyOn(NativeTokenPeriodTransferEnforcer.read, 'getAvailableAmount')
         .mockResolvedValue(mockResult);
 
-      const params = {
-        delegationHash: randomBytes32(),
-        terms: '0x9abc' as Hex,
-      };
+      const params = createParams({
+        enforcer: 'NativeTokenPeriodTransferEnforcer',
+        terms: '0x9abc',
+      });
 
       // Test both approaches
       const [clientResult, functionResult] = await Promise.all([
@@ -658,10 +667,10 @@ describe('Caveat Contract Methods', () => {
         .spyOn(NativeTokenStreamingEnforcer.read, 'getAvailableAmount')
         .mockResolvedValue(mockResult);
 
-      const params = {
-        delegationHash: randomBytes32(),
-        terms: '0x1234' as Hex,
-      };
+      const params = createParams({
+        enforcer: 'NativeTokenStreamingEnforcer',
+        terms: '0x1234',
+      });
 
       // Test both approaches
       const [clientResult, functionResult] = await Promise.all([
@@ -678,50 +687,6 @@ describe('Caveat Contract Methods', () => {
       expect(getAvailableAmountSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('should work identically with custom parameters', async () => {
-      const mockResult = {
-        availableAmount: 150n,
-        isNewPeriod: true,
-        currentPeriod: 1n,
-      };
-
-      const getAvailableAmountSpy = vi
-        .spyOn(ERC20PeriodTransferEnforcer.read, 'getAvailableAmount')
-        .mockResolvedValue(mockResult);
-
-      const customDelegationManager = randomAddress();
-      const customEnforcerAddress = randomAddress();
-      const params = {
-        delegationHash: randomBytes32(),
-        terms: '0x1234' as Hex,
-        delegationManager: customDelegationManager,
-        enforcerAddress: customEnforcerAddress,
-      };
-
-      // Test both approaches with custom parameters
-      const [clientResult, functionResult] = await Promise.all([
-        caveatClient.getErc20PeriodTransferEnforcerAvailableAmount(params),
-        getErc20PeriodTransferEnforcerAvailableAmount(
-          publicClient,
-          mockEnvironment,
-          params,
-        ),
-      ]);
-
-      expect(clientResult).toEqual(functionResult);
-      expect(clientResult).toEqual(mockResult);
-      expect(getAvailableAmountSpy).toHaveBeenCalledTimes(2);
-
-      // Verify both calls used the custom parameters
-      expect(getAvailableAmountSpy).toHaveBeenCalledWith({
-        client: publicClient,
-        contractAddress: customEnforcerAddress,
-        delegationHash: params.delegationHash,
-        delegationManager: customDelegationManager,
-        terms: params.terms,
-      });
-    });
-
     it('should handle errors identically', async () => {
       const mockError = new Error('Contract call failed');
 
@@ -730,10 +695,10 @@ describe('Caveat Contract Methods', () => {
         'getAvailableAmount',
       ).mockRejectedValue(mockError);
 
-      const params = {
-        delegationHash: randomBytes32(),
-        terms: '0x1234' as Hex,
-      };
+      const params = createParams({
+        enforcer: 'ERC20PeriodTransferEnforcer',
+        terms: '0x1234',
+      });
 
       // Both approaches should throw the same error
       await expect(

@@ -1,3 +1,4 @@
+import { hashDelegation } from '@metamask/delegation-core';
 import type { Address, Hex, PublicClient } from 'viem';
 
 import * as ERC20PeriodTransferEnforcer from '../DelegationFramework/ERC20PeriodTransferEnforcer';
@@ -5,7 +6,6 @@ import * as ERC20StreamingEnforcer from '../DelegationFramework/ERC20StreamingEn
 import * as MultiTokenPeriodEnforcer from '../DelegationFramework/MultiTokenPeriodEnforcer';
 import * as NativeTokenPeriodTransferEnforcer from '../DelegationFramework/NativeTokenPeriodTransferEnforcer';
 import * as NativeTokenStreamingEnforcer from '../DelegationFramework/NativeTokenStreamingEnforcer';
-import { hashDelegation } from '../delegation';
 import type { DeleGatorEnvironment, Delegation } from '../types';
 
 /**
@@ -32,12 +32,12 @@ export type StreamingResult = {
 };
 
 /**
- * Finds a caveat that matches the specified enforcer address
- * @param delegation - The delegation to search
- * @param enforcerAddress - The enforcer address to match
- * @returns The matching caveat
- * @throws Error if no matching caveat is found
- * @throws Error if multiple matching caveats are found
+ * Finds a caveat that matches the specified enforcer address.
+ * @param delegation - The delegation to search.
+ * @param enforcerAddress - The enforcer address to match.
+ * @returns The matching caveat.
+ * @throws Error if no matching caveat is found.
+ * @throws Error if multiple matching caveats are found.
  */
 function findMatchingCaveat(
   delegation: Delegation,
@@ -48,11 +48,15 @@ function findMatchingCaveat(
   );
 
   if (matchingCaveats.length === 0) {
-    throw new Error(`No caveat found with enforcer matching ${enforcerAddress}`);
+    throw new Error(
+      `No caveat found with enforcer matching ${enforcerAddress}`,
+    );
   }
 
   if (matchingCaveats.length > 1) {
-    throw new Error(`Multiple caveats found with enforcer matching ${enforcerAddress}`);
+    throw new Error(
+      `Multiple caveats found with enforcer matching ${enforcerAddress}`,
+    );
   }
 
   const [{ terms, args }] = matchingCaveats;
@@ -177,7 +181,10 @@ export async function getMultiTokenPeriodEnforcerAvailableAmount(
   );
 
   const delegationHash = hashDelegation(params.delegation);
-  const { terms, args } = findMatchingCaveat(params.delegation, enforcerAddress);
+  const { terms, args } = findMatchingCaveat(
+    params.delegation,
+    enforcerAddress,
+  );
 
   return MultiTokenPeriodEnforcer.read.getAvailableAmount({
     client,

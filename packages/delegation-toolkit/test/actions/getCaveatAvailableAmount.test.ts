@@ -1,40 +1,56 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { PublicClient } from 'viem';
 import { createPublicClient, http } from 'viem';
 import { mainnet } from 'viem/chains';
-import { hashDelegation } from '@metamask/delegation-core';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
 import {
   getMultiTokenPeriodEnforcerAvailableAmount,
   getErc20PeriodTransferEnforcerAvailableAmount,
   getErc20StreamingEnforcerAvailableAmount,
   getNativeTokenPeriodTransferEnforcerAvailableAmount,
   getNativeTokenStreamingEnforcerAvailableAmount,
-  type DeleGatorEnvironment,
-  type Delegation,
-} from '../../src';
+} from '../../src/actions/getCaveatAvailableAmount';
+import { getDelegationHashOffchain } from '../../src/delegation';
+import type { DeleGatorEnvironment, Delegation } from '../../src/types';
 
 // Mock the contract read functions
-vi.mock('../../src/DelegationFramework/MultiTokenPeriodEnforcer/methods/getAvailableAmount', () => ({
-  read: vi.fn(),
-}));
+vi.mock(
+  '../../src/DelegationFramework/MultiTokenPeriodEnforcer/methods/getAvailableAmount',
+  () => ({
+    read: vi.fn(),
+  }),
+);
 
-vi.mock('../../src/DelegationFramework/ERC20PeriodTransferEnforcer/methods/getAvailableAmount', () => ({
-  read: vi.fn(),
-}));
+vi.mock(
+  '../../src/DelegationFramework/ERC20PeriodTransferEnforcer/methods/getAvailableAmount',
+  () => ({
+    read: vi.fn(),
+  }),
+);
 
-vi.mock('../../src/DelegationFramework/ERC20StreamingEnforcer/methods/getAvailableAmount', () => ({
-  read: vi.fn(),
-}));
+vi.mock(
+  '../../src/DelegationFramework/ERC20StreamingEnforcer/methods/getAvailableAmount',
+  () => ({
+    read: vi.fn(),
+  }),
+);
 
-vi.mock('../../src/DelegationFramework/NativeTokenPeriodTransferEnforcer/methods/getAvailableAmount', () => ({
-  read: vi.fn(),
-}));
+vi.mock(
+  '../../src/DelegationFramework/NativeTokenPeriodTransferEnforcer/methods/getAvailableAmount',
+  () => ({
+    read: vi.fn(),
+  }),
+);
 
-vi.mock('../../src/DelegationFramework/NativeTokenStreamingEnforcer/methods/getAvailableAmount', () => ({
-  read: vi.fn(),
-}));
+vi.mock(
+  '../../src/DelegationFramework/NativeTokenStreamingEnforcer/methods/getAvailableAmount',
+  () => ({
+    read: vi.fn(),
+  }),
+);
 
 describe('Delegation-based Caveat Enforcer Actions', () => {
-  let client: ReturnType<typeof createPublicClient>;
+  let client: PublicClient;
   let environment: DeleGatorEnvironment;
   let delegation: Delegation;
 
@@ -51,17 +67,21 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
       implementations: {},
       caveatEnforcers: {
         MultiTokenPeriodEnforcer: '0x4567890123456789012345678901234567890123',
-        ERC20PeriodTransferEnforcer: '0x5678901234567890123456789012345678901234',
+        ERC20PeriodTransferEnforcer:
+          '0x5678901234567890123456789012345678901234',
         ERC20StreamingEnforcer: '0x6789012345678901234567890123456789012345',
-        NativeTokenPeriodTransferEnforcer: '0x7890123456789012345678901234567890123456',
-        NativeTokenStreamingEnforcer: '0x8901234567890123456789012345678901234567',
+        NativeTokenPeriodTransferEnforcer:
+          '0x7890123456789012345678901234567890123456',
+        NativeTokenStreamingEnforcer:
+          '0x8901234567890123456789012345678901234567',
       },
     };
 
     delegation = {
       delegate: '0x1111111111111111111111111111111111111111',
       delegator: '0x2222222222222222222222222222222222222222',
-      authority: '0x0000000000000000000000000000000000000000000000000000000000000000',
+      authority:
+        '0x0000000000000000000000000000000000000000000000000000000000000000',
       caveats: [
         {
           enforcer: '0x4567890123456789012345678901234567890123',
@@ -82,7 +102,9 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
         currentPeriod: 1n,
       };
 
-      const { read } = await import('../../src/DelegationFramework/MultiTokenPeriodEnforcer/methods/getAvailableAmount');
+      const { read } = await import(
+        '../../src/DelegationFramework/MultiTokenPeriodEnforcer/methods/getAvailableAmount'
+      );
       vi.mocked(read).mockResolvedValue(mockResult);
 
       const result = await getMultiTokenPeriodEnforcerAvailableAmount(
@@ -91,19 +113,21 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
         { delegation },
       );
 
+      const delegationHash = getDelegationHashOffchain(delegation);
+
       expect(result).toEqual(mockResult);
       expect(read).toHaveBeenCalledWith({
         client,
         contractAddress: environment.caveatEnforcers.MultiTokenPeriodEnforcer,
-        delegationHash: hashDelegation(delegation),
+        delegationHash,
         delegationManager: environment.DelegationManager,
-        terms: delegation.caveats[0].terms,
-        args: delegation.caveats[0].args,
+        terms: delegation.caveats[0]?.terms,
+        args: delegation.caveats[0]?.args,
       });
     });
 
     it('should throw Error when no matching caveat is found', async () => {
-      const delegationWithoutMatchingCaveat = {
+      const delegationWithoutMatchingCaveat: Delegation = {
         ...delegation,
         caveats: [
           {
@@ -115,16 +139,16 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
       };
 
       await expect(
-        getMultiTokenPeriodEnforcerAvailableAmount(
-          client,
-          environment,
-          { delegation: delegationWithoutMatchingCaveat },
-        ),
-      ).rejects.toThrow('No caveat found with enforcer matching 0x4567890123456789012345678901234567890123');
+        getMultiTokenPeriodEnforcerAvailableAmount(client, environment, {
+          delegation: delegationWithoutMatchingCaveat,
+        }),
+      ).rejects.toThrow(
+        'No caveat found with enforcer matching 0x4567890123456789012345678901234567890123',
+      );
     });
 
     it('should throw Error when multiple matching caveats are found', async () => {
-      const delegationWithMultipleMatchingCaveats = {
+      const delegationWithMultipleMatchingCaveats: Delegation = {
         ...delegation,
         caveats: [
           {
@@ -141,20 +165,18 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
       };
 
       await expect(
-        getMultiTokenPeriodEnforcerAvailableAmount(
-          client,
-          environment,
-          { delegation: delegationWithMultipleMatchingCaveats },
-        ),
-      ).rejects.toThrow('Multiple caveats found with enforcer matching 0x4567890123456789012345678901234567890123');
+        getMultiTokenPeriodEnforcerAvailableAmount(client, environment, {
+          delegation: delegationWithMultipleMatchingCaveats,
+        }),
+      ).rejects.toThrow(
+        'Multiple caveats found with enforcer matching 0x4567890123456789012345678901234567890123',
+      );
     });
-
-
   });
 
   describe('getErc20PeriodTransferEnforcerAvailableAmount with delegation', () => {
     it('should successfully get available amount with matching caveat', async () => {
-      const delegationWithErc20Caveat = {
+      const delegationWithErc20Caveat: Delegation = {
         ...delegation,
         caveats: [
           {
@@ -171,7 +193,9 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
         currentPeriod: 1n,
       };
 
-      const { read } = await import('../../src/DelegationFramework/ERC20PeriodTransferEnforcer/methods/getAvailableAmount');
+      const { read } = await import(
+        '../../src/DelegationFramework/ERC20PeriodTransferEnforcer/methods/getAvailableAmount'
+      );
       vi.mocked(read).mockResolvedValue(mockResult);
 
       const result = await getErc20PeriodTransferEnforcerAvailableAmount(
@@ -183,17 +207,18 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
       expect(result).toEqual(mockResult);
       expect(read).toHaveBeenCalledWith({
         client,
-        contractAddress: environment.caveatEnforcers.ERC20PeriodTransferEnforcer,
-        delegationHash: hashDelegation(delegationWithErc20Caveat),
+        contractAddress:
+          environment.caveatEnforcers.ERC20PeriodTransferEnforcer,
+        delegationHash: getDelegationHashOffchain(delegationWithErc20Caveat),
         delegationManager: environment.DelegationManager,
-        terms: delegationWithErc20Caveat.caveats[0].terms,
+        terms: delegationWithErc20Caveat.caveats[0]?.terms,
       });
     });
   });
 
   describe('getErc20StreamingEnforcerAvailableAmount with delegation', () => {
     it('should successfully get available amount with matching caveat', async () => {
-      const delegationWithErc20StreamingCaveat = {
+      const delegationWithErc20StreamingCaveat: Delegation = {
         ...delegation,
         caveats: [
           {
@@ -208,7 +233,9 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
         availableAmount: 1000n,
       };
 
-      const { read } = await import('../../src/DelegationFramework/ERC20StreamingEnforcer/methods/getAvailableAmount');
+      const { read } = await import(
+        '../../src/DelegationFramework/ERC20StreamingEnforcer/methods/getAvailableAmount'
+      );
       vi.mocked(read).mockResolvedValue(mockResult);
 
       const result = await getErc20StreamingEnforcerAvailableAmount(
@@ -222,15 +249,17 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
         client,
         contractAddress: environment.caveatEnforcers.ERC20StreamingEnforcer,
         delegationManager: environment.DelegationManager,
-        delegationHash: hashDelegation(delegationWithErc20StreamingCaveat),
-        terms: delegationWithErc20StreamingCaveat.caveats[0].terms,
+        delegationHash: getDelegationHashOffchain(
+          delegationWithErc20StreamingCaveat,
+        ),
+        terms: delegationWithErc20StreamingCaveat.caveats[0]?.terms,
       });
     });
   });
 
   describe('getNativeTokenPeriodTransferEnforcerAvailableAmount with delegation', () => {
     it('should successfully get available amount with matching caveat', async () => {
-      const delegationWithNativeTokenCaveat = {
+      const delegationWithNativeTokenCaveat: Delegation = {
         ...delegation,
         caveats: [
           {
@@ -247,7 +276,9 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
         currentPeriod: 1n,
       };
 
-      const { read } = await import('../../src/DelegationFramework/NativeTokenPeriodTransferEnforcer/methods/getAvailableAmount');
+      const { read } = await import(
+        '../../src/DelegationFramework/NativeTokenPeriodTransferEnforcer/methods/getAvailableAmount'
+      );
       vi.mocked(read).mockResolvedValue(mockResult);
 
       const result = await getNativeTokenPeriodTransferEnforcerAvailableAmount(
@@ -259,17 +290,20 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
       expect(result).toEqual(mockResult);
       expect(read).toHaveBeenCalledWith({
         client,
-        contractAddress: environment.caveatEnforcers.NativeTokenPeriodTransferEnforcer,
-        delegationHash: hashDelegation(delegationWithNativeTokenCaveat),
+        contractAddress:
+          environment.caveatEnforcers.NativeTokenPeriodTransferEnforcer,
+        delegationHash: getDelegationHashOffchain(
+          delegationWithNativeTokenCaveat,
+        ),
         delegationManager: environment.DelegationManager,
-        terms: delegationWithNativeTokenCaveat.caveats[0].terms,
+        terms: delegationWithNativeTokenCaveat.caveats[0]?.terms,
       });
     });
   });
 
   describe('getNativeTokenStreamingEnforcerAvailableAmount with delegation', () => {
     it('should successfully get available amount with matching caveat', async () => {
-      const delegationWithNativeTokenStreamingCaveat = {
+      const delegationWithNativeTokenStreamingCaveat: Delegation = {
         ...delegation,
         caveats: [
           {
@@ -284,7 +318,9 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
         availableAmount: 1000n,
       };
 
-      const { read } = await import('../../src/DelegationFramework/NativeTokenStreamingEnforcer/methods/getAvailableAmount');
+      const { read } = await import(
+        '../../src/DelegationFramework/NativeTokenStreamingEnforcer/methods/getAvailableAmount'
+      );
       vi.mocked(read).mockResolvedValue(mockResult);
 
       const result = await getNativeTokenStreamingEnforcerAvailableAmount(
@@ -296,10 +332,13 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
       expect(result).toEqual(mockResult);
       expect(read).toHaveBeenCalledWith({
         client,
-        contractAddress: environment.caveatEnforcers.NativeTokenStreamingEnforcer,
+        contractAddress:
+          environment.caveatEnforcers.NativeTokenStreamingEnforcer,
         delegationManager: environment.DelegationManager,
-        delegationHash: hashDelegation(delegationWithNativeTokenStreamingCaveat),
-        terms: delegationWithNativeTokenStreamingCaveat.caveats[0].terms,
+        delegationHash: getDelegationHashOffchain(
+          delegationWithNativeTokenStreamingCaveat,
+        ),
+        terms: delegationWithNativeTokenStreamingCaveat.caveats[0]?.terms,
       });
     });
   });
