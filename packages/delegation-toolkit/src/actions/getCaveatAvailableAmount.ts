@@ -59,9 +59,10 @@ function findMatchingCaveat(
     throw new Error(`Multiple caveats found with enforcer matching ${enforcerAddress}`);
   }
 
+  const [{ terms, args }] = matchingCaveats;
   return {
-    terms: matchingCaveats[0].terms,
-    args: matchingCaveats[0].args,
+    terms,
+    args,
   };
 }
 
