@@ -49,7 +49,7 @@ vi.mock(
   }),
 );
 
-describe('Delegation-based Caveat Enforcer Actions', () => {
+describe('getCaveatAvailableAmount', () => {
   let client: PublicClient;
   let environment: DeleGatorEnvironment;
   let delegation: Delegation;
@@ -94,8 +94,8 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
     };
   });
 
-  describe('getMultiTokenPeriodEnforcerAvailableAmount with delegation', () => {
-    it('should successfully get available amount with matching caveat', async () => {
+  describe('getMultiTokenPeriodEnforcerAvailableAmount', () => {
+    it('calls the contract read function with the correct arguments', async () => {
       const mockResult = {
         availableAmount: 1000n,
         isNewPeriod: true,
@@ -126,7 +126,7 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
       });
     });
 
-    it('should throw Error when no matching caveat is found', async () => {
+    it('throws an Error when no matching caveat is found', async () => {
       const delegationWithoutMatchingCaveat: Delegation = {
         ...delegation,
         caveats: [
@@ -147,7 +147,7 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
       );
     });
 
-    it('should throw Error when multiple matching caveats are found', async () => {
+    it('throws an Error when multiple matching caveats are found', async () => {
       const delegationWithMultipleMatchingCaveats: Delegation = {
         ...delegation,
         caveats: [
@@ -172,10 +172,43 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
         'Multiple caveats found with enforcer matching MultiTokenPeriodEnforcer',
       );
     });
+
+    it('throws an Error when delegation manager is not found in environment', async () => {
+      const environmentWithoutDelegationManager = {
+        ...environment,
+        DelegationManager: undefined as any,
+      };
+
+      await expect(
+        getMultiTokenPeriodEnforcerAvailableAmount(
+          client,
+          environmentWithoutDelegationManager,
+          { delegation },
+        ),
+      ).rejects.toThrow('Delegation manager address not found');
+    });
+
+    it('throws an Error when enforcer is not found in environment', async () => {
+      const environmentWithoutEnforcer = {
+        ...environment,
+        caveatEnforcers: {
+          ...environment.caveatEnforcers,
+          MultiTokenPeriodEnforcer: undefined as any,
+        },
+      };
+
+      await expect(
+        getMultiTokenPeriodEnforcerAvailableAmount(
+          client,
+          environmentWithoutEnforcer,
+          { delegation },
+        ),
+      ).rejects.toThrow('MultiTokenPeriodEnforcer not found in environment');
+    });
   });
 
-  describe('getErc20PeriodTransferEnforcerAvailableAmount with delegation', () => {
-    it('should successfully get available amount with matching caveat', async () => {
+  describe('getErc20PeriodTransferEnforcerAvailableAmount', () => {
+    it('calls the contract read function with the correct arguments', async () => {
       const delegationWithErc20Caveat: Delegation = {
         ...delegation,
         caveats: [
@@ -214,10 +247,90 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
         terms: delegationWithErc20Caveat.caveats[0]?.terms,
       });
     });
+
+    it('throws an Error when no matching caveat is found', async () => {
+      const delegationWithoutMatchingCaveat: Delegation = {
+        ...delegation,
+        caveats: [
+          {
+            enforcer: '0x9999999999999999999999999999999999999999',
+            terms: '0x1234567890abcdef',
+            args: '0xfedcba0987654321',
+          },
+        ],
+      };
+
+      await expect(
+        getErc20PeriodTransferEnforcerAvailableAmount(client, environment, {
+          delegation: delegationWithoutMatchingCaveat,
+        }),
+      ).rejects.toThrow(
+        'No caveat found with enforcer matching ERC20PeriodTransferEnforcer',
+      );
+    });
+
+    it('throws an Error when multiple matching caveats are found', async () => {
+      const delegationWithMultipleMatchingCaveats: Delegation = {
+        ...delegation,
+        caveats: [
+          {
+            enforcer: '0x5678901234567890123456789012345678901234',
+            terms: '0x1234567890abcdef',
+            args: '0xfedcba0987654321',
+          },
+          {
+            enforcer: '0x5678901234567890123456789012345678901234',
+            terms: '0xabcdef1234567890',
+            args: '0x1234567890abcdef',
+          },
+        ],
+      };
+
+      await expect(
+        getErc20PeriodTransferEnforcerAvailableAmount(client, environment, {
+          delegation: delegationWithMultipleMatchingCaveats,
+        }),
+      ).rejects.toThrow(
+        'Multiple caveats found with enforcer matching ERC20PeriodTransferEnforcer',
+      );
+    });
+
+    it('throws an Error when delegation manager is not found in environment', async () => {
+      const environmentWithoutDelegationManager = {
+        ...environment,
+        DelegationManager: undefined as any,
+      };
+
+      await expect(
+        getErc20PeriodTransferEnforcerAvailableAmount(
+          client,
+          environmentWithoutDelegationManager,
+          { delegation },
+        ),
+      ).rejects.toThrow('Delegation manager address not found');
+    });
+
+    it('throws an Error when enforcer is not found in environment', async () => {
+      const environmentWithoutEnforcer = {
+        ...environment,
+        caveatEnforcers: {
+          ...environment.caveatEnforcers,
+          ERC20PeriodTransferEnforcer: undefined as any,
+        },
+      };
+
+      await expect(
+        getErc20PeriodTransferEnforcerAvailableAmount(
+          client,
+          environmentWithoutEnforcer,
+          { delegation },
+        ),
+      ).rejects.toThrow('ERC20PeriodTransferEnforcer not found in environment');
+    });
   });
 
-  describe('getErc20StreamingEnforcerAvailableAmount with delegation', () => {
-    it('should successfully get available amount with matching caveat', async () => {
+  describe('getErc20StreamingEnforcerAvailableAmount', () => {
+    it('calls the contract read function with the correct arguments', async () => {
       const delegationWithErc20StreamingCaveat: Delegation = {
         ...delegation,
         caveats: [
@@ -255,10 +368,90 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
         terms: delegationWithErc20StreamingCaveat.caveats[0]?.terms,
       });
     });
+
+    it('throws an Error when no matching caveat is found', async () => {
+      const delegationWithoutMatchingCaveat: Delegation = {
+        ...delegation,
+        caveats: [
+          {
+            enforcer: '0x9999999999999999999999999999999999999999',
+            terms: '0x1234567890abcdef',
+            args: '0xfedcba0987654321',
+          },
+        ],
+      };
+
+      await expect(
+        getErc20StreamingEnforcerAvailableAmount(client, environment, {
+          delegation: delegationWithoutMatchingCaveat,
+        }),
+      ).rejects.toThrow(
+        'No caveat found with enforcer matching ERC20StreamingEnforcer',
+      );
+    });
+
+    it('throws an Error when multiple matching caveats are found', async () => {
+      const delegationWithMultipleMatchingCaveats: Delegation = {
+        ...delegation,
+        caveats: [
+          {
+            enforcer: '0x6789012345678901234567890123456789012345',
+            terms: '0x1234567890abcdef',
+            args: '0xfedcba0987654321',
+          },
+          {
+            enforcer: '0x6789012345678901234567890123456789012345',
+            terms: '0xabcdef1234567890',
+            args: '0x1234567890abcdef',
+          },
+        ],
+      };
+
+      await expect(
+        getErc20StreamingEnforcerAvailableAmount(client, environment, {
+          delegation: delegationWithMultipleMatchingCaveats,
+        }),
+      ).rejects.toThrow(
+        'Multiple caveats found with enforcer matching ERC20StreamingEnforcer',
+      );
+    });
+
+    it('throws an Error when delegation manager is not found in environment', async () => {
+      const environmentWithoutDelegationManager = {
+        ...environment,
+        DelegationManager: undefined as any,
+      };
+
+      await expect(
+        getErc20StreamingEnforcerAvailableAmount(
+          client,
+          environmentWithoutDelegationManager,
+          { delegation },
+        ),
+      ).rejects.toThrow('Delegation manager address not found');
+    });
+
+    it('throws an Error when enforcer is not found in environment', async () => {
+      const environmentWithoutEnforcer = {
+        ...environment,
+        caveatEnforcers: {
+          ...environment.caveatEnforcers,
+          ERC20StreamingEnforcer: undefined as any,
+        },
+      };
+
+      await expect(
+        getErc20StreamingEnforcerAvailableAmount(
+          client,
+          environmentWithoutEnforcer,
+          { delegation },
+        ),
+      ).rejects.toThrow('ERC20StreamingEnforcer not found in environment');
+    });
   });
 
-  describe('getNativeTokenPeriodTransferEnforcerAvailableAmount with delegation', () => {
-    it('should successfully get available amount with matching caveat', async () => {
+  describe('getNativeTokenPeriodTransferEnforcerAvailableAmount', () => {
+    it('calls the contract read function with the correct arguments', async () => {
       const delegationWithNativeTokenCaveat: Delegation = {
         ...delegation,
         caveats: [
@@ -299,10 +492,100 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
         terms: delegationWithNativeTokenCaveat.caveats[0]?.terms,
       });
     });
+
+    it('throws an Error when no matching caveat is found', async () => {
+      const delegationWithoutMatchingCaveat: Delegation = {
+        ...delegation,
+        caveats: [
+          {
+            enforcer: '0x9999999999999999999999999999999999999999',
+            terms: '0x1234567890abcdef',
+            args: '0xfedcba0987654321',
+          },
+        ],
+      };
+
+      await expect(
+        getNativeTokenPeriodTransferEnforcerAvailableAmount(
+          client,
+          environment,
+          {
+            delegation: delegationWithoutMatchingCaveat,
+          },
+        ),
+      ).rejects.toThrow(
+        'No caveat found with enforcer matching NativeTokenPeriodTransferEnforcer',
+      );
+    });
+
+    it('throws an Error when multiple matching caveats are found', async () => {
+      const delegationWithMultipleMatchingCaveats: Delegation = {
+        ...delegation,
+        caveats: [
+          {
+            enforcer: '0x7890123456789012345678901234567890123456',
+            terms: '0x1234567890abcdef',
+            args: '0xfedcba0987654321',
+          },
+          {
+            enforcer: '0x7890123456789012345678901234567890123456',
+            terms: '0xabcdef1234567890',
+            args: '0x1234567890abcdef',
+          },
+        ],
+      };
+
+      await expect(
+        getNativeTokenPeriodTransferEnforcerAvailableAmount(
+          client,
+          environment,
+          {
+            delegation: delegationWithMultipleMatchingCaveats,
+          },
+        ),
+      ).rejects.toThrow(
+        'Multiple caveats found with enforcer matching NativeTokenPeriodTransferEnforcer',
+      );
+    });
+
+    it('throws an Error when delegation manager is not found in environment', async () => {
+      const environmentWithoutDelegationManager = {
+        ...environment,
+        DelegationManager: undefined as any,
+      };
+
+      await expect(
+        getNativeTokenPeriodTransferEnforcerAvailableAmount(
+          client,
+          environmentWithoutDelegationManager,
+          { delegation },
+        ),
+      ).rejects.toThrow('Delegation manager address not found');
+    });
+
+    it('throws an Error when enforcer is not found in environment', async () => {
+      const environmentWithoutEnforcer = {
+        ...environment,
+        caveatEnforcers: {
+          ...environment.caveatEnforcers,
+          NativeTokenPeriodTransferEnforcer: undefined as any,
+        },
+      };
+
+      await expect(
+        getNativeTokenPeriodTransferEnforcerAvailableAmount(
+          client,
+          environmentWithoutEnforcer,
+          { delegation },
+        ),
+      ).rejects.toThrow(
+        'NativeTokenPeriodTransferEnforcer not found in environment',
+      );
+    });
   });
 
-  describe('getNativeTokenStreamingEnforcerAvailableAmount with delegation', () => {
-    it('should successfully get available amount with matching caveat', async () => {
+  describe('getNativeTokenStreamingEnforcerAvailableAmount', () => {
+    it('calls the contract read function with the correct arguments', async () => {
       const delegationWithNativeTokenStreamingCaveat: Delegation = {
         ...delegation,
         caveats: [
@@ -341,17 +624,62 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
         terms: delegationWithNativeTokenStreamingCaveat.caveats[0]?.terms,
       });
     });
-  });
 
-  describe('Error handling', () => {
-    it('should throw error when delegation manager is not found in environment', async () => {
+    it('throws an Error when no matching caveat is found', async () => {
+      const delegationWithoutMatchingCaveat: Delegation = {
+        ...delegation,
+        caveats: [
+          {
+            enforcer: '0x9999999999999999999999999999999999999999',
+            terms: '0x1234567890abcdef',
+            args: '0xfedcba0987654321',
+          },
+        ],
+      };
+
+      await expect(
+        getNativeTokenStreamingEnforcerAvailableAmount(client, environment, {
+          delegation: delegationWithoutMatchingCaveat,
+        }),
+      ).rejects.toThrow(
+        'No caveat found with enforcer matching NativeTokenStreamingEnforcer',
+      );
+    });
+
+    it('throws an Error when multiple matching caveats are found', async () => {
+      const delegationWithMultipleMatchingCaveats: Delegation = {
+        ...delegation,
+        caveats: [
+          {
+            enforcer: '0x8901234567890123456789012345678901234567',
+            terms: '0x1234567890abcdef',
+            args: '0xfedcba0987654321',
+          },
+          {
+            enforcer: '0x8901234567890123456789012345678901234567',
+            terms: '0xabcdef1234567890',
+            args: '0x1234567890abcdef',
+          },
+        ],
+      };
+
+      await expect(
+        getNativeTokenStreamingEnforcerAvailableAmount(client, environment, {
+          delegation: delegationWithMultipleMatchingCaveats,
+        }),
+      ).rejects.toThrow(
+        'Multiple caveats found with enforcer matching NativeTokenStreamingEnforcer',
+      );
+    });
+
+    it('throws an Error when delegation manager is not found in environment', async () => {
       const environmentWithoutDelegationManager = {
         ...environment,
         DelegationManager: undefined as any,
       };
 
       await expect(
-        getMultiTokenPeriodEnforcerAvailableAmount(
+        getNativeTokenStreamingEnforcerAvailableAmount(
           client,
           environmentWithoutDelegationManager,
           { delegation },
@@ -359,22 +687,24 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
       ).rejects.toThrow('Delegation manager address not found');
     });
 
-    it('should throw error when enforcer is not found in environment', async () => {
+    it('throws an Error when enforcer is not found in environment', async () => {
       const environmentWithoutEnforcer = {
         ...environment,
         caveatEnforcers: {
           ...environment.caveatEnforcers,
-          MultiTokenPeriodEnforcer: undefined as any,
+          NativeTokenStreamingEnforcer: undefined as any,
         },
       };
 
       await expect(
-        getMultiTokenPeriodEnforcerAvailableAmount(
+        getNativeTokenStreamingEnforcerAvailableAmount(
           client,
           environmentWithoutEnforcer,
           { delegation },
         ),
-      ).rejects.toThrow('MultiTokenPeriodEnforcer not found in environment');
+      ).rejects.toThrow(
+        'NativeTokenStreamingEnforcer not found in environment',
+      );
     });
   });
 });
