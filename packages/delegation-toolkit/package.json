@@ -116,6 +116,7 @@
     "@metamask/delegation-abis": "^0.11.0",
     "@metamask/delegation-core": "^0.2.0-rc.1",
     "@metamask/delegation-deployments": "^0.12.0",
+    "@metamask/permission-types": "workspace:*",
     "buffer": "^6.0.3",
     "webauthn-p256": "^0.0.10"
   },

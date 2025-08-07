@@ -7,10 +7,10 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { erc7715ProviderActions } from '../../src/experimental';
 import {
   ensureSnapsAuthorized,
-  erc7715GrantPermissionsAction,
-} from '../../src/experimental/erc7715GrantPermissionsAction';
+  erc7715RequestExecutionPermissionsAction,
+} from '../../src/experimental/erc7715RequestExecutionPermissionsAction';
 
-describe('erc7715GrantPermissionsAction', () => {
+describe('erc7715RequestExecutionPermissionsAction', () => {
   let alice: Account;
   let bob: Account;
 
@@ -26,15 +26,15 @@ describe('erc7715GrantPermissionsAction', () => {
     stubRequest.reset();
   });
 
-  describe('erc7715GrantPermissionsAction()', () => {
+  describe('erc7715RequestExecutionPermissionsAction()', () => {
     it('should format permissions request correctly', async () => {
       const parameters = [
         {
           chainId: 31337,
           address: bob.address,
-          expiry: 1234567890,
           permission: {
             type: 'native-token-stream',
+            isAdjustmentAllowed: false,
             data: {
               amountPerSecond: '0x1',
               maxAmount: '0x2',
@@ -42,12 +42,11 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           },
-          isAdjustmentAllowed: false,
           signer: { type: 'account', data: { address: alice.address } },
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient as any, parameters as any);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
@@ -55,14 +54,14 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
+                  isAdjustmentAllowed: false,
                   data: {
                     amountPerSecond: '0x1',
                     maxAmount: '0x2',
@@ -70,7 +69,6 @@ describe('erc7715GrantPermissionsAction', () => {
                     justification: 'Test justification',
                   },
                 },
-                isAdjustmentAllowed: false,
                 signer: {
                   type: 'account',
                   data: {
@@ -89,9 +87,9 @@ describe('erc7715GrantPermissionsAction', () => {
         {
           chainId: 31337,
           address: bob.address,
-          expiry: 1234567890,
           permission: {
             type: 'native-token-stream',
+            isAdjustmentAllowed: false,
             data: {
               amountPerSecond: '0x1',
               maxAmount: '0x2',
@@ -99,12 +97,11 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           },
-          isAdjustmentAllowed: false,
           signer: { type: 'account', data: { address: alice.address } },
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient as any, parameters as any);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[1]).to.deep.equal({
@@ -117,49 +114,23 @@ describe('erc7715GrantPermissionsAction', () => {
         {
           chainId: 31337,
           address: bob.address,
-          expiry: 1234567890,
           permission: {
             type: 'native-token-stream',
             data: {
-              amountPerSecond: undefined,
+              // @ts-ignore testing undefined
+              amountPerSecond: undefined as any,
               maxAmount: '0x2',
               startTime: 2,
               justification: 'Test justification',
             },
           },
-          isAdjustmentAllowed: false,
           signer: { type: 'account', data: { address: alice.address } },
         },
       ];
 
       await expect(
-        erc7715GrantPermissionsAction(mockClient, parameters),
+        erc7715RequestExecutionPermissionsAction(mockClient as any, parameters as any),
       ).rejects.toThrow('Invalid parameters: amountPerSecond is required');
-    });
-
-    it('should throw an error when justification is undefined', async () => {
-      const parameters = [
-        {
-          chainId: 31337,
-          address: bob.address,
-          expiry: 1234567890,
-          permission: {
-            type: 'native-token-stream',
-            data: {
-              amountPerSecond: '0x1',
-              maxAmount: '0x2',
-              startTime: 2,
-              justification: undefined,
-            },
-          },
-          isAdjustmentAllowed: false,
-          signer: { type: 'account', data: { address: alice.address } },
-        },
-      ];
-
-      await expect(
-        erc7715GrantPermissionsAction(mockClient, parameters),
-      ).rejects.toThrow('Invalid parameters: justification is required');
     });
 
     it('should format native-token-stream permission request correctly', async () => {
@@ -167,7 +138,6 @@ describe('erc7715GrantPermissionsAction', () => {
         {
           chainId: 31337,
           address: bob.address,
-          expiry: 1234567890,
           permission: {
             type: 'native-token-stream',
             data: {
@@ -177,12 +147,11 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           },
-          isAdjustmentAllowed: false,
           signer: { type: 'account', data: { address: alice.address } },
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient as any, parameters as any);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
@@ -190,14 +159,14 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
+                  isAdjustmentAllowed: false,
                   data: {
                     amountPerSecond: '0x1',
                     maxAmount: '0x2',
@@ -205,7 +174,6 @@ describe('erc7715GrantPermissionsAction', () => {
                     justification: 'Test justification',
                   },
                 },
-                isAdjustmentAllowed: false,
                 signer: {
                   type: 'account',
                   data: {
@@ -225,7 +193,6 @@ describe('erc7715GrantPermissionsAction', () => {
       const parameters = [
         {
           chainId: 31337,
-          expiry: Math.floor(Date.now() / 1000) + 3600,
           permission: {
             type: 'native-token-stream',
             data: {
@@ -235,43 +202,42 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           },
-          isAdjustmentAllowed: false,
           signer: { type: 'account', data: { address: alice.address } },
         },
       ];
 
       await expect(
-        erc7715GrantPermissionsAction(mockClient, parameters),
-      ).rejects.toThrow('Failed to grant permissions');
+        erc7715RequestExecutionPermissionsAction(mockClient as any, parameters as any),
+      ).rejects.toThrow('Failed to request execution permissions');
     });
 
     it('should use the default snap ID if not provided', async () => {
       stubRequest.resolves([
         {
           chainId: '0x7b27',
-          expiry: 1234567890,
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream',
+            data: { amountPerSecond: '0x1' },
+            isAdjustmentAllowed: false,
           },
           signer: alice.address,
           context: '0x123456',
+          dependencyInfo: [],
         },
       ]);
 
       const parameters = [
         {
           chainId: 31337,
-          expiry: 1234567890,
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream',
+            data: { amountPerSecond: '0x1' },
           },
           signer: { type: 'account', data: { address: alice.address } },
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient as any, parameters as any);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0].params.snapId).to.equal(
@@ -284,31 +250,31 @@ describe('erc7715GrantPermissionsAction', () => {
       stubRequest.resolves([
         {
           chainId: '0x7b27',
-          expiry: 1234567890,
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream',
+            data: { amountPerSecond: '0x1' },
+            isAdjustmentAllowed: false,
           },
           signer: alice.address,
           context: '0x123456',
+          dependencyInfo: [],
         },
       ]);
 
       const parameters = [
         {
           chainId: 31337,
-          expiry: 1234567890,
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream',
+            data: { amountPerSecond: '0x1' },
           },
           signer: { type: 'account', data: { address: alice.address } },
         },
       ];
 
-      await erc7715GrantPermissionsAction(
-        mockClient,
-        parameters,
+      await erc7715RequestExecutionPermissionsAction(
+        mockClient as any,
+        parameters as any,
         customKernelId,
       );
 
@@ -322,23 +288,25 @@ describe('erc7715GrantPermissionsAction', () => {
       const permissionsResponse = [
         {
           chainId: '0x7b27',
-          expiry: 1234567890,
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream',
+            data: { amountPerSecond: '0x1' },
+            isAdjustmentAllowed: false,
           },
           signer: alice.address,
           context: '0x123456',
+          dependencyInfo: [],
         },
         {
           chainId: '0x7b27',
-          expiry: 1234567890,
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream',
+            data: { amountPerSecond: '0x1' },
+            isAdjustmentAllowed: false,
           },
           signer: bob.address,
           context: '0x654321',
+          dependencyInfo: [],
         },
       ];
       stubRequest.resolves(permissionsResponse);
@@ -346,91 +314,29 @@ describe('erc7715GrantPermissionsAction', () => {
       const parameters = [
         {
           chainId: 31337,
-          expiry: 1234567890,
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream',
+            data: { amountPerSecond: '0x1' },
           },
           signer: alice.address,
         },
         {
           chainId: 31337,
-          expiry: 1234567890,
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream',
+            data: { amountPerSecond: '0x1' },
           },
           signer: { type: 'account', data: { address: bob.address } },
         },
       ];
 
-      const result = await erc7715GrantPermissionsAction(
-        mockClient,
-        parameters,
+      const result = await erc7715RequestExecutionPermissionsAction(
+        mockClient as any,
+        parameters as any,
       );
 
       expect(result).to.have.lengthOf(2);
       expect(result).to.deep.equal(permissionsResponse);
-    });
-
-    it('should not specify isAdjustmentAllowed when not specified in the request', async () => {
-      const parameters = [
-        {
-          chainId: 31337,
-          address: bob.address,
-          expiry: 1234567890,
-          permission: {
-            type: 'native-token-stream',
-            data: {
-              amountPerSecond: '0x1',
-              maxAmount: '0x2',
-              startTime: 2,
-              justification: 'Test justification',
-            },
-          },
-          signer: {
-            type: 'account',
-            data: {
-              address: alice.address,
-            },
-          },
-        },
-      ];
-
-      await erc7715GrantPermissionsAction(mockClient, parameters);
-
-      expect(stubRequest.callCount).to.equal(1);
-      expect(stubRequest.firstCall.args[0]).to.deep.equal({
-        method: 'wallet_invokeSnap',
-        params: {
-          snapId: 'npm:@metamask/permissions-kernel-snap',
-          request: {
-            method: 'wallet_grantPermissions',
-            params: [
-              {
-                chainId: '0x7a69',
-                address: bob.address,
-                expiry: 1234567890,
-                permission: {
-                  type: 'native-token-stream',
-                  data: {
-                    amountPerSecond: '0x1',
-                    maxAmount: '0x2',
-                    startTime: 2,
-                    justification: 'Test justification',
-                  },
-                },
-                signer: {
-                  type: 'account',
-                  data: {
-                    address: alice.address,
-                  },
-                },
-              },
-            ],
-          },
-        },
-      });
     });
 
     it('should allow maxAmount to be excluded from the request', async () => {
@@ -438,7 +344,6 @@ describe('erc7715GrantPermissionsAction', () => {
         {
           chainId: 31337,
           address: bob.address,
-          expiry: 1234567890,
           permission: {
             type: 'native-token-stream',
             data: {
@@ -451,7 +356,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient as any, parameters as any);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
@@ -459,14 +364,14 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
+                  isAdjustmentAllowed: false,
                   data: {
                     amountPerSecond: '0x1',
                     startTime: 2,
@@ -491,7 +396,6 @@ describe('erc7715GrantPermissionsAction', () => {
         {
           chainId: 31337,
           address: bob.address,
-          expiry: 1234567890,
           permission: {
             type: 'native-token-stream',
             data: {
@@ -505,7 +409,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient as any, parameters as any);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
@@ -513,14 +417,14 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
+                  isAdjustmentAllowed: false,
                   data: {
                     amountPerSecond: '0x1',
                     startTime: 2,
@@ -540,12 +444,11 @@ describe('erc7715GrantPermissionsAction', () => {
       });
     });
 
-    it('should accept (incorrectly) numerical values as hex', async () => {
+    it('should accept numerical values as hex', async () => {
       const parameters = [
         {
           chainId: 31337,
           address: bob.address,
-          expiry: 1234567890,
           permission: {
             type: 'native-token-stream',
             data: {
@@ -559,7 +462,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient as any, parameters as any);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
@@ -567,14 +470,14 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
+                  isAdjustmentAllowed: false,
                   data: {
                     amountPerSecond: '0x1',
                     maxAmount: '0x2',
@@ -597,7 +500,7 @@ describe('erc7715GrantPermissionsAction', () => {
     });
   });
 
-  describe('erc7715GrantPermissionsAction()', () => {
+  describe('erc7715ProviderActions()', () => {
     const allSnapsEnabledResponse = {
       'npm:@metamask/permissions-kernel-snap': {
         version: '1.0.0',
@@ -624,13 +527,12 @@ describe('erc7715GrantPermissionsAction', () => {
         }),
       }).extend(erc7715ProviderActions());
 
-      expect(client).to.have.property('grantPermissions');
+      expect(client).to.have.property('requestExecutionPermissions');
 
       const parameters = [
         {
           chainId: 31337,
           address: bob.address,
-          expiry: 1234567890,
           permission: {
             type: 'native-token-stream',
             data: {
@@ -639,11 +541,10 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           },
-          isAdjustmentAllowed: false,
           signer: { type: 'account', data: { address: alice.address } },
         },
       ];
-      await client.grantPermissions(parameters);
+      await (client as any).requestExecutionPermissions(parameters as any);
 
       expect(stubRequest.callCount).to.equal(2);
 
@@ -652,21 +553,20 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
+                  isAdjustmentAllowed: false,
                   data: {
                     amountPerSecond: '0x1',
                     startTime: 2,
                     justification: 'Test justification',
                   },
                 },
-                isAdjustmentAllowed: false,
                 signer: { type: 'account', data: { address: alice.address } },
               },
             ],
@@ -696,7 +596,6 @@ describe('erc7715GrantPermissionsAction', () => {
         {
           chainId: 31337,
           address: bob.address,
-          expiry: 1234567890,
           permission: {
             type: 'native-token-stream',
             data: {
@@ -705,12 +604,11 @@ describe('erc7715GrantPermissionsAction', () => {
               justification: 'Test justification',
             },
           },
-          isAdjustmentAllowed: false,
           signer: { type: 'account', data: { address: alice.address } },
         },
       ];
 
-      const grantPromise = client.grantPermissions(parameters);
+      const grantPromise = (client as any).requestExecutionPermissions(parameters as any);
 
       // just let the event loop cycle
       await new Promise((resolve) => setImmediate(resolve));
@@ -724,31 +622,30 @@ describe('erc7715GrantPermissionsAction', () => {
       // Resolve the snaps check with authorized snaps
       resolveSnapsPromise?.(allSnapsEnabledResponse);
 
-      // Wait for the grant permissions operation to complete
+      // Wait for the operation to complete
       await grantPromise;
 
-      // Verify the second call was made to grant permissions
+      // Verify the second call was made to request execution permissions
       expect(stubRequest.callCount).to.equal(2);
       expect(stubRequest.secondCall.args[0]).to.deep.equal({
         method: 'wallet_invokeSnap',
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
+                  isAdjustmentAllowed: false,
                   data: {
                     amountPerSecond: '0x1',
                     startTime: 2,
                     justification: 'Test justification',
                   },
                 },
-                isAdjustmentAllowed: false,
                 signer: { type: 'account', data: { address: alice.address } },
               },
             ],
@@ -781,7 +678,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       });
 
-      const res = await ensureSnapsAuthorized(client);
+      const res = await ensureSnapsAuthorized(client as any);
 
       expect(res).to.equal(true);
 
@@ -813,7 +710,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       });
 
-      const res = await ensureSnapsAuthorized(client, {
+      const res = await ensureSnapsAuthorized(client as any, {
         kernelSnapId,
         providerSnapId,
       });
@@ -839,7 +736,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       });
 
-      const res = await ensureSnapsAuthorized(client);
+      const res = await ensureSnapsAuthorized(client as any);
 
       expect(res).to.equal(false);
     });
@@ -860,7 +757,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       });
 
-      const res = await ensureSnapsAuthorized(client);
+      const res = await ensureSnapsAuthorized(client as any);
 
       expect(res).to.equal(false);
     });
@@ -881,7 +778,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       });
 
-      const res = await ensureSnapsAuthorized(client);
+      const res = await ensureSnapsAuthorized(client as any);
 
       expect(res).to.equal(false);
     });
@@ -902,7 +799,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       });
 
-      const res = await ensureSnapsAuthorized(client);
+      const res = await ensureSnapsAuthorized(client as any);
 
       expect(res).to.equal(false);
     });
