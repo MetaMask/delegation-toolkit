@@ -143,7 +143,7 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
           delegation: delegationWithoutMatchingCaveat,
         }),
       ).rejects.toThrow(
-        'No caveat found with enforcer matching 0x4567890123456789012345678901234567890123',
+        'No caveat found with enforcer matching MultiTokenPeriodEnforcer',
       );
     });
 
@@ -169,7 +169,7 @@ describe('Delegation-based Caveat Enforcer Actions', () => {
           delegation: delegationWithMultipleMatchingCaveats,
         }),
       ).rejects.toThrow(
-        'Multiple caveats found with enforcer matching 0x4567890123456789012345678901234567890123',
+        'Multiple caveats found with enforcer matching MultiTokenPeriodEnforcer',
       );
     });
   });
