@@ -24,7 +24,7 @@ const mockSignature =
   '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890' as const;
 
 const erc20Scope = {
-  type: 'erc20',
+  type: 'erc20-transfer',
   tokenAddress: '0x1234567890123456789012345678901234567890',
   maxAmount: 100n,
 } as const;

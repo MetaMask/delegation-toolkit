@@ -1,4 +1,15 @@
-import { type Erc20ScopeConfig, createErc20CaveatBuilder } from './erc20Scope';
+import {
+  type Erc20PeriodicScopeConfig,
+  createErc20PeriodicCaveatBuilder,
+} from './erc20PeriodicScope';
+import {
+  type Erc20StreamingScopeConfig,
+  createErc20StreamingCaveatBuilder,
+} from './erc20StreamingScope';
+import {
+  type Erc20TransferScopeConfig,
+  createErc20TransferCaveatBuilder,
+} from './erc20TransferScope';
 import {
   type Erc721ScopeConfig,
   createErc721CaveatBuilder,
@@ -8,19 +19,35 @@ import {
   type FunctionCallScopeConfig,
 } from './functionCallScope';
 import {
-  createNativeTokenCaveatBuilder,
-  type NativeTokenScopeConfig,
-} from './nativeTokenScope';
+  type NativeTokenPeriodicScopeConfig,
+  createNativeTokenPeriodicCaveatBuilder,
+} from './nativeTokenPeriodicScope';
+import {
+  type NativeTokenStreamingScopeConfig,
+  createNativeTokenStreamingCaveatBuilder,
+} from './nativeTokenStreamingScope';
+import {
+  type NativeTokenTransferScopeConfig,
+  createNativeTokenTransferCaveatBuilder,
+} from './nativeTokenTransferScope';
 import {
   createOwnershipCaveatBuilder,
   type OwnershipScopeConfig,
 } from './ownershipScope';
+import type { ScopeType } from './scopeTypes';
 import type { DeleGatorEnvironment } from '../../types';
 
+// Export the type for external use
+export type { ScopeType };
+
 export type ScopeConfig =
-  | Erc20ScopeConfig
+  | Erc20TransferScopeConfig
+  | Erc20StreamingScopeConfig
+  | Erc20PeriodicScopeConfig
+  | NativeTokenTransferScopeConfig
+  | NativeTokenStreamingScopeConfig
+  | NativeTokenPeriodicScopeConfig
   | Erc721ScopeConfig
-  | NativeTokenScopeConfig
   | OwnershipScopeConfig
   | FunctionCallScopeConfig;
 
@@ -29,15 +56,20 @@ export const createCaveatBuilderFromScope = (
   scopeConfig: ScopeConfig,
 ) => {
   switch (scopeConfig.type) {
-    case 'erc20':
-      return createErc20CaveatBuilder(
-        environment,
-        scopeConfig as Erc20ScopeConfig,
-      );
+    case 'erc20-transfer':
+      return createErc20TransferCaveatBuilder(environment, scopeConfig);
+    case 'erc20-streaming':
+      return createErc20StreamingCaveatBuilder(environment, scopeConfig);
+    case 'erc20-periodic':
+      return createErc20PeriodicCaveatBuilder(environment, scopeConfig);
+    case 'nativeToken-transfer':
+      return createNativeTokenTransferCaveatBuilder(environment, scopeConfig);
+    case 'nativeToken-streaming':
+      return createNativeTokenStreamingCaveatBuilder(environment, scopeConfig);
+    case 'nativeToken-periodic':
+      return createNativeTokenPeriodicCaveatBuilder(environment, scopeConfig);
     case 'erc721':
       return createErc721CaveatBuilder(environment, scopeConfig);
-    case 'nativeToken':
-      return createNativeTokenCaveatBuilder(environment, scopeConfig);
     case 'ownership':
       return createOwnershipCaveatBuilder(environment, scopeConfig);
     case 'functionCall':

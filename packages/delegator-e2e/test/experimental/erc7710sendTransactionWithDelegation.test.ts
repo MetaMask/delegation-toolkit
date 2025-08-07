@@ -17,6 +17,7 @@ import {
   type MetaMaskSmartAccount,
   type Delegation,
 } from '@metamask/delegation-toolkit';
+import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 import { erc7710WalletActions } from '@metamask/delegation-toolkit/experimental';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import {
@@ -245,15 +246,12 @@ test('Bob sends a native value transaction with delegation', async () => {
   const { DelegationManager: delegationManager } =
     aliceSmartAccount.environment;
 
-  const caveats = createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-    'nativeTokenTransferAmount',
-    { maxAmount },
-  );
-
   const delegation = createDelegation({
     to: bob.address,
     from: aliceSmartAccount.address,
-    caveats,
+    environment: aliceSmartAccount.environment,
+    scope: { type: 'nativeTokenTransferAmount', maxAmount },
+    caveats: [],
   });
 
   const signedDelegation = {
