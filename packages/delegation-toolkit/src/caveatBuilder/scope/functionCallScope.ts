@@ -1,3 +1,4 @@
+import type { DeleGatorEnvironment } from '../../types';
 import { hasProperties } from '../../utils';
 import type { AllowedCalldataBuilderConfig } from '../allowedCalldataBuilder';
 import type { AllowedMethodsBuilderConfig } from '../allowedMethodsBuilder';
@@ -5,7 +6,6 @@ import type { AllowedTargetsBuilderConfig } from '../allowedTargetsBuilder';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
 import type { ExactCalldataBuilderConfig } from '../exactCalldataBuilder';
-import type { DeleGatorEnvironment } from 'src/types';
 
 type FunctionCallScopeBaseConfig = {
   type: 'functionCall';

@@ -16,7 +16,7 @@ describe('createNativeTokenPeriodicCaveatBuilder', () => {
 
   it('creates a native token periodic transfer CaveatBuilder', () => {
     const config: NativeTokenPeriodicScopeConfig = {
-      type: 'nativeToken-periodic',
+      type: 'nativeTokenPeriodTransfer',
       periodAmount: 1000n,
       periodDuration: 1000,
       startDate: Math.floor(Date.now() / 1000),

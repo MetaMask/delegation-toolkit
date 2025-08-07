@@ -36,6 +36,15 @@ import {
 } from './ownershipScope';
 import type { ScopeType } from './scopeTypes';
 import type { DeleGatorEnvironment } from '../../types';
+// Import caveat builder name constants
+import { erc20PeriodTransfer } from '../erc20PeriodTransferBuilder';
+import { erc20Streaming } from '../erc20StreamingBuilder';
+import { erc20TransferAmount } from '../erc20TransferAmountBuilder';
+import { erc721Transfer } from '../erc721TransferBuilder';
+import { nativeTokenPeriodTransfer } from '../nativeTokenPeriodTransferBuilder';
+import { nativeTokenStreaming } from '../nativeTokenStreamingBuilder';
+import { nativeTokenTransferAmount } from '../nativeTokenTransferAmountBuilder';
+import { ownershipTransfer } from '../ownershipTransferBuilder';
 
 // Export the type for external use
 export type { ScopeType };
@@ -56,21 +65,21 @@ export const createCaveatBuilderFromScope = (
   scopeConfig: ScopeConfig,
 ) => {
   switch (scopeConfig.type) {
-    case 'erc20-transfer':
+    case erc20TransferAmount:
       return createErc20TransferCaveatBuilder(environment, scopeConfig);
-    case 'erc20-streaming':
+    case erc20Streaming:
       return createErc20StreamingCaveatBuilder(environment, scopeConfig);
-    case 'erc20-periodic':
+    case erc20PeriodTransfer:
       return createErc20PeriodicCaveatBuilder(environment, scopeConfig);
-    case 'nativeToken-transfer':
+    case nativeTokenTransferAmount:
       return createNativeTokenTransferCaveatBuilder(environment, scopeConfig);
-    case 'nativeToken-streaming':
+    case nativeTokenStreaming:
       return createNativeTokenStreamingCaveatBuilder(environment, scopeConfig);
-    case 'nativeToken-periodic':
+    case nativeTokenPeriodTransfer:
       return createNativeTokenPeriodicCaveatBuilder(environment, scopeConfig);
-    case 'erc721':
+    case erc721Transfer:
       return createErc721CaveatBuilder(environment, scopeConfig);
-    case 'ownership':
+    case ownershipTransfer:
       return createOwnershipCaveatBuilder(environment, scopeConfig);
     case 'functionCall':
       return createFunctionCallCaveatBuilder(environment, scopeConfig);

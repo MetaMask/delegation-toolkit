@@ -1,10 +1,13 @@
+import type { DeleGatorEnvironment } from '../../types';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
-import type { Erc20StreamingBuilderConfig } from '../erc20StreamingBuilder';
-import type { DeleGatorEnvironment } from 'src/types';
+import type {
+  erc20Streaming,
+  Erc20StreamingBuilderConfig,
+} from '../erc20StreamingBuilder';
 
 export type Erc20StreamingScopeConfig = {
-  type: 'erc20-streaming';
+  type: typeof erc20Streaming;
 } & Erc20StreamingBuilderConfig;
 
 /**

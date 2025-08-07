@@ -1,10 +1,13 @@
+import type { DeleGatorEnvironment } from '../../types';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
-import type { NativeTokenTransferAmountBuilderConfig } from '../nativeTokenTransferAmountBuilder';
-import type { DeleGatorEnvironment } from 'src/types';
+import type {
+  nativeTokenTransferAmount,
+  NativeTokenTransferAmountBuilderConfig,
+} from '../nativeTokenTransferAmountBuilder';
 
 export type NativeTokenTransferScopeConfig = {
-  type: 'nativeToken-transfer';
+  type: typeof nativeTokenTransferAmount;
 } & NativeTokenTransferAmountBuilderConfig;
 
 /**

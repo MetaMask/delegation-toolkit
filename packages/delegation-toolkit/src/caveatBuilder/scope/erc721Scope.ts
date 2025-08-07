@@ -1,11 +1,14 @@
+import type { DeleGatorEnvironment } from '../../types';
 import { hasProperties } from '../../utils';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
-import type { Erc721TransferBuilderConfig } from '../erc721TransferBuilder';
-import type { DeleGatorEnvironment } from 'src/types';
+import type {
+  erc721Transfer,
+  Erc721TransferBuilderConfig,
+} from '../erc721TransferBuilder';
 
 export type Erc721ScopeBaseConfig = {
-  type: 'erc721';
+  type: typeof erc721Transfer;
 };
 
 export type Erc721ScopeConfig = Erc721ScopeBaseConfig &

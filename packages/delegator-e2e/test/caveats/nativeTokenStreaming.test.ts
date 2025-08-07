@@ -8,10 +8,13 @@ import {
   createExecution,
   Implementation,
   toMetaMaskSmartAccount,
-  type MetaMaskSmartAccount,
   ExecutionMode,
   ROOT_AUTHORITY,
-  type Delegation,
+  createDelegation,
+} from '@metamask/delegation-toolkit';
+import type {
+  MetaMaskSmartAccount,
+  Delegation,
 } from '@metamask/delegation-toolkit';
 
 import {
@@ -632,6 +635,195 @@ const runTest_expectFailure = async (
   const signedDelegation = {
     ...delegation,
     signature: await delegator.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: recipient,
+    value: transferAmount,
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  const recipientBalanceBefore = await publicClient.getBalance({
+    address: recipient,
+  });
+
+  await expect(
+    sponsoredBundlerClient.sendUserOperation({
+      account: bobSmartAccount,
+      calls: [
+        {
+          to: bobSmartAccount.address,
+          data: redeemData,
+        },
+      ],
+      ...gasPrice,
+    }),
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+
+  const recipientBalanceAfter = await publicClient.getBalance({
+    address: recipient,
+  });
+  expect(
+    recipientBalanceAfter,
+    'Expected recipient balance to remain unchanged',
+  ).toEqual(recipientBalanceBefore);
+};
+
+test('Scope: Bob redeems the delegation with initial amount available using nativeTokenStreaming scope', async () => {
+  const initialAmount = parseEther('0.5');
+  const maxAmount = parseEther('2');
+  const amountPerSecond = parseEther('0.1');
+  const startTime = currentTime;
+  const transferAmount = parseEther('0.5');
+  const recipient = randomAddress();
+
+  await runScopeTest_expectSuccess(
+    initialAmount,
+    maxAmount,
+    amountPerSecond,
+    startTime,
+    transferAmount,
+    recipient,
+  );
+});
+
+test('Scope: Bob attempts to redeem the delegation exceeding initial amount using nativeTokenStreaming scope', async () => {
+  const initialAmount = parseEther('0.5');
+  const maxAmount = parseEther('2');
+  const amountPerSecond = parseEther('0.1');
+  const startTime = currentTime;
+  const transferAmount = parseEther('1');
+  const recipient = randomAddress();
+
+  await runScopeTest_expectFailure(
+    initialAmount,
+    maxAmount,
+    amountPerSecond,
+    startTime,
+    transferAmount,
+    recipient,
+    'NativeTokenStreamingEnforcer:allowance-exceeded',
+  );
+});
+
+const runScopeTest_expectSuccess = async (
+  initialAmount: bigint,
+  maxAmount: bigint,
+  amountPerSecond: bigint,
+  startTime: number,
+  transferAmount: bigint,
+  recipient: Hex,
+) => {
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
+  const delegation = createDelegation({
+    environment: aliceSmartAccount.environment,
+    to: bobAddress,
+    from: aliceAddress,
+    scope: {
+      type: 'nativeTokenStreaming',
+      initialAmount,
+      maxAmount,
+      amountPerSecond,
+      startTime,
+    },
+    caveats: [],
+  });
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: recipient,
+    value: transferAmount,
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  const recipientBalanceBefore = await publicClient.getBalance({
+    address: recipient,
+  });
+
+  const userOpHash = await sponsoredBundlerClient.sendUserOperation({
+    account: bobSmartAccount,
+    calls: [
+      {
+        to: bobSmartAccount.address,
+        data: redeemData,
+      },
+    ],
+    ...gasPrice,
+  });
+
+  const receipt = await sponsoredBundlerClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  });
+
+  expectUserOperationToSucceed(receipt);
+
+  const recipientBalanceAfter = await publicClient.getBalance({
+    address: recipient,
+  });
+
+  expect(
+    recipientBalanceAfter - recipientBalanceBefore,
+    'Expected recipient balance to increase by transfer amount',
+  ).toEqual(transferAmount);
+};
+
+const runScopeTest_expectFailure = async (
+  initialAmount: bigint,
+  maxAmount: bigint,
+  amountPerSecond: bigint,
+  startTime: number,
+  transferAmount: bigint,
+  recipient: Hex,
+  expectedError: string,
+) => {
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
+  const delegation = createDelegation({
+    environment: aliceSmartAccount.environment,
+    to: bobAddress,
+    from: aliceAddress,
+    scope: {
+      type: 'nativeTokenStreaming',
+      initialAmount,
+      maxAmount,
+      amountPerSecond,
+      startTime,
+    },
+    caveats: [],
+  });
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
       delegation,
     }),
   };

@@ -16,7 +16,7 @@ describe('createErc20TransferCaveatBuilder', () => {
 
   it('creates an ERC20 transfer CaveatBuilder', () => {
     const config: Erc20TransferScopeConfig = {
-      type: 'erc20-transfer',
+      type: 'erc20TransferAmount',
       tokenAddress: randomAddress(),
       maxAmount: 1000n,
     };

@@ -16,7 +16,7 @@ describe('createErc20PeriodicCaveatBuilder', () => {
 
   it('creates an ERC20 periodic transfer CaveatBuilder', () => {
     const config: Erc20PeriodicScopeConfig = {
-      type: 'erc20-periodic',
+      type: 'erc20PeriodTransfer',
       tokenAddress: randomAddress(),
       periodAmount: 1000n,
       periodDuration: 1000,

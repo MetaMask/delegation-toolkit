@@ -9,9 +9,12 @@ import {
   Implementation,
   toMetaMaskSmartAccount,
   ExecutionMode,
-  type MetaMaskSmartAccount,
   ROOT_AUTHORITY,
-  type Delegation,
+  createDelegation,
+} from '@metamask/delegation-toolkit';
+import type {
+  MetaMaskSmartAccount,
+  Delegation,
 } from '@metamask/delegation-toolkit';
 import {
   gasPrice,
@@ -125,7 +128,7 @@ const runTest_expectSuccess = async (
     callData: encodeFunctionData({
       abi: erc20TokenAbi,
       functionName: 'transfer',
-      args: [recipient, transferAmount],
+      args: [recipient as `0x${string}`, transferAmount],
     }),
   });
 
@@ -140,7 +143,7 @@ const runTest_expectSuccess = async (
   });
 
   const recipientBalanceBefore = await getErc20Balance(
-    recipient,
+    recipient as `0x${string}`,
     erc20TokenAddress,
   );
 
@@ -162,7 +165,7 @@ const runTest_expectSuccess = async (
   await expectUserOperationToSucceed(receipt);
 
   const recipientBalanceAfter = await getErc20Balance(
-    recipient,
+    recipient as `0x${string}`,
     erc20TokenAddress,
   );
 
@@ -210,7 +213,7 @@ const runTest_expectFailure = async (
     callData: encodeFunctionData({
       abi: erc20TokenAbi,
       functionName: 'transfer',
-      args: [recipient, transferAmount],
+      args: [recipient as `0x${string}`, transferAmount],
     }),
   });
 
@@ -225,7 +228,7 @@ const runTest_expectFailure = async (
   });
 
   const recipientBalanceBefore = await getErc20Balance(
-    recipient,
+    recipient as `0x${string}`,
     erc20TokenAddress,
   );
 
@@ -243,7 +246,7 @@ const runTest_expectFailure = async (
   ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 
   const recipientBalanceAfter = await getErc20Balance(
-    recipient,
+    recipient as `0x${string}`,
     erc20TokenAddress,
   );
 
@@ -910,3 +913,223 @@ test('Bob attempts to redeem before start date', async () => {
     }),
   ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 });
+
+test('Scope: Bob redeems the delegation with transfers within period limit using erc20PeriodTransfer scope', async () => {
+  const periodAmount = parseEther('1');
+  const periodDuration = 86400; // 1 day in seconds
+  const startDate = currentTime;
+  const transferAmount = parseEther('0.5');
+  const recipient = randomAddress();
+
+  await runScopeTest_expectSuccess(
+    periodAmount,
+    periodDuration,
+    startDate,
+    transferAmount,
+    recipient,
+  );
+});
+
+test('Scope: Bob attempts to redeem the delegation exceeding period amount using erc20PeriodTransfer scope', async () => {
+  const periodAmount = parseEther('1');
+  const periodDuration = 86400; // 1 day in seconds
+  const startDate = currentTime;
+  const transferAmount = parseEther('1.5');
+  const recipient = randomAddress();
+
+  await runScopeTest_expectFailure(
+    periodAmount,
+    periodDuration,
+    startDate,
+    transferAmount,
+    recipient,
+    'ERC20PeriodTransferEnforcer:transfer-amount-exceeded',
+  );
+});
+
+const runScopeTest_expectSuccess = async (
+  periodAmount: bigint,
+  periodDuration: number,
+  startDate: number,
+  transferAmount: bigint,
+  recipient: string,
+) => {
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
+  const delegation = createDelegation({
+    environment: aliceSmartAccount.environment,
+    to: bobAddress,
+    from: aliceAddress,
+    scope: {
+      type: 'erc20PeriodTransfer',
+      tokenAddress: erc20TokenAddress,
+      periodAmount,
+      periodDuration,
+      startDate,
+    },
+    caveats: [],
+  });
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: erc20TokenAddress,
+    value: 0n,
+    callData: encodeFunctionData({
+      abi: [
+        {
+          type: 'function',
+          name: 'transfer',
+          inputs: [
+            { name: 'to', type: 'address' },
+            { name: 'amount', type: 'uint256' },
+          ],
+          outputs: [{ name: '', type: 'bool' }],
+          stateMutability: 'nonpayable',
+        },
+      ],
+      functionName: 'transfer',
+      args: [recipient as `0x${string}`, transferAmount],
+    }),
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  const recipientBalanceBefore = await getErc20Balance(
+    recipient as `0x${string}`,
+    erc20TokenAddress,
+  );
+
+  const userOpHash = await sponsoredBundlerClient.sendUserOperation({
+    account: bobSmartAccount,
+    calls: [
+      {
+        to: bobSmartAccount.address,
+        data: redeemData,
+      },
+    ],
+    ...gasPrice,
+  });
+
+  const receipt = await sponsoredBundlerClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  });
+
+  expectUserOperationToSucceed(receipt);
+
+  const recipientBalanceAfter = await getErc20Balance(
+    recipient as `0x${string}`,
+    erc20TokenAddress,
+  );
+
+  expect(
+    recipientBalanceAfter,
+    'Expected recipient balance to increase by transfer amount',
+  ).toEqual(recipientBalanceBefore + transferAmount);
+};
+
+const runScopeTest_expectFailure = async (
+  periodAmount: bigint,
+  periodDuration: number,
+  startDate: number,
+  transferAmount: bigint,
+  recipient: string,
+  expectedError: string,
+) => {
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
+  const delegation = createDelegation({
+    environment: aliceSmartAccount.environment,
+    to: bobAddress,
+    from: aliceAddress,
+    scope: {
+      type: 'erc20PeriodTransfer',
+      tokenAddress: erc20TokenAddress,
+      periodAmount,
+      periodDuration,
+      startDate,
+    },
+    caveats: [],
+  });
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: erc20TokenAddress,
+    value: 0n,
+    callData: encodeFunctionData({
+      abi: [
+        {
+          type: 'function',
+          name: 'transfer',
+          inputs: [
+            { name: 'to', type: 'address' },
+            { name: 'amount', type: 'uint256' },
+          ],
+          outputs: [{ name: '', type: 'bool' }],
+          stateMutability: 'nonpayable',
+        },
+      ],
+      functionName: 'transfer',
+      args: [recipient as `0x${string}`, transferAmount],
+    }),
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  const recipientBalanceBefore = await getErc20Balance(
+    recipient as `0x${string}`,
+    erc20TokenAddress,
+  );
+
+  await expect(
+    sponsoredBundlerClient.sendUserOperation({
+      account: bobSmartAccount,
+      calls: [
+        {
+          to: bobSmartAccount.address,
+          data: redeemData,
+        },
+      ],
+      ...gasPrice,
+    }),
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+
+  const recipientBalanceAfter = await getErc20Balance(
+    recipient as `0x${string}`,
+    erc20TokenAddress,
+  );
+
+  expect(
+    recipientBalanceAfter,
+    'Expected recipient balance to remain unchanged',
+  ).toEqual(recipientBalanceBefore);
+};

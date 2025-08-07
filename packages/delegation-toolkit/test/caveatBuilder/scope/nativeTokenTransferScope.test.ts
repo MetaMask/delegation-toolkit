@@ -16,7 +16,7 @@ describe('createNativeTokenTransferCaveatBuilder', () => {
 
   it('creates a native token transfer CaveatBuilder', () => {
     const config: NativeTokenTransferScopeConfig = {
-      type: 'nativeToken-transfer',
+      type: 'nativeTokenTransferAmount',
       maxAmount: 1000n,
     };
 

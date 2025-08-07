@@ -32,7 +32,7 @@ describe('resolveCaveats', () => {
   };
 
   const erc20Scope: ScopeConfig = {
-    type: 'erc20-transfer',
+    type: 'erc20TransferAmount',
     tokenAddress: randomAddress(),
     maxAmount: 1000n,
   };
@@ -182,7 +182,7 @@ describe('resolveCaveats', () => {
   describe('scope', () => {
     it('should work with different scope types', () => {
       const erc721Scope: ScopeConfig = {
-        type: 'erc721',
+        type: 'erc721Transfer',
         tokenAddress: randomAddress(),
         tokenId: 123n,
       };

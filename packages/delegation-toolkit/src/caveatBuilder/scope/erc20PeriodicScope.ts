@@ -1,10 +1,13 @@
+import type { DeleGatorEnvironment } from '../../types';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
-import type { Erc20PeriodTransferBuilderConfig } from '../erc20PeriodTransferBuilder';
-import type { DeleGatorEnvironment } from 'src/types';
+import type {
+  erc20PeriodTransfer,
+  Erc20PeriodTransferBuilderConfig,
+} from '../erc20PeriodTransferBuilder';
 
 export type Erc20PeriodicScopeConfig = {
-  type: 'erc20-periodic';
+  type: typeof erc20PeriodTransfer;
 } & Erc20PeriodTransferBuilderConfig;
 
 /**

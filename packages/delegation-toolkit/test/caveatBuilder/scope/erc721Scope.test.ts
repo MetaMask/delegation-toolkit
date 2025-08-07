@@ -15,7 +15,7 @@ describe('createErc721CaveatBuilder', () => {
 
   it('creates an ERC721 transfer CaveatBuilder', () => {
     const config: Erc721ScopeConfig = {
-      type: 'erc721',
+      type: 'erc721Transfer',
       tokenAddress: randomAddress(),
       tokenId: 1n,
     };
@@ -37,7 +37,7 @@ describe('createErc721CaveatBuilder', () => {
   });
 
   it('throws an error for invalid configuration', () => {
-    const config = { type: 'erc721' } as unknown as Erc721ScopeConfig;
+    const config = { type: 'erc721Transfer' } as unknown as Erc721ScopeConfig;
 
     expect(() => createErc721CaveatBuilder(environment, config)).to.throw(
       'Invalid ERC721 configuration',

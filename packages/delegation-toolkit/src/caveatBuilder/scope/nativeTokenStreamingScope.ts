@@ -1,10 +1,13 @@
+import type { DeleGatorEnvironment } from '../../types';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
-import type { NativeTokenStreamingBuilderConfig } from '../nativeTokenStreamingBuilder';
-import type { DeleGatorEnvironment } from 'src/types';
+import type {
+  nativeTokenStreaming,
+  NativeTokenStreamingBuilderConfig,
+} from '../nativeTokenStreamingBuilder';
 
 export type NativeTokenStreamingScopeConfig = {
-  type: 'nativeToken-streaming';
+  type: typeof nativeTokenStreaming;
 } & NativeTokenStreamingBuilderConfig;
 
 /**

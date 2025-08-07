@@ -2,10 +2,13 @@ import type { DeleGatorEnvironment } from '../../types';
 import { hasProperties } from '../../utils';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
-import type { OwnershipTransferBuilderConfig } from '../ownershipTransferBuilder';
+import type {
+  ownershipTransfer,
+  OwnershipTransferBuilderConfig,
+} from '../ownershipTransferBuilder';
 
 type OwnershipScopeBaseConfig = {
-  type: 'ownership';
+  type: typeof ownershipTransfer;
 };
 
 export type OwnershipScopeConfig = OwnershipScopeBaseConfig &

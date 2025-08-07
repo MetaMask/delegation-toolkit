@@ -16,7 +16,7 @@ describe('createErc20StreamingCaveatBuilder', () => {
 
   it('creates an ERC20 streaming CaveatBuilder', () => {
     const config: Erc20StreamingScopeConfig = {
-      type: 'erc20-streaming',
+      type: 'erc20Streaming',
       tokenAddress: randomAddress(),
       initialAmount: 1000n,
       maxAmount: 10000n,

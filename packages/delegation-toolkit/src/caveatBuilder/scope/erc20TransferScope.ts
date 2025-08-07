@@ -1,10 +1,13 @@
+import type { DeleGatorEnvironment } from '../../types';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
-import type { Erc20TransferAmountBuilderConfig } from '../erc20TransferAmountBuilder';
-import type { DeleGatorEnvironment } from 'src/types';
+import type {
+  erc20TransferAmount,
+  Erc20TransferAmountBuilderConfig,
+} from '../erc20TransferAmountBuilder';
 
 export type Erc20TransferScopeConfig = {
-  type: 'erc20-transfer';
+  type: typeof erc20TransferAmount;
 } & Erc20TransferAmountBuilderConfig;
 
 /**

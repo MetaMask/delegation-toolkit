@@ -14,7 +14,7 @@ describe('createOwnershipTransferCaveatBuilder', () => {
 
   it('creates an Ownership Transfer CaveatBuilder', () => {
     const config: OwnershipScopeConfig = {
-      type: 'ownership',
+      type: 'ownershipTransfer',
       contractAddress: randomAddress(),
     };
 
@@ -32,7 +32,9 @@ describe('createOwnershipTransferCaveatBuilder', () => {
   });
 
   it('throws an error for invalid configuration', () => {
-    const config = { type: 'ownership' } as unknown as OwnershipScopeConfig;
+    const config = {
+      type: 'ownershipTransfer',
+    } as unknown as OwnershipScopeConfig;
 
     expect(() => createOwnershipCaveatBuilder(environment, config)).to.throw(
       'Invalid ownership transfer configuration',

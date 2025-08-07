@@ -1,10 +1,13 @@
+import type { DeleGatorEnvironment } from '../../types';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
-import type { NativeTokenPeriodTransferBuilderConfig } from '../nativeTokenPeriodTransferBuilder';
-import type { DeleGatorEnvironment } from 'src/types';
+import type {
+  nativeTokenPeriodTransfer,
+  NativeTokenPeriodTransferBuilderConfig,
+} from '../nativeTokenPeriodTransferBuilder';
 
 export type NativeTokenPeriodicScopeConfig = {
-  type: 'nativeToken-periodic';
+  type: typeof nativeTokenPeriodTransfer;
 } & NativeTokenPeriodTransferBuilderConfig;
 
 /**

@@ -16,7 +16,7 @@ describe('createNativeTokenStreamingCaveatBuilder', () => {
 
   it('creates a native token streaming CaveatBuilder', () => {
     const config: NativeTokenStreamingScopeConfig = {
-      type: 'nativeToken-streaming',
+      type: 'nativeTokenStreaming',
       initialAmount: 1000n,
       maxAmount: 10000n,
       amountPerSecond: 1n,

@@ -7,10 +7,13 @@ import {
   createExecution,
   Implementation,
   toMetaMaskSmartAccount,
-  type MetaMaskSmartAccount,
   ExecutionMode,
   ROOT_AUTHORITY,
-  type Delegation,
+  createDelegation,
+} from '@metamask/delegation-toolkit';
+import type {
+  MetaMaskSmartAccount,
+  Delegation,
 } from '@metamask/delegation-toolkit';
 import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
 import {
@@ -255,4 +258,161 @@ const runTest_expectFailure = async (
 
   const counterAfter = await aliceCounter.read.count();
   expect(counterAfter, 'Expected count to remain 0n').toEqual(0n);
+};
+
+test('Scope: Bob redeems the delegation with an allowed method using functionCall scope', async () => {
+  const allowedMethod = 'increment()';
+
+  await runScopeTest_expectSuccess(
+    [aliceCounter.address as `0x${string}`],
+    [allowedMethod],
+  );
+});
+
+test('Scope: Bob attempts to redeem the delegation with a disallowed method using functionCall scope', async () => {
+  const allowedMethod = 'increment()';
+  const disallowedMethod = 'setCount(uint256)';
+
+  await runScopeTest_expectFailure(
+    [aliceCounter.address as `0x${string}`],
+    [allowedMethod],
+    disallowedMethod,
+    'AllowedMethodsEnforcer:method-not-allowed',
+  );
+});
+
+const runScopeTest_expectSuccess = async (
+  targets: `0x${string}`[],
+  selectors: string[],
+) => {
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
+  const delegation = createDelegation({
+    environment: aliceSmartAccount.environment,
+    to: bobAddress,
+    from: aliceAddress,
+    scope: {
+      type: 'functionCall',
+      targets,
+      selectors,
+    },
+    caveats: [],
+  });
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: aliceCounter.address,
+    value: 0n,
+    callData: toFunctionSelector('increment()'),
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  const counterBefore = await aliceCounter.read.count();
+
+  const userOpHash = await sponsoredBundlerClient.sendUserOperation({
+    account: bobSmartAccount,
+    calls: [
+      {
+        to: bobSmartAccount.address,
+        data: redeemData,
+      },
+    ],
+    ...gasPrice,
+  });
+
+  const receipt = await sponsoredBundlerClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  });
+
+  expectUserOperationToSucceed(receipt);
+
+  const counterAfter = await aliceCounter.read.count();
+  expect(counterAfter, 'Expected count to increment').toEqual(
+    (counterBefore as bigint) + 1n,
+  );
+};
+
+const runScopeTest_expectFailure = async (
+  targets: `0x${string}`[],
+  selectors: string[],
+  callMethod: string,
+  expectedError: string,
+) => {
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
+  const delegation = createDelegation({
+    environment: aliceSmartAccount.environment,
+    to: bobAddress,
+    from: aliceAddress,
+    scope: {
+      type: 'functionCall',
+      targets,
+      selectors,
+    },
+    caveats: [],
+  });
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: aliceCounter.address,
+    value: 0n,
+    callData: encodeFunctionData({
+      abi: CounterMetadata.abi as AbiFunction[],
+      functionName: 'setCount',
+      args: [42n],
+    }),
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  const counterBefore = await aliceCounter.read.count();
+
+  await expect(
+    sponsoredBundlerClient.sendUserOperation({
+      account: bobSmartAccount,
+      calls: [
+        {
+          to: bobSmartAccount.address,
+          data: redeemData,
+        },
+      ],
+      ...gasPrice,
+    }),
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+
+  const counterAfter = await aliceCounter.read.count();
+  expect(counterAfter, 'Expected count to remain unchanged').toEqual(
+    counterBefore,
+  );
 };
