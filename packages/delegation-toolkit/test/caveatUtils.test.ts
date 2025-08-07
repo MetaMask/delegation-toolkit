@@ -13,7 +13,7 @@ import {
 } from '../src/actions/getCaveatAvailableAmount';
 import type {
   CaveatEnforcerParams,
-  type CaveatEnforcerClient,
+  CaveatEnforcerClient,
 } from '../src/actions/getCaveatAvailableAmount';
 import {
   ERC20PeriodTransferEnforcer,
@@ -384,10 +384,7 @@ describe('Caveat Contract Methods', () => {
         terms,
       });
 
-      const delegationHash = getDelegationHashOffchain({
-        ...params.delegation,
-        salt: 0n,
-      });
+      const delegationHash = getDelegationHashOffchain(params.delegation);
 
       const result =
         await caveatClient.getErc20StreamingEnforcerAvailableAmount(params);

@@ -1,6 +1,6 @@
-import { getDelegationHashOffchain } from '../delegation';
 import type { Address, Hex, PublicClient } from 'viem';
 
+import { getDelegationHashOffchain } from '../delegation';
 import * as ERC20PeriodTransferEnforcer from '../DelegationFramework/ERC20PeriodTransferEnforcer';
 import * as ERC20StreamingEnforcer from '../DelegationFramework/ERC20StreamingEnforcer';
 import * as MultiTokenPeriodEnforcer from '../DelegationFramework/MultiTokenPeriodEnforcer';

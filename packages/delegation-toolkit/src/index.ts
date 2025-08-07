@@ -66,4 +66,4 @@ export * as actions from './actions';
 export {
   createCaveatEnforcerClient,
   type CaveatEnforcerClient,
-} from './actions';
+} from './actions/getCaveatAvailableAmount';
