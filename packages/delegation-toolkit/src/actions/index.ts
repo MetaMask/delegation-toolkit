@@ -10,10 +10,6 @@ export {
   getMultiTokenPeriodEnforcerAvailableAmount,
   getNativeTokenPeriodTransferEnforcerAvailableAmount,
   getNativeTokenStreamingEnforcerAvailableAmount,
-  // Client extension exports
-  createCaveatEnforcerClient,
-  caveatEnforcerActions,
-  type CaveatEnforcerClient,
   // Parameter types
   type CaveatEnforcerParams,
   // Result types
