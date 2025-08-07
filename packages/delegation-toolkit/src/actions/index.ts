@@ -10,6 +10,8 @@ export {
   getMultiTokenPeriodEnforcerAvailableAmount,
   getNativeTokenPeriodTransferEnforcerAvailableAmount,
   getNativeTokenStreamingEnforcerAvailableAmount,
+  // Action builder
+  caveatEnforcerActions,
   // Parameter types
   type CaveatEnforcerParams,
   // Result types
