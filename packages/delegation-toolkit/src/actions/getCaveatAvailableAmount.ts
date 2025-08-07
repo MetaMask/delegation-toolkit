@@ -1,4 +1,4 @@
-import { hashDelegation } from '@metamask/delegation-core';
+import { getDelegationHashOffchain } from '../delegation';
 import type { Address, Hex, PublicClient } from 'viem';
 
 import * as ERC20PeriodTransferEnforcer from '../DelegationFramework/ERC20PeriodTransferEnforcer';
@@ -59,7 +59,10 @@ function findMatchingCaveat(
     );
   }
 
-  const [{ terms, args }] = matchingCaveats;
+  const [{ terms, args }] = matchingCaveats as unknown as [
+    { terms: Hex; args: Hex },
+  ];
+
   return {
     terms,
     args,
@@ -118,7 +121,7 @@ export async function getErc20PeriodTransferEnforcerAvailableAmount(
     environment,
   );
 
-  const delegationHash = hashDelegation(params.delegation);
+  const delegationHash = getDelegationHashOffchain(params.delegation);
   const { terms } = findMatchingCaveat(params.delegation, enforcerAddress);
 
   return ERC20PeriodTransferEnforcer.read.getAvailableAmount({
@@ -149,7 +152,7 @@ export async function getErc20StreamingEnforcerAvailableAmount(
     environment,
   );
 
-  const delegationHash = hashDelegation(params.delegation);
+  const delegationHash = getDelegationHashOffchain(params.delegation);
   const { terms } = findMatchingCaveat(params.delegation, enforcerAddress);
 
   return ERC20StreamingEnforcer.read.getAvailableAmount({
@@ -180,7 +183,7 @@ export async function getMultiTokenPeriodEnforcerAvailableAmount(
     environment,
   );
 
-  const delegationHash = hashDelegation(params.delegation);
+  const delegationHash = getDelegationHashOffchain(params.delegation);
   const { terms, args } = findMatchingCaveat(
     params.delegation,
     enforcerAddress,
@@ -215,7 +218,7 @@ export async function getNativeTokenPeriodTransferEnforcerAvailableAmount(
     environment,
   );
 
-  const delegationHash = hashDelegation(params.delegation);
+  const delegationHash = getDelegationHashOffchain(params.delegation);
   const { terms } = findMatchingCaveat(params.delegation, enforcerAddress);
 
   return NativeTokenPeriodTransferEnforcer.read.getAvailableAmount({
@@ -246,7 +249,7 @@ export async function getNativeTokenStreamingEnforcerAvailableAmount(
     environment,
   );
 
-  const delegationHash = hashDelegation(params.delegation);
+  const delegationHash = getDelegationHashOffchain(params.delegation);
   const { terms } = findMatchingCaveat(params.delegation, enforcerAddress);
 
   return NativeTokenStreamingEnforcer.read.getAvailableAmount({
