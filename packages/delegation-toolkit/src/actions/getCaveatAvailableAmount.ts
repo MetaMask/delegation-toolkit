@@ -31,10 +31,6 @@ export type StreamingResult = {
   availableAmount: bigint;
 };
 
-
-
-
-
 /**
  * Finds a caveat that matches the specified enforcer address
  * @param delegation - The delegation to search
