@@ -30,7 +30,6 @@ export type BasePermissionParameter = {
  */
 export type NativeTokenStreamPermissionParameter = BasePermissionParameter & {
   type: 'native-token-stream';
-  expiry?: number;
   data: {
     amountPerSecond: bigint;
     initialAmount?: bigint;
@@ -42,7 +41,6 @@ export type NativeTokenStreamPermissionParameter = BasePermissionParameter & {
 
 export type Erc20TokenStreamPermissionParameter = BasePermissionParameter & {
   type: 'erc20-token-stream';
-  expiry?: number;
   data: {
     tokenAddress: Address;
     amountPerSecond: bigint;
@@ -55,7 +53,6 @@ export type Erc20TokenStreamPermissionParameter = BasePermissionParameter & {
 
 export type NativeTokenPeriodicPermissionParameter = BasePermissionParameter & {
   type: 'native-token-periodic';
-  expiry?: number;
   data: {
     periodAmount: bigint;
     periodDuration: number;
@@ -66,7 +63,6 @@ export type NativeTokenPeriodicPermissionParameter = BasePermissionParameter & {
 
 export type Erc20TokenPeriodicPermissionParameter = BasePermissionParameter & {
   type: 'erc20-token-periodic';
-  expiry?: number;
   data: {
     tokenAddress: Address;
     periodAmount: bigint;
@@ -177,7 +173,7 @@ function formatPermissionsRequest(
       ? parameters.signer
       : parameters.signer.data.address;
 
-  const isExpirySpecified = Boolean(expiry);
+  const isExpirySpecified = expiry !== undefined && expiry !== null;
 
   const rules: Rule[] = isExpirySpecified
     ? [
