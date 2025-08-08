@@ -34,7 +34,6 @@ import {
   createOwnershipCaveatBuilder,
   type OwnershipScopeConfig,
 } from './ownershipScope';
-import type { ScopeType } from './scopeTypes';
 import type { DeleGatorEnvironment } from '../../types';
 // Import caveat builder name constants
 import { erc20PeriodTransfer } from '../erc20PeriodTransferBuilder';
@@ -45,9 +44,6 @@ import { nativeTokenPeriodTransfer } from '../nativeTokenPeriodTransferBuilder';
 import { nativeTokenStreaming } from '../nativeTokenStreamingBuilder';
 import { nativeTokenTransferAmount } from '../nativeTokenTransferAmountBuilder';
 import { ownershipTransfer } from '../ownershipTransferBuilder';
-
-// Export the type for external use
-export type { ScopeType };
 
 export type ScopeConfig =
   | Erc20TransferScopeConfig
