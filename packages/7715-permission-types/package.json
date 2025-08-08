@@ -1,6 +1,6 @@
 {
   "name": "@metamask/7715-permission-types",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Permission types for the ERC-7715",
   "license": "(MIT-0 OR Apache-2.0)",
   "type": "module",
@@ -8,7 +8,7 @@
     "MetaMask",
     "Ethereum"
   ],
-  "homepage": "https://github.com/metamask/delegation-toolkit/tree/main/packages/permission-types#readme",
+  "homepage": "https://github.com/metamask/delegation-toolkit/tree/main/packages/7715-permission-types#readme",
   "bugs": {
     "url": "https://github.com/metamask/delegation-toolkit/issues"
   },
@@ -16,7 +16,7 @@
     "type": "git",
     "url": "https://github.com/metamask/delegation-toolkit.git"
   },
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
@@ -26,11 +26,11 @@
   "exports": {
     ".": {
       "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       },
       "import": {
-        "types": "./dist/index.d.ts",
+        "types": "./dist/index.d.mts",
         "default": "./dist/index.mjs"
       }
     },
