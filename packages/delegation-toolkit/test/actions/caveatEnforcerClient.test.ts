@@ -2,7 +2,6 @@ import { type PublicClient, createPublicClient, http, type Hex } from 'viem';
 import { sepolia } from 'viem/chains';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { randomAddress, randomBytes } from '../utils';
 import {
   createCaveatEnforcerClient,
   type CaveatEnforcerClient,
@@ -24,6 +23,7 @@ import {
 } from '../../src/contracts';
 import { getDelegationHashOffchain } from '../../src/delegation';
 import type { DeleGatorEnvironment } from '../../src/types';
+import { randomAddress, randomBytes } from '../utils';
 
 // Helper function to generate random bytes32
 const randomBytes32 = (): Hex => randomBytes(32);

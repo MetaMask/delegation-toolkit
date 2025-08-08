@@ -33,8 +33,10 @@ export type StreamingResult = {
 
 /**
  * Finds a caveat that matches the specified enforcer address.
- * @param delegation - The delegation to search.
- * @param enforcerAddress - The enforcer address to match.
+ * @param config - The configuration object.
+ * @param config.delegation - The delegation to search.
+ * @param config.enforcerAddress - The enforcer address to match.
+ * @param config.enforcerName - The name of the enforcer.
  * @returns The matching caveat.
  * @throws Error if no matching caveat is found.
  * @throws Error if multiple matching caveats are found.
@@ -89,8 +91,9 @@ function getDelegationManager(environment: DeleGatorEnvironment): Address {
 /**
  * Gets the enforcer address from environment.
  *
- * @param enforcerName - The name of the enforcer.
- * @param environment - The delegator environment.
+ * @param config - The configuration object.
+ * @param config.enforcerName - The name of the enforcer.
+ * @param config.environment - The delegator environment.
  * @returns The enforcer address.
  */
 function getEnforcerAddress({
@@ -380,3 +383,27 @@ export const caveatEnforcerActions =
       );
     },
   });
+
+/**
+ * Type for client extended with caveat enforcer actions.
+ */
+export type CaveatEnforcerClient = PublicClient &
+  ReturnType<ReturnType<typeof caveatEnforcerActions>>;
+
+/**
+ * Create a viem client extended with caveat enforcer actions.
+ *
+ * @param params - The parameters object.
+ * @param params.client - The viem public client.
+ * @param params.environment - The delegator environment.
+ * @returns The extended client with caveat enforcer actions.
+ */
+export function createCaveatEnforcerClient({
+  client,
+  environment,
+}: {
+  client: PublicClient;
+  environment: DeleGatorEnvironment;
+}): CaveatEnforcerClient {
+  return client.extend(caveatEnforcerActions({ environment }));
+}

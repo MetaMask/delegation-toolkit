@@ -4,6 +4,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { randomAddress, randomBytes } from './utils';
 import {
+  createCaveatEnforcerClient,
+  type CaveatEnforcerClient,
+} from '../src/actions/caveatEnforcerClient';
+import {
   getErc20PeriodTransferEnforcerAvailableAmount,
   getErc20StreamingEnforcerAvailableAmount,
   getMultiTokenPeriodEnforcerAvailableAmount,
@@ -11,10 +15,6 @@ import {
   getNativeTokenStreamingEnforcerAvailableAmount,
   type CaveatEnforcerParams,
 } from '../src/actions/getCaveatAvailableAmount';
-import {
-  createCaveatEnforcerClient,
-  type CaveatEnforcerClient,
-} from '../src/actions/caveatEnforcerClient';
 import {
   ERC20PeriodTransferEnforcer,
   MultiTokenPeriodEnforcer,
