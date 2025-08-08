@@ -2,7 +2,6 @@ import { isHex } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { describe, expect, it } from 'vitest';
 
-import { createCaveatBuilder } from '../../../src/caveatBuilder';
 import { createDelegation } from '../../../src/delegation';
 import * as DelegationManager from '../../../src/DelegationFramework/DelegationManager';
 import { ExecutionMode, createExecution } from '../../../src/executions';
@@ -86,9 +85,13 @@ describe('DelegationManager - Delegation Management', () => {
       const delegation = createDelegation({
         to: bob.address,
         from: alice.address,
-        caveats: createCaveatBuilder(environment).addCaveat('allowedTargets', {
+        environment,
+        scope: {
+          type: 'functionCall',
           targets: [alice.address],
-        }),
+          selectors: ['0x00000000'],
+        },
+        caveats: [],
       });
 
       const encodedData = DelegationManager.encode.disableDelegation({
@@ -96,7 +99,7 @@ describe('DelegationManager - Delegation Management', () => {
       });
 
       expect(isHex(encodedData, { strict: true })).toBe(true);
-      expect(encodedData.length).toBe(1034);
+      expect(encodedData.length).toBe(1482);
     });
   });
 
@@ -108,9 +111,13 @@ describe('DelegationManager - Delegation Management', () => {
       const delegation = createDelegation({
         to: bob.address,
         from: alice.address,
-        caveats: createCaveatBuilder(environment).addCaveat('allowedTargets', {
+        environment,
+        scope: {
+          type: 'functionCall',
           targets: [alice.address],
-        }),
+          selectors: ['0x00000000'],
+        },
+        caveats: [],
       });
 
       const encodedData = DelegationManager.encode.enableDelegation({
@@ -118,7 +125,7 @@ describe('DelegationManager - Delegation Management', () => {
       });
 
       expect(isHex(encodedData, { strict: true })).toBe(true);
-      expect(encodedData.length).toBe(1034);
+      expect(encodedData.length).toBe(1482);
     });
   });
 
@@ -130,9 +137,13 @@ describe('DelegationManager - Delegation Management', () => {
       const delegation = createDelegation({
         to: bob.address,
         from: alice.address,
-        caveats: createCaveatBuilder(environment).addCaveat('allowedTargets', {
+        environment,
+        scope: {
+          type: 'functionCall',
           targets: [alice.address],
-        }),
+          selectors: ['0x00000000'],
+        },
+        caveats: [],
       });
 
       const execution = createExecution({
@@ -146,7 +157,7 @@ describe('DelegationManager - Delegation Management', () => {
       });
 
       expect(isHex(encodedData, { strict: true })).toBe(true);
-      expect(encodedData.length).toBe(1994);
+      expect(encodedData.length).toBe(2442);
     });
   });
 });

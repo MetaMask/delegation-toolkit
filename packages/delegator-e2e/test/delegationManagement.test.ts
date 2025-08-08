@@ -8,7 +8,6 @@ import {
   type MetaMaskSmartAccount,
 } from '@metamask/delegation-toolkit';
 import {
-  createCaveatBuilder,
   encodePermissionContexts,
   encodeExecutionCalldatas,
   getDelegationHashOffchain,
@@ -81,9 +80,13 @@ test('delegation management lifecycle: create, disable, enable, and check status
   const delegation = createDelegation({
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', { targets: [aliceCounter.address] })
-      .addCaveat('allowedMethods', { selectors: ['increment()'] }),
+    environment: aliceSmartAccount.environment,
+    scope: {
+      type: 'functionCall',
+      targets: [aliceCounter.address],
+      selectors: ['increment()'],
+    },
+    caveats: [],
   });
 
   const signedDelegation = {
@@ -247,9 +250,13 @@ test('only delegator can disable their own delegation', async () => {
   const delegation = createDelegation({
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', { targets: [aliceCounter.address] })
-      .addCaveat('allowedMethods', { selectors: ['increment()'] }),
+    environment: aliceSmartAccount.environment,
+    scope: {
+      type: 'functionCall',
+      targets: [aliceCounter.address],
+      selectors: ['increment()'],
+    },
+    caveats: [],
   });
 
   // Bob attempts to disable Alice's delegation (should fail)
@@ -277,9 +284,13 @@ test('only delegator can enable their own delegation', async () => {
   const delegation = createDelegation({
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', { targets: [aliceCounter.address] })
-      .addCaveat('allowedMethods', { selectors: ['increment()'] }),
+    environment: aliceSmartAccount.environment,
+    scope: {
+      type: 'functionCall',
+      targets: [aliceCounter.address],
+      selectors: ['increment()'],
+    },
+    caveats: [],
   });
 
   // Alice disables the delegation first
@@ -330,9 +341,13 @@ test('disabling non-existent delegation should succeed silently', async () => {
   const delegation = createDelegation({
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', { targets: [aliceCounter.address] })
-      .addCaveat('allowedMethods', { selectors: ['increment()'] }),
+    environment: aliceSmartAccount.environment,
+    scope: {
+      type: 'functionCall',
+      targets: [aliceCounter.address],
+      selectors: ['increment()'],
+    },
+    caveats: [],
   });
 
   // Alice disables the delegation even though it was never used
@@ -374,17 +389,25 @@ test('can check delegation status using disabledDelegations', async () => {
   const delegation1 = createDelegation({
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', { targets: [aliceCounter.address] })
-      .addCaveat('allowedMethods', { selectors: ['increment()'] }),
+    environment: aliceSmartAccount.environment,
+    scope: {
+      type: 'functionCall',
+      targets: [aliceCounter.address],
+      selectors: ['increment()'],
+    },
+    caveats: [],
   });
 
   const delegation2 = createDelegation({
     to: bobSmartAccount.address,
     from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment)
-      .addCaveat('allowedTargets', { targets: [aliceCounter.address] })
-      .addCaveat('allowedMethods', { selectors: ['decrement()'] }),
+    environment: aliceSmartAccount.environment,
+    scope: {
+      type: 'functionCall',
+      targets: [aliceCounter.address],
+      selectors: ['decrement()'],
+    },
+    caveats: [],
   });
 
   const delegationHash1 = getDelegationHashOffchain(delegation1);

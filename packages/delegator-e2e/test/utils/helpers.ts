@@ -26,6 +26,7 @@ import {
 
 import CounterMetadata from '../utils/counter/metadata.json';
 import * as ERC20Token from '../../contracts/out/ERC20Token.sol/ERC20Token.json';
+import * as ERC721Token from '../../contracts/out/ERC721Token.sol/ERC721Token.json';
 import {
   chain,
   nodeUrl,
@@ -43,6 +44,11 @@ const {
   abi: erc20TokenAbi,
   bytecode: { object: erc20TokenBytecode },
 } = ERC20Token;
+
+const {
+  abi: erc721TokenAbi,
+  bytecode: { object: erc721TokenBytecode },
+} = ERC721Token;
 
 export const transport = http(nodeUrl);
 const deployerAccount = privateKeyToAccount(deployPk);
@@ -234,4 +240,160 @@ export const randomAddress = (lowerCase: boolean = false) => {
 
 export const stringToUnprefixedHex = (value: string) => {
   return stringToHex(value).slice(2);
+};
+
+export const deployErc721Token = async (name = 'TestNFT', symbol = 'TNFT') => {
+  // Deploy the ERC721 token contract using Viem's deployContract with constructor args
+  const hash = await deployerClient.deployContract({
+    abi: erc721TokenAbi as Abi,
+    bytecode: erc721TokenBytecode as Hex,
+    args: [name, symbol],
+  });
+
+  // Wait for the transaction receipt to get the deployed contract address
+  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+  if (!receipt.contractAddress) {
+    throw new Error(
+      'Failed to deploy ERC721 token contract - no contract address in receipt',
+    );
+  }
+
+  return receipt.contractAddress;
+};
+
+export const mintErc721Token = async (
+  to: Address,
+  erc721TokenAddress: Hex,
+  tokenId?: bigint,
+) => {
+  let data: Hex;
+
+  if (tokenId !== undefined) {
+    // Use mintTokenId if specific tokenId is provided
+    data = encodeFunctionData({
+      abi: [
+        {
+          name: 'mintTokenId',
+          type: 'function',
+          stateMutability: 'nonpayable',
+          inputs: [
+            { name: 'to', type: 'address' },
+            { name: 'tokenId', type: 'uint256' },
+          ],
+          outputs: [],
+        },
+      ],
+      functionName: 'mintTokenId',
+      args: [to, tokenId],
+    });
+  } else {
+    // Use regular mint which auto-assigns tokenId
+    data = encodeFunctionData({
+      abi: [
+        {
+          name: 'mint',
+          type: 'function',
+          stateMutability: 'nonpayable',
+          inputs: [{ name: 'to', type: 'address' }],
+          outputs: [{ name: '', type: 'uint256' }],
+        },
+      ],
+      functionName: 'mint',
+      args: [to],
+    });
+  }
+
+  const txHash = await deployerClient.sendTransaction({
+    to: erc721TokenAddress,
+    data,
+  });
+
+  const receipt = await publicClient.waitForTransactionReceipt({
+    hash: txHash,
+  });
+
+  // If using regular mint, extract tokenId from logs
+  if (tokenId === undefined && receipt.logs.length > 0) {
+    // Parse Transfer event to get tokenId
+    const transferLog = receipt.logs.find((log) => log.topics.length === 4);
+    if (transferLog && transferLog.topics[3]) {
+      return BigInt(transferLog.topics[3]);
+    }
+  }
+
+  return tokenId;
+};
+
+export const getErc721Balance = async (
+  address: Hex,
+  erc721TokenAddress: Hex,
+) => {
+  return publicClient.readContract({
+    address: erc721TokenAddress,
+    abi: [
+      {
+        name: 'balanceOf',
+        type: 'function',
+        stateMutability: 'view',
+        inputs: [{ name: 'owner', type: 'address' }],
+        outputs: [{ name: '', type: 'uint256' }],
+      },
+    ],
+    functionName: 'balanceOf',
+    args: [address],
+  });
+};
+
+export const getErc721Owner = async (
+  tokenId: bigint,
+  erc721TokenAddress: Hex,
+) => {
+  return publicClient.readContract({
+    address: erc721TokenAddress,
+    abi: [
+      {
+        name: 'ownerOf',
+        type: 'function',
+        stateMutability: 'view',
+        inputs: [{ name: 'tokenId', type: 'uint256' }],
+        outputs: [{ name: '', type: 'address' }],
+      },
+    ],
+    functionName: 'ownerOf',
+    args: [tokenId],
+  });
+};
+
+export const getContractOwner = async (contractAddress: Hex) => {
+  return publicClient.readContract({
+    address: contractAddress,
+    abi: [
+      {
+        name: 'owner',
+        type: 'function',
+        stateMutability: 'view',
+        inputs: [],
+        outputs: [{ name: '', type: 'address' }],
+      },
+    ],
+    functionName: 'owner',
+    args: [],
+  });
+};
+
+export const transferContractOwnership = (newOwner: Hex) => {
+  return encodeFunctionData({
+    abi: [
+      {
+        name: 'transferOwnership',
+        type: 'function',
+        stateMutability: 'nonpayable',
+        inputs: [{ name: 'newOwner', type: 'address' }],
+        outputs: [],
+      },
+    ],
+    functionName: 'transferOwnership',
+    args: [newOwner],
+  });
 };

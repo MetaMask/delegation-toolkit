@@ -1,18 +1,20 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  encodeExecutionCalldatas,
-  encodePermissionContexts,
-  createCaveatBuilder,
-} from '@metamask/delegation-toolkit/utils';
-import {
   createExecution,
-  createDelegation,
   Implementation,
   toMetaMaskSmartAccount,
-  ExecutionMode,
   type MetaMaskSmartAccount,
+  ExecutionMode,
+  ROOT_AUTHORITY,
+  type Delegation,
 } from '@metamask/delegation-toolkit';
 import {
+  createCaveatBuilder,
+  encodeExecutionCalldatas,
+  encodePermissionContexts,
+} from '@metamask/delegation-toolkit/utils';
+import {
+  transport,
   gasPrice,
   sponsoredBundlerClient,
   deploySmartAccount,
@@ -104,14 +106,18 @@ const runTest_expectSuccess = async (
   allowedTargets: Hex[],
   calledTarget: Hex,
 ) => {
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'allowedTargets',
-      { targets: allowedTargets },
-    ),
-  });
+  const { environment } = aliceSmartAccount;
+
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('allowedTargets', { targets: allowedTargets })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -170,14 +176,18 @@ const runTest_expectFailure = async (
   calledTarget: Hex,
   expectedError: string,
 ) => {
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'allowedTargets',
-      { targets: allowedTargets },
-    ),
-  });
+  const { environment } = aliceSmartAccount;
+
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('allowedTargets', { targets: allowedTargets })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

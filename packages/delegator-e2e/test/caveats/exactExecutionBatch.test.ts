@@ -1,18 +1,20 @@
 import { beforeEach, test, expect } from 'vitest';
 import {
-  encodeExecutionCalldatas,
-  encodePermissionContexts,
-  createCaveatBuilder,
-} from '@metamask/delegation-toolkit/utils';
-import {
-  createDelegation,
   Implementation,
   toMetaMaskSmartAccount,
   ExecutionMode,
   type ExecutionStruct,
   type MetaMaskSmartAccount,
+  ROOT_AUTHORITY,
+  type Delegation,
 } from '@metamask/delegation-toolkit';
 import {
+  createCaveatBuilder,
+  encodeExecutionCalldatas,
+  encodePermissionContexts,
+} from '@metamask/delegation-toolkit/utils';
+import {
+  transport,
   gasPrice,
   sponsoredBundlerClient,
   deploySmartAccount,
@@ -75,13 +77,16 @@ const runTest_expectSuccess = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat('exactExecutionBatch', {
-      executions: executions,
-    }),
-  });
+  const delegation: Delegation = {
+    delegate: delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('exactExecutionBatch', { executions })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -127,13 +132,16 @@ const runTest_expectFailure = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat('exactExecutionBatch', {
-      executions: expectedExecutions,
-    }),
-  });
+  const delegation: Delegation = {
+    delegate: delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('exactExecutionBatch', { executions: expectedExecutions })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,

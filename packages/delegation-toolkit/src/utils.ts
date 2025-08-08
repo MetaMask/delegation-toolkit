@@ -52,3 +52,24 @@ export function deepHexlify(obj: any): any {
     {},
   );
 }
+
+/**
+ * Utility function to check if an object has all specified properties defined and not undefined.
+ *
+ * @template TObject - The type of the object to check.
+ * @template TKey - The keys of the properties to check for.
+ * @param object - The object to check for the required properties.
+ * @param properties - An array of property names to verify on the object.
+ * @returns True if all specified properties exist on the object and are not undefined, otherwise false.
+ */
+export const hasProperties = <
+  TObject extends Record<string, any>,
+  TKey extends keyof TObject,
+>(
+  object: TObject,
+  properties: readonly TKey[],
+): object is TObject & Record<TKey, NonNullable<TObject[TKey]>> => {
+  return properties.every(
+    (prop) => prop in object && object[prop] !== undefined,
+  );
+};
