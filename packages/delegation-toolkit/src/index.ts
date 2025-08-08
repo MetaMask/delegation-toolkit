@@ -61,3 +61,8 @@ export { redeemDelegations } from './write';
 export * as contracts from './contracts';
 
 export * as actions from './actions';
+
+export {
+  createCaveatEnforcerClient,
+  type CaveatEnforcerClient,
+} from './actions/caveatEnforcerClient';
