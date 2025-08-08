@@ -13,11 +13,16 @@ import { isHex, toHex, type Address } from 'viem';
 
 import type { SnapClient } from './snapsAuthorization.js';
 
+type PermissionParameter = {
+  type: string;
+  data: Record<string, unknown>;
+};
+
 /**
  * Represents a native token stream permission.
  * This allows for continuous token streaming with defined parameters.
  */
-export type NativeTokenStreamPermissionParameter = {
+export type NativeTokenStreamPermissionParameter = PermissionParameter & {
   type: 'native-token-stream';
   data: {
     amountPerSecond: bigint;
@@ -32,7 +37,7 @@ export type NativeTokenStreamPermissionParameter = {
  * Represents an ERC-20 token stream permission.
  * This allows for continuous ERC-20 token streaming with defined parameters.
  */
-export type Erc20TokenStreamPermissionParameter = {
+export type Erc20TokenStreamPermissionParameter = PermissionParameter & {
   type: 'erc20-token-stream';
   data: {
     tokenAddress: Address;
@@ -48,7 +53,7 @@ export type Erc20TokenStreamPermissionParameter = {
  * Represents a native token periodic permission.
  * This allows for periodic native token transfers with defined parameters.
  */
-export type NativeTokenPeriodicPermissionParameter = {
+export type NativeTokenPeriodicPermissionParameter = PermissionParameter & {
   type: 'native-token-periodic';
   data: {
     periodAmount: bigint;
@@ -62,7 +67,7 @@ export type NativeTokenPeriodicPermissionParameter = {
  * Represents an ERC-20 token periodic permission.
  * This allows for periodic ERC-20 token transfers with defined parameters.
  */
-export type Erc20TokenPeriodicPermissionParameter = {
+export type Erc20TokenPeriodicPermissionParameter = PermissionParameter & {
   type: 'erc20-token-periodic';
   data: {
     tokenAddress: Address;
@@ -95,7 +100,7 @@ export type PermissionRequestParameter = {
   // address from which the permission should be granted.
   address?: Address;
   // Timestamp (in seconds) that specifies the time by which this permission MUST expire.
-  expiry?: number;
+  expiry: number;
 };
 
 /**
@@ -132,8 +137,6 @@ export async function erc7715RequestExecutionPermissionsAction(
   kernelSnapId = 'npm:@metamask/permissions-kernel-snap',
 ): Promise<RequestExecutionPermissionsReturnType> {
   const formattedParameters = parameters.map(formatPermissionsRequest);
-
-  console.log({ formattedParameters });
 
   const result = await client.request(
     {
@@ -177,19 +180,15 @@ function formatPermissionsRequest(
       ? parameters.signer
       : parameters.signer.data.address;
 
-  const isExpirySpecified = expiry !== undefined && expiry !== null;
-
-  const rules: Rule[] = isExpirySpecified
-    ? [
-        {
-          type: 'expiry',
-          isAdjustmentAllowed,
-          data: {
-            expiry,
-          },
-        },
-      ]
-    : [];
+  const rules: Rule[] = [
+    {
+      type: 'expiry',
+      isAdjustmentAllowed,
+      data: {
+        timestamp: expiry,
+      },
+    },
+  ];
 
   const optionalFields = {
     ...(address ? { address } : {}),
@@ -253,7 +252,7 @@ function toHexOrThrow(
 }
 
 type PermissionFormatter = (params: {
-  permission: BasePermissionParameter;
+  permission: PermissionParameter;
   isAdjustmentAllowed: boolean;
 }) => PermissionTypes;
 

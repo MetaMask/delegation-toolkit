@@ -168,7 +168,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
                     type: 'expiry',
                     isAdjustmentAllowed: false,
                     data: {
-                      expiry: 1234567890,
+                      timestamp: 1234567890,
                     },
                   },
                 ],
@@ -438,7 +438,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
                     type: 'expiry',
                     isAdjustmentAllowed: false,
                     data: {
-                      expiry: 1234567890,
+                      timestamp: 1234567890,
                     },
                   },
                 ],
@@ -501,7 +501,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
                     type: 'expiry',
                     isAdjustmentAllowed: false,
                     data: {
-                      expiry: 1234567890,
+                      timestamp: 1234567890,
                     },
                   },
                 ],
@@ -565,7 +565,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
                     type: 'expiry',
                     isAdjustmentAllowed: false,
                     data: {
-                      expiry: 1234567890,
+                      timestamp: 1234567890,
                     },
                   },
                 ],
@@ -630,7 +630,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
                     type: 'expiry',
                     isAdjustmentAllowed: false,
                     data: {
-                      expiry: 1234567890,
+                      timestamp: 1234567890,
                     },
                   },
                 ],
@@ -690,7 +690,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
             type: 'expiry',
             isAdjustmentAllowed: true,
             data: {
-              expiry: 1234567890,
+              timestamp: 1234567890,
             },
           },
         ],
@@ -760,7 +760,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
             type: 'expiry',
             isAdjustmentAllowed: true,
             data: {
-              expiry: 1234567890,
+              timestamp: 1234567890,
             },
           },
         ],
@@ -828,7 +828,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
             type: 'expiry',
             isAdjustmentAllowed: true,
             data: {
-              expiry: 1234567890,
+              timestamp: 1234567890,
             },
           },
         ],
@@ -898,7 +898,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
             type: 'expiry',
             isAdjustmentAllowed: true,
             data: {
-              expiry: 1234567890,
+              timestamp: 1234567890,
             },
           },
         ],
@@ -998,7 +998,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
                     type: 'expiry',
                     isAdjustmentAllowed: false,
                     data: {
-                      expiry: 1234567890,
+                      timestamp: 1234567890,
                     },
                   },
                 ],
@@ -1093,7 +1093,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
                     type: 'expiry',
                     isAdjustmentAllowed: false,
                     data: {
-                      expiry: 1234567890,
+                      timestamp: 1234567890,
                     },
                   },
                 ],
