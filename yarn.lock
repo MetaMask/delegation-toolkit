@@ -480,6 +480,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/7715-permission-types@npm:^0.2.0, @metamask/7715-permission-types@workspace:packages/7715-permission-types":
+  version: 0.0.0-use.local
+  resolution: "@metamask/7715-permission-types@workspace:packages/7715-permission-types"
+  dependencies:
+    "@metamask/auto-changelog": "npm:^5.0.2"
+    compare-versions: "npm:^6.1.1"
+    tsup: "npm:^8.5.0"
+    typescript: "npm:5.0.4"
+  languageName: unknown
+  linkType: soft
+
 "@metamask/abi-utils@npm:^3.0.0":
   version: 3.0.0
   resolution: "@metamask/abi-utils@npm:3.0.0"
@@ -600,6 +611,7 @@ __metadata:
   dependencies:
     "@lavamoat/allow-scripts": "npm:^2.3.1"
     "@lavamoat/preinstall-always-fail": "npm:^1.0.0"
+    "@metamask/7715-permission-types": "npm:^0.2.0"
     "@metamask/auto-changelog": "npm:^5.0.2"
     "@metamask/delegation-abis": "npm:^0.11.0"
     "@metamask/delegation-core": "npm:^0.2.0-rc.1"
@@ -607,7 +619,6 @@ __metadata:
     "@metamask/eslint-config": "npm:^12.0.0"
     "@metamask/eslint-config-nodejs": "npm:^12.0.0"
     "@metamask/eslint-config-typescript": "npm:^12.0.0"
-    "@metamask/permission-types": "npm:^0.1.0"
     "@types/node": "npm:^20.10.6"
     "@types/sinon": "npm:^17.0.3"
     "@typescript-eslint/eslint-plugin": "npm:^5.42.1"
@@ -683,17 +694,6 @@ __metadata:
   checksum: 10/6edbf4c2fce34ba8ccd873938501744d69cd13c02047655df596ab551f1aaa390513b8df855145d04c7fed6b5d91b9cfd0ce96ee082abf838292df761f50c520
   languageName: node
   linkType: hard
-
-"@metamask/permission-types@npm:^0.1.0, @metamask/permission-types@workspace:packages/permission-types":
-  version: 0.0.0-use.local
-  resolution: "@metamask/permission-types@workspace:packages/permission-types"
-  dependencies:
-    "@metamask/auto-changelog": "npm:^5.0.2"
-    compare-versions: "npm:^6.1.1"
-    tsup: "npm:^8.5.0"
-    typescript: "npm:5.0.4"
-  languageName: unknown
-  linkType: soft
 
 "@metamask/superstruct@npm:^3.1.0":
   version: 3.2.1

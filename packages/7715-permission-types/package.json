@@ -1,6 +1,6 @@
 {
-  "name": "@metamask/permission-types",
-  "version": "0.1.0",
+  "name": "@metamask/7715-permission-types",
+  "version": "0.2.0",
   "description": "Permission types for the ERC-7715",
   "license": "(MIT-0 OR Apache-2.0)",
   "type": "module",
@@ -8,7 +8,7 @@
     "MetaMask",
     "Ethereum"
   ],
-  "homepage": "https://github.com/metamask/delegation-toolkit/tree/main/packages/permission-types#readme",
+  "homepage": "https://github.com/metamask/delegation-toolkit/tree/main/packages/7715-permission-types#readme",
   "bugs": {
     "url": "https://github.com/metamask/delegation-toolkit/issues"
   },
@@ -43,8 +43,8 @@
   "scripts": {
     "build": "yarn typecheck && tsup",
     "typecheck": "tsc --noEmit",
-    "changelog:update": "../../scripts/update-changelog.sh @metamask/permission-types",
-    "changelog:validate": "../../scripts/validate-changelog.sh @metamask/permission-types"
+    "changelog:update": "../../scripts/update-changelog.sh @metamask/7715-permission-types",
+    "changelog:validate": "../../scripts/validate-changelog.sh @metamask/7715-permission-types"
   },
   "publishConfig": {
     "access": "public",

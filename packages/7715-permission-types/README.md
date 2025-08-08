@@ -10,12 +10,12 @@ In order to install this package standalone:
 
 With yarn:
 ```
-yarn add @metamask/permission-types
+yarn add @metamask/7715-permission-types
 ```
 
 With npm:
 ```
-npm install @metamask/permission-types
+npm install @metamask/7715-permission-types
 ```
 
 

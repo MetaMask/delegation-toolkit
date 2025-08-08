@@ -7,7 +7,7 @@ import type {
   PermissionRequest,
   PermissionResponse,
   PermissionTypes,
-} from '@metamask/permission-types';
+} from '@metamask/7715-permission-types';
 import { stub } from 'sinon';
 import type { Account, Client } from 'viem';
 import { createClient, custom } from 'viem';

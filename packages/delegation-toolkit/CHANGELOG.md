@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0-rc.2]
+
+### Added
+
+- New utilities and actions for interacting with the Delegation Framework smart contracts ([#45](https://github.com/MetaMask/delegation-toolkit/pull/45))
+
+### Changed
+
+- The 7715 experimental actions not align with the new Erc7715 interface ([#54](https://github.com/MetaMask/delegation-toolkit/pull/54))
+
 ## [0.13.0-rc.1]
 
 ### Changed
@@ -22,5 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed a bug where `sendTransactionWithDelegation` failed whenever `value` was specified in the parameters. ([#30](https://github.com/metamask/delegation-toolkit/pull/30))
 
-[Unreleased]: https://github.com/metamask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.1...HEAD
+[Unreleased]: https://github.com/metamask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.2...HEAD
+[0.13.0-rc.2]: https://github.com/metamask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.1...@metamask/delegation-toolkit@0.13.0-rc.2
 [0.13.0-rc.1]: https://github.com/metamask/delegation-toolkit/releases/tag/@metamask/delegation-toolkit@0.13.0-rc.1

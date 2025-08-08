@@ -8,7 +8,7 @@ import type {
   PermissionResponse,
   PermissionTypes,
   Rule,
-} from '@metamask/permission-types';
+} from '@metamask/7715-permission-types';
 import { isHex, toHex, type Address } from 'viem';
 
 import type { SnapClient } from './snapsAuthorization.js';

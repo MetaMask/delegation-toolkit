@@ -13,3 +13,4 @@
 /packages/delegation-core           @MetaMask/delegation
 /packages/delegation-deployments    @MetaMask/delegation
 /packages/delegation-toolkit        @MetaMask/delegation
+/packages/7715-permission-types     @MetaMask/delegation
