@@ -5,11 +5,17 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract ERC721Token is ERC721, Ownable {
-    constructor(uint256 initialSupply) ERC721("MyToken", "MTK") Ownable(msg.sender) {
-        _mint(msg.sender, initialSupply);
+    uint256 private _nextTokenId = 1;
+
+    constructor(string memory name, string memory symbol) ERC721(name, symbol) Ownable(msg.sender) {}
+
+    function mint(address to) public onlyOwner returns (uint256) {
+        uint256 tokenId = _nextTokenId++;
+        _mint(to, tokenId);
+        return tokenId;
     }
 
-    function mint(address to, uint256 amount) public onlyOwner {
-        _mint(to, amount);
+    function mintTokenId(address to, uint256 tokenId) public onlyOwner {
+        _mint(to, tokenId);
     }
 }
