@@ -213,6 +213,16 @@ function formatPermissionsRequest(
 }
 
 /**
+ * Checks if a value is defined (not null or undefined).
+ *
+ * @param value - The value to check.
+ * @returns A boolean indicating whether the value is defined.
+ */
+function isDefined<TValue>(value: TValue | null | undefined): value is TValue {
+  return value !== undefined && value !== null;
+}
+
+/**
  * Asserts that a value is defined (not null or undefined).
  *
  * @param value - The value to check.
@@ -223,7 +233,7 @@ function assertIsDefined<TValue>(
   value: TValue | null | undefined,
   message?: string,
 ): asserts value is TValue {
-  if (value === null || value === undefined) {
+  if (!isDefined(value)) {
     throw new Error(message ?? 'Invalid parameters: value is required');
   }
 }
@@ -319,21 +329,14 @@ function formatNativeTokenStreamPermission({
     },
   } = permission;
 
-  const isInitialAmountSpecified =
-    initialAmount !== undefined && initialAmount !== null;
-
-  const isMaxAmountSpecified = maxAmount !== undefined && maxAmount !== null;
-
-  const isStartTimeSpecified = startTime !== undefined && startTime !== null;
-
   const optionalFields = {
-    ...(isInitialAmountSpecified && {
+    ...(isDefined(initialAmount) && {
       initialAmount: toHexOrThrow(initialAmount),
     }),
-    ...(isMaxAmountSpecified && {
+    ...(isDefined(maxAmount) && {
       maxAmount: toHexOrThrow(maxAmount),
     }),
-    ...(isStartTimeSpecified && {
+    ...(isDefined(startTime) && {
       startTime: Number(startTime),
     }),
     ...(justification ? { justification } : {}),
@@ -380,21 +383,14 @@ function formatErc20TokenStreamPermission({
     },
   } = permission;
 
-  const isInitialAmountSpecified =
-    initialAmount !== undefined && initialAmount !== null;
-
-  const isMaxAmountSpecified = maxAmount !== undefined && maxAmount !== null;
-
-  const isStartTimeSpecified = startTime !== undefined && startTime !== null;
-
   const optionalFields = {
-    ...(isInitialAmountSpecified && {
+    ...(isDefined(initialAmount) && {
       initialAmount: toHexOrThrow(initialAmount),
     }),
-    ...(isMaxAmountSpecified && {
+    ...(isDefined(maxAmount) && {
       maxAmount: toHexOrThrow(maxAmount),
     }),
-    ...(isStartTimeSpecified && {
+    ...(isDefined(startTime) && {
       startTime: Number(startTime),
     }),
     ...(justification ? { justification } : {}),
@@ -430,10 +426,8 @@ function formatNativeTokenPeriodicPermission({
     data: { periodAmount, periodDuration, startTime, justification },
   } = permission;
 
-  const isStartTimeSpecified = startTime !== undefined && startTime !== null;
-
   const optionalFields = {
-    ...(isStartTimeSpecified && {
+    ...(isDefined(startTime) && {
       startTime: Number(startTime),
     }),
     ...(justification ? { justification } : {}),
@@ -475,10 +469,8 @@ function formatErc20TokenPeriodicPermission({
     },
   } = permission;
 
-  const isStartTimeSpecified = startTime !== undefined && startTime !== null;
-
   const optionalFields = {
-    ...(isStartTimeSpecified && {
+    ...(isDefined(startTime) && {
       startTime: Number(startTime),
     }),
     ...(justification ? { justification } : {}),
