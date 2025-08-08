@@ -6,9 +6,9 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { erc7715ProviderActions } from '../../src/experimental';
 import {
-  erc7715GrantPermissionsAction,
+  erc7715RequestExecutionPermissionsAction,
   GrantPermissionsParameters,
-} from '../../src/experimental/erc7715GrantPermissionsAction';
+} from '../../src/experimental/erc7715RequestExecutionPermissionsAction';
 import { ensureSnapsAuthorized } from '../../src/experimental/snapsAuthorization';
 import {
   AccountSigner,
@@ -21,7 +21,7 @@ import {
   PermissionTypes,
 } from '@metamask/permission-types';
 
-describe('erc7715GrantPermissionsAction', () => {
+describe('erc7715RequestExecutionPermissionsAction', () => {
   let alice: Account;
   let bob: Account;
 
@@ -37,7 +37,7 @@ describe('erc7715GrantPermissionsAction', () => {
     stubRequest.reset();
   });
 
-  describe('erc7715GrantPermissionsAction()', () => {
+  describe('erc7715RequestExecutionPermissionsAction()', () => {
     it('should set retryCount to 0', async () => {
       const parameters = [
         {
@@ -58,7 +58,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[1]).to.deep.equal({
@@ -87,7 +87,7 @@ describe('erc7715GrantPermissionsAction', () => {
       ];
 
       await expect(
-        erc7715GrantPermissionsAction(mockClient, parameters),
+        erc7715RequestExecutionPermissionsAction(mockClient, parameters),
       ).rejects.toThrow('Invalid parameters: amountPerSecond is required');
     });
 
@@ -112,7 +112,7 @@ describe('erc7715GrantPermissionsAction', () => {
       ];
 
       await expect(
-        erc7715GrantPermissionsAction(mockClient, parameters),
+        erc7715RequestExecutionPermissionsAction(mockClient, parameters),
       ).resolves.not.toThrow();
     });
 
@@ -136,7 +136,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
@@ -203,7 +203,7 @@ describe('erc7715GrantPermissionsAction', () => {
       ];
 
       await expect(
-        erc7715GrantPermissionsAction(mockClient, parameters),
+        erc7715RequestExecutionPermissionsAction(mockClient, parameters),
       ).rejects.toThrow('Failed to grant permissions');
     });
 
@@ -237,7 +237,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0].params.snapId).to.equal(
@@ -276,7 +276,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(
+      await erc7715RequestExecutionPermissionsAction(
         mockClient,
         parameters,
         customKernelId,
@@ -377,7 +377,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      const result = await erc7715GrantPermissionsAction(
+      const result = await erc7715RequestExecutionPermissionsAction(
         mockClient,
         parameters,
       );
@@ -406,7 +406,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
@@ -470,7 +470,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
@@ -534,7 +534,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
@@ -598,7 +598,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
@@ -663,7 +663,7 @@ describe('erc7715GrantPermissionsAction', () => {
         } as const,
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       const expectedRequest: PermissionRequest<
         AccountSigner,
@@ -732,7 +732,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       const expectedRequest: PermissionRequest<
         AccountSigner,
@@ -801,7 +801,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       const expectedRequest: PermissionRequest<
         AccountSigner,
@@ -870,7 +870,7 @@ describe('erc7715GrantPermissionsAction', () => {
         },
       ];
 
-      await erc7715GrantPermissionsAction(mockClient, parameters);
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       const expectedRequest: PermissionRequest<
         AccountSigner,

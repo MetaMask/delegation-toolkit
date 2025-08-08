@@ -127,7 +127,7 @@ export type GrantPermissionsReturnType = PermissionResponse<
  * This function formats the permissions requests and invokes the wallet snap to grant permissions.
  * It will throw an error if the permissions could not be granted.
  */
-export async function erc7715GrantPermissionsAction(
+export async function erc7715RequestExecutionPermissionsAction(
   client: SnapClient,
   parameters: GrantPermissionsParameters,
   kernelSnapId = 'npm:@metamask/permissions-kernel-snap',

@@ -9,16 +9,16 @@ import {
   sendTransactionWithDelegationAction,
   sendUserOperationWithDelegationAction,
 } from './erc7710RedeemDelegationAction';
-import { erc7715GrantPermissionsAction } from './erc7715GrantPermissionsAction';
+import { erc7715RequestExecutionPermissionsAction } from './erc7715RequestExecutionPermissionsAction';
 import { ensureSnapsAuthorized } from './snapsAuthorization';
 import type { SnapClient } from './snapsAuthorization';
-import type { GrantPermissionsParameters } from './erc7715GrantPermissionsAction';
+import type { GrantPermissionsParameters } from './erc7715RequestExecutionPermissionsAction';
 
 export {
-  erc7715GrantPermissionsAction as grantPermissions,
+  erc7715RequestExecutionPermissionsAction as grantPermissions,
   type GrantPermissionsParameters,
   type GrantPermissionsReturnType,
-} from './erc7715GrantPermissionsAction';
+} from './erc7715RequestExecutionPermissionsAction';
 
 export {
   DelegationStorageClient,
@@ -35,7 +35,7 @@ export const erc7715ProviderActions =
         throw new Error('Snaps not authorized');
       }
 
-      return erc7715GrantPermissionsAction(
+      return erc7715RequestExecutionPermissionsAction(
         client as SnapClient,
         parameters,
         snapIds?.kernelSnapId,
