@@ -9,14 +9,10 @@ import {
   sendTransactionWithDelegationAction,
   sendUserOperationWithDelegationAction,
 } from './erc7710RedeemDelegationAction';
-import {
-  ensureSnapsAuthorized,
-  erc7715GrantPermissionsAction,
-} from './erc7715GrantPermissionsAction';
-import type {
-  SnapClient,
-  GrantPermissionsParameters,
-} from './erc7715GrantPermissionsAction';
+import { erc7715GrantPermissionsAction } from './erc7715GrantPermissionsAction';
+import { ensureSnapsAuthorized } from './snapsAuthorization';
+import type { SnapClient } from './snapsAuthorization';
+import type { GrantPermissionsParameters } from './erc7715GrantPermissionsAction';
 
 export {
   erc7715GrantPermissionsAction as grantPermissions,

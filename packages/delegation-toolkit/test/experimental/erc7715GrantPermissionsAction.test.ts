@@ -6,9 +6,17 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { erc7715ProviderActions } from '../../src/experimental';
 import {
-  ensureSnapsAuthorized,
   erc7715GrantPermissionsAction,
+  GrantPermissionsParameters,
 } from '../../src/experimental/erc7715GrantPermissionsAction';
+import { ensureSnapsAuthorized } from '../../src/experimental/snapsAuthorization';
+import {
+  AccountSigner,
+  NativeTokenStreamPermission,
+  PermissionRequest,
+  PermissionResponse,
+  PermissionTypes,
+} from '@metamask/permission-types';
 
 describe('erc7715GrantPermissionsAction', () => {
   let alice: Account;
@@ -36,18 +44,52 @@ describe('erc7715GrantPermissionsAction', () => {
           permission: {
             type: 'native-token-stream',
             data: {
-              amountPerSecond: '0x1',
-              maxAmount: '0x2',
+              amountPerSecond: 0x1n,
+              maxAmount: 2,
               startTime: 2,
               justification: 'Test justification',
             },
           },
           isAdjustmentAllowed: false,
-          signer: { type: 'account', data: { address: alice.address } },
-        },
+          signer: alice.address,
+        } as const,
       ];
 
       await erc7715GrantPermissionsAction(mockClient, parameters);
+
+      // the expectedRequest is explicitly typed to ensure that it matches the expected type of the request
+      const expectedRequest: PermissionRequest<
+        AccountSigner,
+        NativeTokenStreamPermission
+      > = {
+        chainId: '0x7a69',
+        address: bob.address,
+        permission: {
+          type: 'native-token-stream',
+          data: {
+            amountPerSecond: '0x1',
+            maxAmount: '0x2',
+            startTime: 2,
+            justification: 'Test justification',
+          },
+          isAdjustmentAllowed: false,
+        },
+        signer: {
+          type: 'account',
+          data: {
+            address: alice.address,
+          },
+        },
+        rules: [
+          {
+            type: 'expiry',
+            isAdjustmentAllowed: false,
+            data: {
+              expiry: 1234567890,
+            },
+          },
+        ],
+      };
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
@@ -55,30 +97,8 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
-            params: [
-              {
-                chainId: '0x7a69',
-                address: bob.address,
-                expiry: 1234567890,
-                permission: {
-                  type: 'native-token-stream',
-                  data: {
-                    amountPerSecond: '0x1',
-                    maxAmount: '0x2',
-                    startTime: 2,
-                    justification: 'Test justification',
-                  },
-                },
-                isAdjustmentAllowed: false,
-                signer: {
-                  type: 'account',
-                  data: {
-                    address: alice.address,
-                  },
-                },
-              },
-            ],
+            method: 'wallet_requestExecutionPermissions',
+            params: [expectedRequest],
           },
         },
       });
@@ -91,16 +111,16 @@ describe('erc7715GrantPermissionsAction', () => {
           address: bob.address,
           expiry: 1234567890,
           permission: {
-            type: 'native-token-stream',
+            type: 'native-token-stream' as const,
             data: {
-              amountPerSecond: '0x1',
-              maxAmount: '0x2',
+              amountPerSecond: 0x1n,
+              maxAmount: 2,
               startTime: 2,
               justification: 'Test justification',
             },
           },
           isAdjustmentAllowed: false,
-          signer: { type: 'account', data: { address: alice.address } },
+          signer: alice.address,
         },
       ];
 
@@ -119,16 +139,16 @@ describe('erc7715GrantPermissionsAction', () => {
           address: bob.address,
           expiry: 1234567890,
           permission: {
-            type: 'native-token-stream',
+            type: 'native-token-stream' as const,
             data: {
-              amountPerSecond: undefined,
-              maxAmount: '0x2',
+              amountPerSecond: undefined as any,
+              maxAmount: 2,
               startTime: 2,
               justification: 'Test justification',
             },
           },
           isAdjustmentAllowed: false,
-          signer: { type: 'account', data: { address: alice.address } },
+          signer: alice.address,
         },
       ];
 
@@ -144,16 +164,16 @@ describe('erc7715GrantPermissionsAction', () => {
           address: bob.address,
           expiry: 1234567890,
           permission: {
-            type: 'native-token-stream',
+            type: 'native-token-stream' as const,
             data: {
-              amountPerSecond: '0x1',
-              maxAmount: '0x2',
+              amountPerSecond: 0x1n,
+              maxAmount: 2,
               startTime: 2,
-              justification: undefined,
+              justification: undefined as any,
             },
           },
           isAdjustmentAllowed: false,
-          signer: { type: 'account', data: { address: alice.address } },
+          signer: alice.address,
         },
       ];
 
@@ -169,16 +189,16 @@ describe('erc7715GrantPermissionsAction', () => {
           address: bob.address,
           expiry: 1234567890,
           permission: {
-            type: 'native-token-stream',
+            type: 'native-token-stream' as const,
             data: {
-              amountPerSecond: '0x1',
-              maxAmount: '0x2',
+              amountPerSecond: 0x1n,
+              maxAmount: 2,
               startTime: 2,
               justification: 'Test justification',
             },
           },
           isAdjustmentAllowed: false,
-          signer: { type: 'account', data: { address: alice.address } },
+          signer: alice.address,
         },
       ];
 
@@ -190,12 +210,11 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
                   data: {
@@ -204,14 +223,23 @@ describe('erc7715GrantPermissionsAction', () => {
                     startTime: 2,
                     justification: 'Test justification',
                   },
+                  isAdjustmentAllowed: false,
                 },
-                isAdjustmentAllowed: false,
                 signer: {
                   type: 'account',
                   data: {
                     address: alice.address,
                   },
                 },
+                rules: [
+                  {
+                    type: 'expiry',
+                    isAdjustmentAllowed: false,
+                    data: {
+                      expiry: 1234567890,
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -227,16 +255,16 @@ describe('erc7715GrantPermissionsAction', () => {
           chainId: 31337,
           expiry: Math.floor(Date.now() / 1000) + 3600,
           permission: {
-            type: 'native-token-stream',
+            type: 'native-token-stream' as const,
             data: {
-              amountPerSecond: '0x1',
-              maxAmount: '0x2',
+              amountPerSecond: 0x1n,
+              maxAmount: 2,
               startTime: 1,
               justification: 'Test justification',
             },
           },
           isAdjustmentAllowed: false,
-          signer: { type: 'account', data: { address: alice.address } },
+          signer: alice.address,
         },
       ];
 
@@ -264,10 +292,14 @@ describe('erc7715GrantPermissionsAction', () => {
           chainId: 31337,
           expiry: 1234567890,
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream' as const,
+            data: {
+              amountPerSecond: 0x1n,
+              justification: 'Test justification',
+            },
           },
-          signer: { type: 'account', data: { address: alice.address } },
+          isAdjustmentAllowed: false,
+          signer: alice.address,
         },
       ];
 
@@ -299,10 +331,14 @@ describe('erc7715GrantPermissionsAction', () => {
           chainId: 31337,
           expiry: 1234567890,
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream' as const,
+            data: {
+              amountPerSecond: 0x1n,
+              justification: 'Test justification',
+            },
           },
-          signer: { type: 'account', data: { address: alice.address } },
+          isAdjustmentAllowed: false,
+          signer: alice.address,
         },
       ];
 
@@ -319,48 +355,91 @@ describe('erc7715GrantPermissionsAction', () => {
     });
 
     it('should handle multiple permission requests', async () => {
-      const permissionsResponse = [
+      const permissionsResponse: PermissionResponse<
+        AccountSigner,
+        PermissionTypes
+      >[] = [
         {
           chainId: '0x7b27',
-          expiry: 1234567890,
+          rules: [
+            {
+              type: 'expiry',
+              isAdjustmentAllowed: true,
+              data: { expiry: 1234567890 },
+            },
+          ],
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream',
+            isAdjustmentAllowed: true,
+            data: {
+              amountPerSecond: '0x1',
+              justification: 'Test justification',
+            },
           },
-          signer: alice.address,
+          signer: {
+            type: 'account',
+            data: {
+              address: alice.address,
+            },
+          },
           context: '0x123456',
+          dependencyInfo: [],
         },
         {
           chainId: '0x7b27',
-          expiry: 1234567890,
+          rules: [
+            {
+              type: 'expiry',
+              isAdjustmentAllowed: true,
+              data: { expiry: 1234567890 },
+            },
+          ],
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream',
+            isAdjustmentAllowed: true,
+            data: {
+              amountPerSecond: '0x2',
+              justification: 'Test justification 2',
+            },
           },
-          signer: bob.address,
+          signer: {
+            type: 'account',
+            data: {
+              address: alice.address,
+            },
+          },
           context: '0x654321',
+          dependencyInfo: [],
         },
       ];
       stubRequest.resolves(permissionsResponse);
 
-      const parameters = [
+      const parameters: GrantPermissionsParameters = [
         {
           chainId: 31337,
           expiry: 1234567890,
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream' as const,
+            data: {
+              amountPerSecond: 0x1n,
+              justification: 'Test justification',
+            },
           },
+          isAdjustmentAllowed: false,
           signer: alice.address,
         },
         {
           chainId: 31337,
           expiry: 1234567890,
           permission: {
-            type: 'basic-permission',
-            data: { foo: 'bar' },
+            type: 'native-token-stream' as const,
+            data: {
+              amountPerSecond: 0x1n,
+              justification: 'Test justification',
+            },
           },
-          signer: { type: 'account', data: { address: bob.address } },
+          isAdjustmentAllowed: false,
+          signer: bob.address,
         },
       ];
 
@@ -374,26 +453,22 @@ describe('erc7715GrantPermissionsAction', () => {
     });
 
     it('should not specify isAdjustmentAllowed when not specified in the request', async () => {
-      const parameters = [
+      const parameters: GrantPermissionsParameters = [
         {
           chainId: 31337,
           address: bob.address,
           expiry: 1234567890,
           permission: {
-            type: 'native-token-stream',
+            type: 'native-token-stream' as const,
             data: {
-              amountPerSecond: '0x1',
-              maxAmount: '0x2',
+              amountPerSecond: 0x1n,
+              maxAmount: 2,
               startTime: 2,
               justification: 'Test justification',
             },
           },
-          signer: {
-            type: 'account',
-            data: {
-              address: alice.address,
-            },
-          },
+          isAdjustmentAllowed: false,
+          signer: alice.address,
         },
       ];
 
@@ -405,12 +480,11 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
                   data: {
@@ -419,6 +493,7 @@ describe('erc7715GrantPermissionsAction', () => {
                     startTime: 2,
                     justification: 'Test justification',
                   },
+                  isAdjustmentAllowed: false,
                 },
                 signer: {
                   type: 'account',
@@ -426,6 +501,15 @@ describe('erc7715GrantPermissionsAction', () => {
                     address: alice.address,
                   },
                 },
+                rules: [
+                  {
+                    type: 'expiry',
+                    isAdjustmentAllowed: false,
+                    data: {
+                      expiry: 1234567890,
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -440,14 +524,15 @@ describe('erc7715GrantPermissionsAction', () => {
           address: bob.address,
           expiry: 1234567890,
           permission: {
-            type: 'native-token-stream',
+            type: 'native-token-stream' as const,
             data: {
-              amountPerSecond: '0x1',
+              amountPerSecond: 0x1n,
               startTime: 2,
               justification: 'Test justification',
             },
           },
-          signer: { type: 'account', data: { address: alice.address } },
+          isAdjustmentAllowed: false,
+          signer: alice.address,
         },
       ];
 
@@ -459,12 +544,11 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
                   data: {
@@ -472,6 +556,7 @@ describe('erc7715GrantPermissionsAction', () => {
                     startTime: 2,
                     justification: 'Test justification',
                   },
+                  isAdjustmentAllowed: false,
                 },
                 signer: {
                   type: 'account',
@@ -479,6 +564,15 @@ describe('erc7715GrantPermissionsAction', () => {
                     address: alice.address,
                   },
                 },
+                rules: [
+                  {
+                    type: 'expiry',
+                    isAdjustmentAllowed: false,
+                    data: {
+                      expiry: 1234567890,
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -493,15 +587,16 @@ describe('erc7715GrantPermissionsAction', () => {
           address: bob.address,
           expiry: 1234567890,
           permission: {
-            type: 'native-token-stream',
+            type: 'native-token-stream' as const,
             data: {
-              amountPerSecond: '0x1',
-              maxAmount: null,
+              amountPerSecond: 0x1n,
+              maxAmount: null as any,
               startTime: 2,
               justification: 'Test justification',
             },
           },
-          signer: { type: 'account', data: { address: alice.address } },
+          isAdjustmentAllowed: false,
+          signer: alice.address,
         },
       ];
 
@@ -513,12 +608,11 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
                   data: {
@@ -526,6 +620,7 @@ describe('erc7715GrantPermissionsAction', () => {
                     startTime: 2,
                     justification: 'Test justification',
                   },
+                  isAdjustmentAllowed: false,
                 },
                 signer: {
                   type: 'account',
@@ -533,6 +628,15 @@ describe('erc7715GrantPermissionsAction', () => {
                     address: alice.address,
                   },
                 },
+                rules: [
+                  {
+                    type: 'expiry',
+                    isAdjustmentAllowed: false,
+                    data: {
+                      expiry: 1234567890,
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -540,22 +644,23 @@ describe('erc7715GrantPermissionsAction', () => {
       });
     });
 
-    it('should accept (incorrectly) numerical values as hex', async () => {
-      const parameters = [
+    it('should accept numerical values as hex for startTime', async () => {
+      const parameters: GrantPermissionsParameters = [
         {
           chainId: 31337,
           address: bob.address,
           expiry: 1234567890,
           permission: {
-            type: 'native-token-stream',
+            type: 'native-token-stream' as const,
             data: {
-              amountPerSecond: '0x1',
-              maxAmount: '0x2',
-              startTime: '0x2',
+              amountPerSecond: 0x1n,
+              maxAmount: 2,
+              startTime: 2,
               justification: 'Test justification',
             },
           },
-          signer: { type: 'account', data: { address: alice.address } },
+          isAdjustmentAllowed: false,
+          signer: alice.address,
         },
       ];
 
@@ -567,12 +672,11 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
                   data: {
@@ -581,14 +685,23 @@ describe('erc7715GrantPermissionsAction', () => {
                     startTime: 2,
                     justification: 'Test justification',
                   },
+                  isAdjustmentAllowed: false,
                 },
-
                 signer: {
                   type: 'account',
                   data: {
                     address: alice.address,
                   },
                 },
+                rules: [
+                  {
+                    type: 'expiry',
+                    isAdjustmentAllowed: false,
+                    data: {
+                      expiry: 1234567890,
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -597,7 +710,7 @@ describe('erc7715GrantPermissionsAction', () => {
     });
   });
 
-  describe('erc7715GrantPermissionsAction()', () => {
+  describe('erc7715ProviderActions integration', () => {
     const allSnapsEnabledResponse = {
       'npm:@metamask/permissions-kernel-snap': {
         version: '1.0.0',
@@ -626,21 +739,21 @@ describe('erc7715GrantPermissionsAction', () => {
 
       expect(client).to.have.property('grantPermissions');
 
-      const parameters = [
+      const parameters: GrantPermissionsParameters = [
         {
           chainId: 31337,
           address: bob.address,
           expiry: 1234567890,
           permission: {
-            type: 'native-token-stream',
+            type: 'native-token-stream' as const,
             data: {
-              amountPerSecond: '0x1',
+              amountPerSecond: 0x1n,
               startTime: 2,
               justification: 'Test justification',
             },
           },
           isAdjustmentAllowed: false,
-          signer: { type: 'account', data: { address: alice.address } },
+          signer: alice.address,
         },
       ];
       await client.grantPermissions(parameters);
@@ -652,12 +765,11 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
                   data: {
@@ -665,9 +777,23 @@ describe('erc7715GrantPermissionsAction', () => {
                     startTime: 2,
                     justification: 'Test justification',
                   },
+                  isAdjustmentAllowed: false,
                 },
-                isAdjustmentAllowed: false,
-                signer: { type: 'account', data: { address: alice.address } },
+                signer: {
+                  type: 'account',
+                  data: {
+                    address: alice.address,
+                  },
+                },
+                rules: [
+                  {
+                    type: 'expiry',
+                    isAdjustmentAllowed: false,
+                    data: {
+                      expiry: 1234567890,
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -698,15 +824,15 @@ describe('erc7715GrantPermissionsAction', () => {
           address: bob.address,
           expiry: 1234567890,
           permission: {
-            type: 'native-token-stream',
+            type: 'native-token-stream' as const,
             data: {
-              amountPerSecond: '0x1',
+              amountPerSecond: 0x1n,
               startTime: 2,
               justification: 'Test justification',
             },
           },
           isAdjustmentAllowed: false,
-          signer: { type: 'account', data: { address: alice.address } },
+          signer: alice.address,
         },
       ];
 
@@ -734,12 +860,11 @@ describe('erc7715GrantPermissionsAction', () => {
         params: {
           snapId: 'npm:@metamask/permissions-kernel-snap',
           request: {
-            method: 'wallet_grantPermissions',
+            method: 'wallet_requestExecutionPermissions',
             params: [
               {
                 chainId: '0x7a69',
                 address: bob.address,
-                expiry: 1234567890,
                 permission: {
                   type: 'native-token-stream',
                   data: {
@@ -747,9 +872,23 @@ describe('erc7715GrantPermissionsAction', () => {
                     startTime: 2,
                     justification: 'Test justification',
                   },
+                  isAdjustmentAllowed: false,
                 },
-                isAdjustmentAllowed: false,
-                signer: { type: 'account', data: { address: alice.address } },
+                signer: {
+                  type: 'account',
+                  data: {
+                    address: alice.address,
+                  },
+                },
+                rules: [
+                  {
+                    type: 'expiry',
+                    isAdjustmentAllowed: false,
+                    data: {
+                      expiry: 1234567890,
+                    },
+                  },
+                ],
               },
             ],
           },
