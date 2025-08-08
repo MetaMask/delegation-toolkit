@@ -1,6 +1,9 @@
 import { isHex, toHex, type Address } from 'viem';
 import type {
   AccountSigner,
+  Erc20TokenPeriodicPermission,
+  Erc20TokenStreamPermission,
+  NativeTokenPeriodicPermission,
   NativeTokenStreamPermission,
   PermissionRequest,
   PermissionResponse,
@@ -32,12 +35,51 @@ export type NativeTokenStreamPermissionParameter = BasePermissionParameter & {
     initialAmount?: bigint;
     startTime?: number;
     maxAmount?: number;
-    justification: string;
+    justification?: string;
+  };
+};
+
+export type Erc20TokenStreamPermissionParameter = BasePermissionParameter & {
+  type: 'erc20-token-stream';
+  expiry?: number;
+  data: {
+    tokenAddress: Address;
+    amountPerSecond: bigint;
+    initialAmount?: bigint;
+    startTime?: number;
+    maxAmount?: number;
+    justification?: string;
+  };
+};
+
+export type NativeTokenPeriodicPermissionParameter = BasePermissionParameter & {
+  type: 'native-token-periodic';
+  expiry?: number;
+  data: {
+    periodAmount: bigint;
+    periodDuration: number;
+    startTime?: number;
+    justification?: string;
+  };
+};
+
+export type Erc20TokenPeriodicPermissionParameter = BasePermissionParameter & {
+  type: 'erc20-token-periodic';
+  expiry?: number;
+  data: {
+    tokenAddress: Address;
+    periodAmount: bigint;
+    periodDuration: number;
+    startTime?: number;
+    justification?: string;
   };
 };
 
 export type SupportedPermissionParams =
-  NativeTokenStreamPermissionParameter /* TODO: add other supported permission types here */;
+  | NativeTokenStreamPermissionParameter
+  | Erc20TokenStreamPermissionParameter
+  | NativeTokenPeriodicPermissionParameter
+  | Erc20TokenPeriodicPermissionParameter;
 
 export type SignerParam = Address | AccountSigner;
 
@@ -228,6 +270,25 @@ function getPermissionFormatter(permissionType: string): PermissionFormatter {
           permission: permission as NativeTokenStreamPermissionParameter,
           isAdjustmentAllowed,
         });
+    case 'erc20-token-stream':
+      return ({ permission, isAdjustmentAllowed }) =>
+        formatErc20TokenStreamPermission({
+          permission: permission as Erc20TokenStreamPermissionParameter,
+          isAdjustmentAllowed,
+        });
+
+    case 'native-token-periodic':
+      return ({ permission, isAdjustmentAllowed }) =>
+        formatNativeTokenPeriodicPermission({
+          permission: permission as NativeTokenPeriodicPermissionParameter,
+          isAdjustmentAllowed,
+        });
+    case 'erc20-token-periodic':
+      return ({ permission, isAdjustmentAllowed }) =>
+        formatErc20TokenPeriodicPermission({
+          permission: permission as Erc20TokenPeriodicPermissionParameter,
+          isAdjustmentAllowed,
+        });
     default:
       throw new Error(`Unsupported permission type: ${permissionType}`);
   }
@@ -255,10 +316,6 @@ function formatNativeTokenStreamPermission({
       amountPerSecond,
     },
   } = permission;
-  assertIsDefined(
-    justification,
-    'Invalid parameters: justification is required',
-  );
 
   const isInitialAmountSpecified =
     initialAmount !== undefined && initialAmount !== null;
@@ -277,6 +334,7 @@ function formatNativeTokenStreamPermission({
     ...(isStartTimeSpecified && {
       startTime: Number(startTime),
     }),
+    ...(justification ? { justification } : {}),
   };
 
   return {
@@ -286,7 +344,150 @@ function formatNativeTokenStreamPermission({
         amountPerSecond,
         'Invalid parameters: amountPerSecond is required',
       ),
+      ...optionalFields,
+    },
+    isAdjustmentAllowed,
+  };
+}
+
+/**
+ * Formats an ERC-20 token stream permission parameter into the required
+ * Erc20TokenStreamPermission object, converting numeric values to hex strings
+ * and including only specified optional fields.
+ *
+ * @param params - The parameters for formatting the ERC-20 token stream permission.
+ * @param params.permission - The ERC-20 token stream permission parameter to format.
+ * @param params.isAdjustmentAllowed - Whether adjustment of the stream is allowed.
+ * @returns The formatted Erc20TokenStreamPermission object.
+ */
+function formatErc20TokenStreamPermission({
+  permission,
+  isAdjustmentAllowed,
+}: {
+  permission: Erc20TokenStreamPermissionParameter;
+  isAdjustmentAllowed: boolean;
+}): Erc20TokenStreamPermission {
+  const {
+    data: {
+      tokenAddress,
+      amountPerSecond,
+      initialAmount,
+      startTime,
+      maxAmount,
       justification,
+    },
+  } = permission;
+
+  const isInitialAmountSpecified =
+    initialAmount !== undefined && initialAmount !== null;
+
+  const isMaxAmountSpecified = maxAmount !== undefined && maxAmount !== null;
+
+  const isStartTimeSpecified = startTime !== undefined && startTime !== null;
+
+  const optionalFields = {
+    ...(isInitialAmountSpecified && {
+      initialAmount: toHexOrThrow(initialAmount),
+    }),
+    ...(isMaxAmountSpecified && {
+      maxAmount: toHexOrThrow(maxAmount),
+    }),
+    ...(isStartTimeSpecified && {
+      startTime: Number(startTime),
+    }),
+    ...(justification ? { justification } : {}),
+  };
+
+  return {
+    type: 'erc20-token-stream',
+    data: {
+      tokenAddress: toHexOrThrow(tokenAddress),
+      amountPerSecond: toHexOrThrow(amountPerSecond),
+      ...optionalFields,
+    },
+    isAdjustmentAllowed,
+  };
+}
+
+/**
+ * Formats a native token periodic permission for submission to the wallet.
+ *
+ * @param params - The parameters for formatting the native token periodic permission.
+ * @param params.permission - The native token periodic permission parameter to format.
+ * @param params.isAdjustmentAllowed - Whether the permission is allowed to be adjusted.
+ * @returns The formatted NativeTokenPeriodicPermission object.
+ */
+function formatNativeTokenPeriodicPermission({
+  permission,
+  isAdjustmentAllowed,
+}: {
+  permission: NativeTokenPeriodicPermissionParameter;
+  isAdjustmentAllowed: boolean;
+}): NativeTokenPeriodicPermission {
+  const {
+    data: { periodAmount, periodDuration, startTime, justification },
+  } = permission;
+
+  const isStartTimeSpecified = startTime !== undefined && startTime !== null;
+
+  const optionalFields = {
+    ...(isStartTimeSpecified && {
+      startTime: Number(startTime),
+    }),
+    ...(justification ? { justification } : {}),
+  };
+
+  return {
+    type: 'native-token-periodic',
+    data: {
+      periodAmount: toHexOrThrow(periodAmount),
+      periodDuration: Number(periodDuration),
+      ...optionalFields,
+    },
+    isAdjustmentAllowed,
+  };
+}
+
+/**
+ * Formats an ERC20 token periodic permission for submission to the wallet.
+ *
+ * @param params - The parameters for formatting the ERC20 token periodic permission.
+ * @param params.permission - The ERC20 token periodic permission parameter to format.
+ * @param params.isAdjustmentAllowed - Whether the permission is allowed to be adjusted.
+ * @returns The formatted Erc20TokenPeriodicPermission object.
+ */
+function formatErc20TokenPeriodicPermission({
+  permission,
+  isAdjustmentAllowed,
+}: {
+  permission: Erc20TokenPeriodicPermissionParameter;
+  isAdjustmentAllowed: boolean;
+}): Erc20TokenPeriodicPermission {
+  const {
+    data: {
+      tokenAddress,
+      periodAmount,
+      periodDuration,
+      startTime,
+      justification,
+    },
+  } = permission;
+
+  const isStartTimeSpecified = startTime !== undefined && startTime !== null;
+
+  const optionalFields = {
+    ...(isStartTimeSpecified && {
+      startTime: Number(startTime),
+    }),
+    ...(justification ? { justification } : {}),
+  };
+
+  return {
+    type: 'erc20-token-periodic',
+    data: {
+      tokenAddress: toHexOrThrow(tokenAddress),
+      periodAmount: toHexOrThrow(periodAmount),
+      periodDuration: Number(periodDuration),
       ...optionalFields,
     },
     isAdjustmentAllowed,

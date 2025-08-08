@@ -12,6 +12,9 @@ import {
 import { ensureSnapsAuthorized } from '../../src/experimental/snapsAuthorization';
 import {
   AccountSigner,
+  Erc20TokenPeriodicPermission,
+  Erc20TokenStreamPermission,
+  NativeTokenPeriodicPermission,
   NativeTokenStreamPermission,
   PermissionRequest,
   PermissionResponse,
@@ -35,75 +38,6 @@ describe('erc7715GrantPermissionsAction', () => {
   });
 
   describe('erc7715GrantPermissionsAction()', () => {
-    it('should format permissions request correctly', async () => {
-      const parameters = [
-        {
-          chainId: 31337,
-          address: bob.address,
-          expiry: 1234567890,
-          permission: {
-            type: 'native-token-stream',
-            data: {
-              amountPerSecond: 0x1n,
-              maxAmount: 2,
-              startTime: 2,
-              justification: 'Test justification',
-            },
-          },
-          isAdjustmentAllowed: false,
-          signer: alice.address,
-        } as const,
-      ];
-
-      await erc7715GrantPermissionsAction(mockClient, parameters);
-
-      // the expectedRequest is explicitly typed to ensure that it matches the expected type of the request
-      const expectedRequest: PermissionRequest<
-        AccountSigner,
-        NativeTokenStreamPermission
-      > = {
-        chainId: '0x7a69',
-        address: bob.address,
-        permission: {
-          type: 'native-token-stream',
-          data: {
-            amountPerSecond: '0x1',
-            maxAmount: '0x2',
-            startTime: 2,
-            justification: 'Test justification',
-          },
-          isAdjustmentAllowed: false,
-        },
-        signer: {
-          type: 'account',
-          data: {
-            address: alice.address,
-          },
-        },
-        rules: [
-          {
-            type: 'expiry',
-            isAdjustmentAllowed: false,
-            data: {
-              expiry: 1234567890,
-            },
-          },
-        ],
-      };
-
-      expect(stubRequest.callCount).to.equal(1);
-      expect(stubRequest.firstCall.args[0]).to.deep.equal({
-        method: 'wallet_invokeSnap',
-        params: {
-          snapId: 'npm:@metamask/permissions-kernel-snap',
-          request: {
-            method: 'wallet_requestExecutionPermissions',
-            params: [expectedRequest],
-          },
-        },
-      });
-    });
-
     it('should set retryCount to 0', async () => {
       const parameters = [
         {
@@ -157,7 +91,7 @@ describe('erc7715GrantPermissionsAction', () => {
       ).rejects.toThrow('Invalid parameters: amountPerSecond is required');
     });
 
-    it('should throw an error when justification is undefined', async () => {
+    it("doesn't throw error when justification is undefined", async () => {
       const parameters = [
         {
           chainId: 31337,
@@ -179,7 +113,7 @@ describe('erc7715GrantPermissionsAction', () => {
 
       await expect(
         erc7715GrantPermissionsAction(mockClient, parameters),
-      ).rejects.toThrow('Invalid parameters: justification is required');
+      ).resolves.not.toThrow();
     });
 
     it('should format native-token-stream permission request correctly', async () => {
@@ -704,6 +638,282 @@ describe('erc7715GrantPermissionsAction', () => {
                 ],
               },
             ],
+          },
+        },
+      });
+    });
+
+    it('formats Native Token Stream correctly', async () => {
+      const parameters: GrantPermissionsParameters = [
+        {
+          chainId: 31337,
+          address: bob.address,
+          expiry: 1234567890,
+          permission: {
+            type: 'native-token-stream',
+            data: {
+              amountPerSecond: 0x1n,
+              maxAmount: 2,
+              startTime: 2,
+              justification: 'Test justification',
+            },
+          },
+          isAdjustmentAllowed: true,
+          signer: alice.address,
+        } as const,
+      ];
+
+      await erc7715GrantPermissionsAction(mockClient, parameters);
+
+      const expectedRequest: PermissionRequest<
+        AccountSigner,
+        NativeTokenStreamPermission
+      > = {
+        chainId: '0x7a69',
+        address: bob.address,
+        permission: {
+          type: 'native-token-stream',
+          data: {
+            amountPerSecond: '0x1',
+            maxAmount: '0x2',
+            startTime: 2,
+            justification: 'Test justification',
+          },
+          isAdjustmentAllowed: true,
+        },
+        signer: {
+          type: 'account',
+          data: {
+            address: alice.address,
+          },
+        },
+        rules: [
+          {
+            type: 'expiry',
+            isAdjustmentAllowed: true,
+            data: {
+              expiry: 1234567890,
+            },
+          },
+        ],
+      };
+
+      expect(stubRequest.callCount).to.equal(1);
+      expect(stubRequest.firstCall.args[0]).to.deep.equal({
+        method: 'wallet_invokeSnap',
+        params: {
+          snapId: 'npm:@metamask/permissions-kernel-snap',
+          request: {
+            method: 'wallet_requestExecutionPermissions',
+            params: [expectedRequest],
+          },
+        },
+      });
+    });
+
+    it('formats Erc20 Token Stream correctly', async () => {
+      const parameters: GrantPermissionsParameters = [
+        {
+          chainId: 31337,
+          address: bob.address,
+          expiry: 1234567890,
+          permission: {
+            type: 'erc20-token-stream',
+            data: {
+              tokenAddress: '0x1',
+              amountPerSecond: 0x1n,
+              maxAmount: 2,
+              startTime: 2,
+              justification: 'Test justification',
+            },
+          },
+          isAdjustmentAllowed: true,
+          signer: alice.address,
+        },
+      ];
+
+      await erc7715GrantPermissionsAction(mockClient, parameters);
+
+      const expectedRequest: PermissionRequest<
+        AccountSigner,
+        Erc20TokenStreamPermission
+      > = {
+        chainId: '0x7a69',
+        address: bob.address,
+        permission: {
+          type: 'erc20-token-stream',
+          data: {
+            tokenAddress: '0x1',
+            amountPerSecond: '0x1',
+            maxAmount: '0x2',
+            startTime: 2,
+            justification: 'Test justification',
+          },
+          isAdjustmentAllowed: true,
+        },
+        signer: {
+          type: 'account',
+          data: {
+            address: alice.address,
+          },
+        },
+        rules: [
+          {
+            type: 'expiry',
+            isAdjustmentAllowed: true,
+            data: {
+              expiry: 1234567890,
+            },
+          },
+        ],
+      };
+
+      expect(stubRequest.callCount).to.equal(1);
+      expect(stubRequest.firstCall.args[0]).to.deep.equal({
+        method: 'wallet_invokeSnap',
+        params: {
+          snapId: 'npm:@metamask/permissions-kernel-snap',
+          request: {
+            method: 'wallet_requestExecutionPermissions',
+            params: [expectedRequest],
+          },
+        },
+      });
+    });
+
+    it('formats Native Token Periodic correctly', async () => {
+      const parameters: GrantPermissionsParameters = [
+        {
+          chainId: 31337,
+          address: bob.address,
+          expiry: 1234567890,
+          permission: {
+            type: 'native-token-periodic' as const,
+            data: {
+              periodAmount: 0x5n,
+              periodDuration: 60,
+              startTime: 1000,
+              justification: 'Periodic native token test',
+            },
+          },
+          isAdjustmentAllowed: true,
+          signer: alice.address,
+        },
+      ];
+
+      await erc7715GrantPermissionsAction(mockClient, parameters);
+
+      const expectedRequest: PermissionRequest<
+        AccountSigner,
+        NativeTokenPeriodicPermission
+      > = {
+        chainId: '0x7a69',
+        address: bob.address,
+        permission: {
+          type: 'native-token-periodic',
+          data: {
+            periodAmount: '0x5',
+            periodDuration: 60,
+            startTime: 1000,
+            justification: 'Periodic native token test',
+          },
+          isAdjustmentAllowed: true,
+        },
+        signer: {
+          type: 'account',
+          data: {
+            address: alice.address,
+          },
+        },
+        rules: [
+          {
+            type: 'expiry',
+            isAdjustmentAllowed: true,
+            data: {
+              expiry: 1234567890,
+            },
+          },
+        ],
+      };
+
+      expect(stubRequest.callCount).to.equal(1);
+      expect(stubRequest.firstCall.args[0]).to.deep.equal({
+        method: 'wallet_invokeSnap',
+        params: {
+          snapId: 'npm:@metamask/permissions-kernel-snap',
+          request: {
+            method: 'wallet_requestExecutionPermissions',
+            params: [expectedRequest],
+          },
+        },
+      });
+    });
+
+    it('formats Erc20 Token Periodic correctly', async () => {
+      const parameters: GrantPermissionsParameters = [
+        {
+          chainId: 31337,
+          address: bob.address,
+          expiry: 1234567890,
+          permission: {
+            type: 'erc20-token-periodic' as const,
+            data: {
+              tokenAddress: '0x2',
+              periodAmount: 0x10n,
+              periodDuration: 120,
+              startTime: 2000,
+              justification: 'Periodic erc20 token test',
+            },
+          },
+          isAdjustmentAllowed: true,
+          signer: alice.address,
+        },
+      ];
+
+      await erc7715GrantPermissionsAction(mockClient, parameters);
+
+      const expectedRequest: PermissionRequest<
+        AccountSigner,
+        Erc20TokenPeriodicPermission
+      > = {
+        chainId: '0x7a69',
+        address: bob.address,
+        permission: {
+          type: 'erc20-token-periodic',
+          data: {
+            tokenAddress: '0x2',
+            periodAmount: '0x10',
+            periodDuration: 120,
+            startTime: 2000,
+            justification: 'Periodic erc20 token test',
+          },
+          isAdjustmentAllowed: true,
+        },
+        signer: {
+          type: 'account',
+          data: {
+            address: alice.address,
+          },
+        },
+        rules: [
+          {
+            type: 'expiry',
+            isAdjustmentAllowed: true,
+            data: {
+              expiry: 1234567890,
+            },
+          },
+        ],
+      };
+
+      expect(stubRequest.callCount).to.equal(1);
+      expect(stubRequest.firstCall.args[0]).to.deep.equal({
+        method: 'wallet_invokeSnap',
+        params: {
+          snapId: 'npm:@metamask/permissions-kernel-snap',
+          request: {
+            method: 'wallet_requestExecutionPermissions',
+            params: [expectedRequest],
           },
         },
       });
