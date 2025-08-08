@@ -1,48 +1,19 @@
 import type { Address, Hex, PublicClient } from 'viem';
 
+import { getDelegationHashOffchain } from '../delegation';
 import * as ERC20PeriodTransferEnforcer from '../DelegationFramework/ERC20PeriodTransferEnforcer';
 import * as ERC20StreamingEnforcer from '../DelegationFramework/ERC20StreamingEnforcer';
 import * as MultiTokenPeriodEnforcer from '../DelegationFramework/MultiTokenPeriodEnforcer';
 import * as NativeTokenPeriodTransferEnforcer from '../DelegationFramework/NativeTokenPeriodTransferEnforcer';
 import * as NativeTokenStreamingEnforcer from '../DelegationFramework/NativeTokenStreamingEnforcer';
-import type { DeleGatorEnvironment } from '../types';
+import type { DeleGatorEnvironment, Delegation } from '../types';
 
 /**
- * Shared base params for all enforcer actions
+ * Parameters for all caveat enforcer actions.
  */
-export type BaseCaveatParams = {
-  delegationHash: Hex;
-  delegationManager?: Address;
-  enforcerAddress?: Address;
-  terms: Hex;
+export type CaveatEnforcerParams = {
+  delegation: Delegation;
 };
-
-/**
- * Parameters for ERC20 period transfer enforcer.
- */
-export type ERC20PeriodTransferParams = BaseCaveatParams;
-
-/**
- * Parameters for ERC20 streaming enforcer.
- */
-export type ERC20StreamingParams = BaseCaveatParams;
-
-/**
- * Parameters for MultiTokenPeriodEnforcer.
- */
-export type MultiTokenPeriodParams = {
-  args: Hex;
-} & BaseCaveatParams;
-
-/**
- * Parameters for native token period transfer enforcer.
- */
-export type NativeTokenPeriodTransferParams = BaseCaveatParams;
-
-/**
- * Parameters for native token streaming enforcer.
- */
-export type NativeTokenStreamingParams = BaseCaveatParams;
 
 /**
  * Return type for period-based transfer enforcers
@@ -61,45 +32,77 @@ export type StreamingResult = {
 };
 
 /**
- * Resolves the delegation manager address from parameters or environment.
- *
- * @param params - The parameters object.
- * @param params.delegationManager - The delegation manager address.
- * @param environment - The delegator environment.
- * @returns The resolved delegation manager address.
+ * Finds a caveat that matches the specified enforcer address.
+ * @param config - The configuration object.
+ * @param config.delegation - The delegation to search.
+ * @param config.enforcerAddress - The enforcer address to match.
+ * @param config.enforcerName - The name of the enforcer.
+ * @returns The matching caveat.
+ * @throws Error if no matching caveat is found.
+ * @throws Error if multiple matching caveats are found.
  */
-function resolveDelegationManager(
-  params: { delegationManager?: Address },
-  environment: DeleGatorEnvironment,
-): Address {
-  const delegationManager =
-    params.delegationManager ?? environment.DelegationManager;
+function findMatchingCaveat({
+  delegation,
+  enforcerAddress,
+  enforcerName,
+}: {
+  delegation: Delegation;
+  enforcerAddress: Address;
+  enforcerName: keyof DeleGatorEnvironment['caveatEnforcers'];
+}): { terms: Hex; args: Hex } {
+  const matchingCaveats = delegation.caveats.filter(
+    (caveat) => caveat.enforcer.toLowerCase() === enforcerAddress.toLowerCase(),
+  );
 
-  if (!delegationManager) {
-    throw new Error('Delegation manager address not found');
+  if (matchingCaveats.length === 0) {
+    throw new Error(`No caveat found with enforcer matching ${enforcerName}`);
   }
 
-  return delegationManager;
+  if (matchingCaveats.length > 1) {
+    throw new Error(
+      `Multiple caveats found with enforcer matching ${enforcerName}`,
+    );
+  }
+
+  const [{ terms, args }] = matchingCaveats as unknown as [
+    { terms: Hex; args: Hex },
+  ];
+
+  return {
+    terms,
+    args,
+  };
 }
 
 /**
- * Resolves the enforcer address from parameters or environment.
+ * Gets the delegation manager address from environment.
  *
- * @param enforcerName - The name of the enforcer.
- * @param params - The parameters object.
- * @param params.enforcerAddress - The enforcer address.
  * @param environment - The delegator environment.
- * @returns The resolved enforcer address.
+ * @returns The delegation manager address.
  */
-function resolveEnforcerAddress(
-  enforcerName: keyof DeleGatorEnvironment['caveatEnforcers'],
-  params: { enforcerAddress?: Address },
-  environment: DeleGatorEnvironment,
-): Address {
-  if (params.enforcerAddress) {
-    return params.enforcerAddress;
+function getDelegationManager(environment: DeleGatorEnvironment): Address {
+  if (!environment.DelegationManager) {
+    throw new Error('Delegation manager address not found');
   }
 
+  return environment.DelegationManager;
+}
+
+/**
+ * Gets the enforcer address from environment.
+ *
+ * @param config - The configuration object.
+ * @param config.enforcerName - The name of the enforcer.
+ * @param config.environment - The delegator environment.
+ * @returns The enforcer address.
+ */
+function getEnforcerAddress({
+  enforcerName,
+  environment,
+}: {
+  enforcerName: keyof DeleGatorEnvironment['caveatEnforcers'];
+  environment: DeleGatorEnvironment;
+}): Address {
   const enforcerAddress = environment.caveatEnforcers[enforcerName];
   if (!enforcerAddress) {
     throw new Error(`${enforcerName} not found in environment`);
@@ -119,21 +122,29 @@ function resolveEnforcerAddress(
 export async function getErc20PeriodTransferEnforcerAvailableAmount(
   client: PublicClient,
   environment: DeleGatorEnvironment,
-  params: ERC20PeriodTransferParams,
+  params: CaveatEnforcerParams,
 ): Promise<PeriodTransferResult> {
-  const delegationManager = resolveDelegationManager(params, environment);
-  const enforcerAddress = resolveEnforcerAddress(
-    'ERC20PeriodTransferEnforcer',
-    params,
+  const enforcerName = 'ERC20PeriodTransferEnforcer';
+
+  const delegationManager = getDelegationManager(environment);
+  const enforcerAddress = getEnforcerAddress({
+    enforcerName,
     environment,
-  );
+  });
+
+  const delegationHash = getDelegationHashOffchain(params.delegation);
+  const { terms } = findMatchingCaveat({
+    delegation: params.delegation,
+    enforcerAddress,
+    enforcerName,
+  });
 
   return ERC20PeriodTransferEnforcer.read.getAvailableAmount({
     client,
     contractAddress: enforcerAddress,
-    delegationHash: params.delegationHash,
+    delegationHash,
     delegationManager,
-    terms: params.terms,
+    terms,
   });
 }
 
@@ -148,21 +159,28 @@ export async function getErc20PeriodTransferEnforcerAvailableAmount(
 export async function getErc20StreamingEnforcerAvailableAmount(
   client: PublicClient,
   environment: DeleGatorEnvironment,
-  params: ERC20StreamingParams,
+  params: CaveatEnforcerParams,
 ): Promise<StreamingResult> {
-  const delegationManager = resolveDelegationManager(params, environment);
-  const enforcerAddress = resolveEnforcerAddress(
-    'ERC20StreamingEnforcer',
-    params,
+  const enforcerName = 'ERC20StreamingEnforcer';
+  const delegationManager = getDelegationManager(environment);
+  const enforcerAddress = getEnforcerAddress({
+    enforcerName,
     environment,
-  );
+  });
+
+  const delegationHash = getDelegationHashOffchain(params.delegation);
+  const { terms } = findMatchingCaveat({
+    delegation: params.delegation,
+    enforcerAddress,
+    enforcerName,
+  });
 
   return ERC20StreamingEnforcer.read.getAvailableAmount({
     client,
     contractAddress: enforcerAddress,
     delegationManager,
-    delegationHash: params.delegationHash,
-    terms: params.terms,
+    delegationHash,
+    terms,
   });
 }
 
@@ -177,22 +195,29 @@ export async function getErc20StreamingEnforcerAvailableAmount(
 export async function getMultiTokenPeriodEnforcerAvailableAmount(
   client: PublicClient,
   environment: DeleGatorEnvironment,
-  params: MultiTokenPeriodParams,
+  params: CaveatEnforcerParams,
 ): Promise<PeriodTransferResult> {
-  const delegationManager = resolveDelegationManager(params, environment);
-  const enforcerAddress = resolveEnforcerAddress(
-    'MultiTokenPeriodEnforcer',
-    params,
+  const enforcerName = 'MultiTokenPeriodEnforcer';
+  const delegationManager = getDelegationManager(environment);
+  const enforcerAddress = getEnforcerAddress({
+    enforcerName,
     environment,
-  );
+  });
+
+  const delegationHash = getDelegationHashOffchain(params.delegation);
+  const { terms, args } = findMatchingCaveat({
+    delegation: params.delegation,
+    enforcerAddress,
+    enforcerName,
+  });
 
   return MultiTokenPeriodEnforcer.read.getAvailableAmount({
     client,
     contractAddress: enforcerAddress,
-    delegationHash: params.delegationHash,
+    delegationHash,
     delegationManager,
-    terms: params.terms,
-    args: params.args,
+    terms,
+    args,
   });
 }
 
@@ -207,21 +232,28 @@ export async function getMultiTokenPeriodEnforcerAvailableAmount(
 export async function getNativeTokenPeriodTransferEnforcerAvailableAmount(
   client: PublicClient,
   environment: DeleGatorEnvironment,
-  params: NativeTokenPeriodTransferParams,
+  params: CaveatEnforcerParams,
 ): Promise<PeriodTransferResult> {
-  const delegationManager = resolveDelegationManager(params, environment);
-  const enforcerAddress = resolveEnforcerAddress(
-    'NativeTokenPeriodTransferEnforcer',
-    params,
+  const enforcerName = 'NativeTokenPeriodTransferEnforcer';
+  const delegationManager = getDelegationManager(environment);
+  const enforcerAddress = getEnforcerAddress({
+    enforcerName,
     environment,
-  );
+  });
+
+  const delegationHash = getDelegationHashOffchain(params.delegation);
+  const { terms } = findMatchingCaveat({
+    delegation: params.delegation,
+    enforcerAddress,
+    enforcerName,
+  });
 
   return NativeTokenPeriodTransferEnforcer.read.getAvailableAmount({
     client,
     contractAddress: enforcerAddress,
-    delegationHash: params.delegationHash,
+    delegationHash,
     delegationManager,
-    terms: params.terms,
+    terms,
   });
 }
 
@@ -236,21 +268,28 @@ export async function getNativeTokenPeriodTransferEnforcerAvailableAmount(
 export async function getNativeTokenStreamingEnforcerAvailableAmount(
   client: PublicClient,
   environment: DeleGatorEnvironment,
-  params: NativeTokenStreamingParams,
+  params: CaveatEnforcerParams,
 ): Promise<StreamingResult> {
-  const delegationManager = resolveDelegationManager(params, environment);
-  const enforcerAddress = resolveEnforcerAddress(
-    'NativeTokenStreamingEnforcer',
-    params,
+  const enforcerName = 'NativeTokenStreamingEnforcer';
+  const delegationManager = getDelegationManager(environment);
+  const enforcerAddress = getEnforcerAddress({
+    enforcerName,
     environment,
-  );
+  });
+
+  const delegationHash = getDelegationHashOffchain(params.delegation);
+  const { terms } = findMatchingCaveat({
+    delegation: params.delegation,
+    enforcerAddress,
+    enforcerName,
+  });
 
   return NativeTokenStreamingEnforcer.read.getAvailableAmount({
     client,
     contractAddress: enforcerAddress,
     delegationManager,
-    delegationHash: params.delegationHash,
-    terms: params.terms,
+    delegationHash,
+    terms,
   });
 }
 
@@ -271,7 +310,7 @@ export const caveatEnforcerActions =
      * @returns Promise resolving to the period transfer result.
      */
     getErc20PeriodTransferEnforcerAvailableAmount: async (
-      params: ERC20PeriodTransferParams,
+      params: CaveatEnforcerParams,
     ): Promise<PeriodTransferResult> => {
       return getErc20PeriodTransferEnforcerAvailableAmount(
         client,
@@ -287,7 +326,7 @@ export const caveatEnforcerActions =
      * @returns Promise resolving to the streaming result.
      */
     getErc20StreamingEnforcerAvailableAmount: async (
-      params: ERC20StreamingParams,
+      params: CaveatEnforcerParams,
     ): Promise<StreamingResult> => {
       return getErc20StreamingEnforcerAvailableAmount(
         client,
@@ -303,7 +342,7 @@ export const caveatEnforcerActions =
      * @returns Promise resolving to the period transfer result.
      */
     getMultiTokenPeriodEnforcerAvailableAmount: async (
-      params: MultiTokenPeriodParams,
+      params: CaveatEnforcerParams,
     ): Promise<PeriodTransferResult> => {
       return getMultiTokenPeriodEnforcerAvailableAmount(
         client,
@@ -319,7 +358,7 @@ export const caveatEnforcerActions =
      * @returns Promise resolving to the period transfer result.
      */
     getNativeTokenPeriodTransferEnforcerAvailableAmount: async (
-      params: NativeTokenPeriodTransferParams,
+      params: CaveatEnforcerParams,
     ): Promise<PeriodTransferResult> => {
       return getNativeTokenPeriodTransferEnforcerAvailableAmount(
         client,
@@ -335,7 +374,7 @@ export const caveatEnforcerActions =
      * @returns Promise resolving to the streaming result.
      */
     getNativeTokenStreamingEnforcerAvailableAmount: async (
-      params: NativeTokenStreamingParams,
+      params: CaveatEnforcerParams,
     ): Promise<StreamingResult> => {
       return getNativeTokenStreamingEnforcerAvailableAmount(
         client,
@@ -344,27 +383,3 @@ export const caveatEnforcerActions =
       );
     },
   });
-
-/**
- * Type for client extended with caveat enforcer actions.
- */
-export type CaveatEnforcerClient = PublicClient &
-  ReturnType<ReturnType<typeof caveatEnforcerActions>>;
-
-/**
- * Create a viem client extended with caveat enforcer actions.
- *
- * @param params - The parameters object.
- * @param params.client - The viem public client.
- * @param params.environment - The delegator environment.
- * @returns The extended client with caveat enforcer actions.
- */
-export function createCaveatEnforcerClient({
-  client,
-  environment,
-}: {
-  client: PublicClient;
-  environment: DeleGatorEnvironment;
-}): CaveatEnforcerClient {
-  return client.extend(caveatEnforcerActions({ environment }));
-}
