@@ -9,38 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.13.0-rc.2]
 
-### Uncategorized
+### Added
 
-- Rename @metamask/permission-types to @metamask/7715-permission-types
-- Update the 7715 experimental actions to new Erc7715 interface ([#54](https://github.com/MetaMask/delegation-toolkit/pull/54))
-- Remove duplicate createCaveatEnforcerClient and type
-- Fix jsdoc comments in getCaveatAvailableAmount.ts
-- Move caveatEnforcerClient into it's own file
-- Improve action tests, remove client tests.
-- Improve internals of getCaveatAvailableAmount actions. Improve validation messages when caveats are not found, or duplicates are found.
-- Fix package exports, straggling tests, and import order.
-- use getDelegationHashoffchain function instead of delegation-core hashDelegation directly. Use type assertion when destructuring foundCaveats.
-- Fix tests
-- style: remove extra whitespace in getCaveatAvailableAmount.ts
-- refactor: use destructuring in findMatchingCaveat function
-- refactor: add caveatEnforcerActions back to actions export
-- refactor: remove client exports from actions index (moved to main export)
-- refactor: consolidate parameter types into single CaveatEnforcerParams type
-- refactor: replace custom error types with standard Error constructor
-- refactor: simplify actions to only accept delegation and use environment values
-- refactor: modify existing actions to accept delegation instead of creating new ones
-- feat: move caveat enforcer client to main export
-- feat: add delegation-based caveat enforcer actions
-- fix: fixing conflicts
-- chore: 7702 validation improvements
-- chore: using viem address comparison
-- chore: 7702 is valid implementation code
-- chore: override isDeployed function
-- chore: override is deployed viem function
-- Adds Contract Utils (Caveats, Delegation) ([#45](https://github.com/MetaMask/delegation-toolkit/pull/45))
-- chore: fixing types in tests
-- chore: caveat enforcer configs, and extend
-- feat: added contract utils
+- New utilities and actions for interacting with the Delegation Framework smart contracts ([#45](https://github.com/MetaMask/delegation-toolkit/pull/45))
+
+### Changed
+
+- The 7715 experimental actions not align with the new Erc7715 interface ([#54](https://github.com/MetaMask/delegation-toolkit/pull/54))
 
 ## [0.13.0-rc.1]
 
@@ -57,6 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed a bug where `sendTransactionWithDelegation` failed whenever `value` was specified in the parameters. ([#30](https://github.com/metamask/delegation-toolkit/pull/30))
 
-[Unreleased]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.2...HEAD
-[0.13.0-rc.2]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.1...@metamask/delegation-toolkit@0.13.0-rc.2
-[0.13.0-rc.1]: https://github.com/MetaMask/delegation-toolkit/releases/tag/@metamask/delegation-toolkit@0.13.0-rc.1
+[Unreleased]: https://github.com/metamask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.2...HEAD
+[0.13.0-rc.2]: https://github.com/metamask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.1...@metamask/delegation-toolkit@0.13.0-rc.2
+[0.13.0-rc.1]: https://github.com/metamask/delegation-toolkit/releases/tag/@metamask/delegation-toolkit@0.13.0-rc.1
