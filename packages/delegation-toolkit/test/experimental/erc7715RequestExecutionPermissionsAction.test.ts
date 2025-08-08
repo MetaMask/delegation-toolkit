@@ -1,16 +1,4 @@
-import { stub } from 'sinon';
-import type { Account, Client } from 'viem';
-import { createClient, custom } from 'viem';
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { beforeEach, describe, expect, it } from 'vitest';
-
-import { erc7715ProviderActions } from '../../src/experimental';
-import {
-  erc7715RequestExecutionPermissionsAction,
-  GrantPermissionsParameters,
-} from '../../src/experimental/erc7715RequestExecutionPermissionsAction';
-import { ensureSnapsAuthorized } from '../../src/experimental/snapsAuthorization';
-import {
+import type {
   AccountSigner,
   Erc20TokenPeriodicPermission,
   Erc20TokenStreamPermission,
@@ -20,6 +8,16 @@ import {
   PermissionResponse,
   PermissionTypes,
 } from '@metamask/permission-types';
+import { stub } from 'sinon';
+import type { Account, Client } from 'viem';
+import { createClient, custom } from 'viem';
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { beforeEach, describe, expect, it } from 'vitest';
+
+import { erc7715ProviderActions } from '../../src/experimental';
+import type { GrantPermissionsParameters } from '../../src/experimental/erc7715RequestExecutionPermissionsAction';
+import { erc7715RequestExecutionPermissionsAction } from '../../src/experimental/erc7715RequestExecutionPermissionsAction';
+import { ensureSnapsAuthorized } from '../../src/experimental/snapsAuthorization';
 
 describe('erc7715RequestExecutionPermissionsAction', () => {
   let alice: Account;

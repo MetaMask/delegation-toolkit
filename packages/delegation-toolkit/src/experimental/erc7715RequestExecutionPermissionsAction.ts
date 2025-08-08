@@ -1,4 +1,3 @@
-import { isHex, toHex, type Address } from 'viem';
 import type {
   AccountSigner,
   Erc20TokenPeriodicPermission,
@@ -10,6 +9,8 @@ import type {
   PermissionTypes,
   Rule,
 } from '@metamask/permission-types';
+import { isHex, toHex, type Address } from 'viem';
+
 import type { SnapClient } from './snapsAuthorization.js';
 
 // todo: we will remove custom permissions, and just have a union of the supported permission types.
@@ -176,7 +177,7 @@ function formatPermissionsRequest(
       ? parameters.signer
       : parameters.signer.data.address;
 
-  const isExpirySpecified = !!expiry;
+  const isExpirySpecified = Boolean(expiry);
 
   const rules: Rule[] = isExpirySpecified
     ? [
@@ -298,6 +299,8 @@ function getPermissionFormatter(permissionType: string): PermissionFormatter {
  * Formats a native token stream permission for the wallet.
  *
  * @param permission - The native token stream permission to format.
+ * @param permission.permission - The native token stream permission to format.
+ * @param permission.isAdjustmentAllowed - Whether the permission is allowed to be adjusted.
  * @returns The formatted permission object.
  */
 function formatNativeTokenStreamPermission({

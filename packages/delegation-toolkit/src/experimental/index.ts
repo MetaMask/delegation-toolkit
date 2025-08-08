@@ -10,9 +10,9 @@ import {
   sendUserOperationWithDelegationAction,
 } from './erc7710RedeemDelegationAction';
 import { erc7715RequestExecutionPermissionsAction } from './erc7715RequestExecutionPermissionsAction';
+import type { GrantPermissionsParameters } from './erc7715RequestExecutionPermissionsAction';
 import { ensureSnapsAuthorized } from './snapsAuthorization';
 import type { SnapClient } from './snapsAuthorization';
-import type { GrantPermissionsParameters } from './erc7715RequestExecutionPermissionsAction';
 
 export {
   erc7715RequestExecutionPermissionsAction as grantPermissions,
