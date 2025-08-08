@@ -10,14 +10,14 @@ import {
   sendUserOperationWithDelegationAction,
 } from './erc7710RedeemDelegationAction';
 import { erc7715RequestExecutionPermissionsAction } from './erc7715RequestExecutionPermissionsAction';
-import type { GrantPermissionsParameters } from './erc7715RequestExecutionPermissionsAction';
+import type { RequestExecutionPermissionsParameters } from './erc7715RequestExecutionPermissionsAction';
 import { ensureSnapsAuthorized } from './snapsAuthorization';
 import type { SnapClient } from './snapsAuthorization';
 
 export {
-  erc7715RequestExecutionPermissionsAction as grantPermissions,
-  type GrantPermissionsParameters,
-  type GrantPermissionsReturnType,
+  erc7715RequestExecutionPermissionsAction as requestExecutionPermissions,
+  type RequestExecutionPermissionsParameters,
+  type RequestExecutionPermissionsReturnType,
 } from './erc7715RequestExecutionPermissionsAction';
 
 export {
@@ -30,7 +30,9 @@ export {
 export const erc7715ProviderActions =
   (snapIds?: { kernelSnapId: string; providerSnapId: string }) =>
   (client: Client) => ({
-    grantPermissions: async (parameters: GrantPermissionsParameters) => {
+    requestExecutionPermissions: async (
+      parameters: RequestExecutionPermissionsParameters,
+    ) => {
       if (!(await ensureSnapsAuthorized(client as SnapClient, snapIds))) {
         throw new Error('Snaps not authorized');
       }

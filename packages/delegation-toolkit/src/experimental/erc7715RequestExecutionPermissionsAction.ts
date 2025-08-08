@@ -13,45 +13,42 @@ import { isHex, toHex, type Address } from 'viem';
 
 import type { SnapClient } from './snapsAuthorization.js';
 
-// todo: we will remove custom permissions, and just have a union of the supported permission types.
-/**
- * Represents a custom permission with arbitrary data.
- */
-export type BasePermissionParameter = {
-  data: Record<string, unknown>;
-  type: string;
-  rules?: Record<string, unknown>;
-  isRequired?: boolean;
-};
-
 /**
  * Represents a native token stream permission.
  * This allows for continuous token streaming with defined parameters.
  */
-export type NativeTokenStreamPermissionParameter = BasePermissionParameter & {
+export type NativeTokenStreamPermissionParameter = {
   type: 'native-token-stream';
   data: {
     amountPerSecond: bigint;
     initialAmount?: bigint;
+    maxAmount?: bigint;
     startTime?: number;
-    maxAmount?: number;
     justification?: string;
   };
 };
 
-export type Erc20TokenStreamPermissionParameter = BasePermissionParameter & {
+/**
+ * Represents an ERC-20 token stream permission.
+ * This allows for continuous ERC-20 token streaming with defined parameters.
+ */
+export type Erc20TokenStreamPermissionParameter = {
   type: 'erc20-token-stream';
   data: {
     tokenAddress: Address;
     amountPerSecond: bigint;
     initialAmount?: bigint;
+    maxAmount?: bigint;
     startTime?: number;
-    maxAmount?: number;
     justification?: string;
   };
 };
 
-export type NativeTokenPeriodicPermissionParameter = BasePermissionParameter & {
+/**
+ * Represents a native token periodic permission.
+ * This allows for periodic native token transfers with defined parameters.
+ */
+export type NativeTokenPeriodicPermissionParameter = {
   type: 'native-token-periodic';
   data: {
     periodAmount: bigint;
@@ -61,7 +58,11 @@ export type NativeTokenPeriodicPermissionParameter = BasePermissionParameter & {
   };
 };
 
-export type Erc20TokenPeriodicPermissionParameter = BasePermissionParameter & {
+/**
+ * Represents an ERC-20 token periodic permission.
+ * This allows for periodic ERC-20 token transfers with defined parameters.
+ */
+export type Erc20TokenPeriodicPermissionParameter = {
   type: 'erc20-token-periodic';
   data: {
     tokenAddress: Address;
@@ -102,12 +103,13 @@ export type PermissionRequestParameter = {
  *
  * @template Signer - The type of the signer, either an Address or Account.
  */
-export type GrantPermissionsParameters = PermissionRequestParameter[];
+export type RequestExecutionPermissionsParameters =
+  PermissionRequestParameter[];
 
 /**
- * Return type for the grant permissions action.
+ * Return type for the request execution permissions action.
  */
-export type GrantPermissionsReturnType = PermissionResponse<
+export type RequestExecutionPermissionsReturnType = PermissionResponse<
   AccountSigner,
   PermissionTypes
 >[];
@@ -126,10 +128,12 @@ export type GrantPermissionsReturnType = PermissionResponse<
  */
 export async function erc7715RequestExecutionPermissionsAction(
   client: SnapClient,
-  parameters: GrantPermissionsParameters,
+  parameters: RequestExecutionPermissionsParameters,
   kernelSnapId = 'npm:@metamask/permissions-kernel-snap',
-): Promise<GrantPermissionsReturnType> {
+): Promise<RequestExecutionPermissionsReturnType> {
   const formattedParameters = parameters.map(formatPermissionsRequest);
+
+  console.log({ formattedParameters });
 
   const result = await client.request(
     {
@@ -149,7 +153,7 @@ export async function erc7715RequestExecutionPermissionsAction(
     throw new Error('Failed to grant permissions');
   }
 
-  return result as any as GrantPermissionsReturnType;
+  return result as any as RequestExecutionPermissionsReturnType;
 }
 
 /**

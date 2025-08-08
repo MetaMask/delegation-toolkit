@@ -15,7 +15,7 @@ import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { erc7715ProviderActions } from '../../src/experimental';
-import type { GrantPermissionsParameters } from '../../src/experimental/erc7715RequestExecutionPermissionsAction';
+import type { RequestExecutionPermissionsParameters } from '../../src/experimental/erc7715RequestExecutionPermissionsAction';
 import { erc7715RequestExecutionPermissionsAction } from '../../src/experimental/erc7715RequestExecutionPermissionsAction';
 import { ensureSnapsAuthorized } from '../../src/experimental/snapsAuthorization';
 
@@ -46,7 +46,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
             type: 'native-token-stream' as const,
             data: {
               amountPerSecond: 0x1n,
-              maxAmount: 2,
+              maxAmount: 2n,
               startTime: 2,
               justification: 'Test justification',
             },
@@ -74,7 +74,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
             type: 'native-token-stream' as const,
             data: {
               amountPerSecond: undefined as any,
-              maxAmount: 2,
+              maxAmount: 2n,
               startTime: 2,
               justification: 'Test justification',
             },
@@ -99,7 +99,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
             type: 'native-token-stream' as const,
             data: {
               amountPerSecond: 0x1n,
-              maxAmount: 2,
+              maxAmount: 2n,
               startTime: 2,
               justification: undefined as any,
             },
@@ -124,7 +124,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
             type: 'native-token-stream' as const,
             data: {
               amountPerSecond: 0x1n,
-              maxAmount: 2,
+              maxAmount: 2n,
               startTime: 2,
               justification: 'Test justification',
             },
@@ -190,7 +190,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
             type: 'native-token-stream' as const,
             data: {
               amountPerSecond: 0x1n,
-              maxAmount: 2,
+              maxAmount: 2n,
               startTime: 1,
               justification: 'Test justification',
             },
@@ -346,7 +346,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
       ];
       stubRequest.resolves(permissionsResponse);
 
-      const parameters: GrantPermissionsParameters = [
+      const parameters: RequestExecutionPermissionsParameters = [
         {
           chainId: 31337,
           expiry: 1234567890,
@@ -385,7 +385,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
     });
 
     it('should not specify isAdjustmentAllowed when not specified in the request', async () => {
-      const parameters: GrantPermissionsParameters = [
+      const parameters: RequestExecutionPermissionsParameters = [
         {
           chainId: 31337,
           address: bob.address,
@@ -394,7 +394,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
             type: 'native-token-stream' as const,
             data: {
               amountPerSecond: 0x1n,
-              maxAmount: 2,
+              maxAmount: 2n,
               startTime: 2,
               justification: 'Test justification',
             },
@@ -577,7 +577,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
     });
 
     it('should accept numerical values as hex for startTime', async () => {
-      const parameters: GrantPermissionsParameters = [
+      const parameters: RequestExecutionPermissionsParameters = [
         {
           chainId: 31337,
           address: bob.address,
@@ -586,7 +586,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
             type: 'native-token-stream' as const,
             data: {
               amountPerSecond: 0x1n,
-              maxAmount: 2,
+              maxAmount: 2n,
               startTime: 2,
               justification: 'Test justification',
             },
@@ -642,7 +642,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
     });
 
     it('formats Native Token Stream correctly', async () => {
-      const parameters: GrantPermissionsParameters = [
+      const parameters: RequestExecutionPermissionsParameters = [
         {
           chainId: 31337,
           address: bob.address,
@@ -651,7 +651,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
             type: 'native-token-stream',
             data: {
               amountPerSecond: 0x1n,
-              maxAmount: 2,
+              maxAmount: 2n,
               startTime: 2,
               justification: 'Test justification',
             },
@@ -710,7 +710,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
     });
 
     it('formats Erc20 Token Stream correctly', async () => {
-      const parameters: GrantPermissionsParameters = [
+      const parameters: RequestExecutionPermissionsParameters = [
         {
           chainId: 31337,
           address: bob.address,
@@ -720,7 +720,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
             data: {
               tokenAddress: '0x1',
               amountPerSecond: 0x1n,
-              maxAmount: 2,
+              maxAmount: 2n,
               startTime: 2,
               justification: 'Test justification',
             },
@@ -780,7 +780,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
     });
 
     it('formats Native Token Periodic correctly', async () => {
-      const parameters: GrantPermissionsParameters = [
+      const parameters: RequestExecutionPermissionsParameters = [
         {
           chainId: 31337,
           address: bob.address,
@@ -848,7 +848,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
     });
 
     it('formats Erc20 Token Periodic correctly', async () => {
-      const parameters: GrantPermissionsParameters = [
+      const parameters: RequestExecutionPermissionsParameters = [
         {
           chainId: 31337,
           address: bob.address,
@@ -945,9 +945,9 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
         }),
       }).extend(erc7715ProviderActions());
 
-      expect(client).to.have.property('grantPermissions');
+      expect(client).to.have.property('requestExecutionPermissions');
 
-      const parameters: GrantPermissionsParameters = [
+      const parameters: RequestExecutionPermissionsParameters = [
         {
           chainId: 31337,
           address: bob.address,
@@ -964,7 +964,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
           signer: alice.address,
         },
       ];
-      await client.grantPermissions(parameters);
+      await client.requestExecutionPermissions(parameters);
 
       expect(stubRequest.callCount).to.equal(2);
 
@@ -1044,7 +1044,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
         },
       ];
 
-      const grantPromise = client.grantPermissions(parameters);
+      const grantPromise = client.requestExecutionPermissions(parameters);
 
       // just let the event loop cycle
       await new Promise((resolve) => setImmediate(resolve));
