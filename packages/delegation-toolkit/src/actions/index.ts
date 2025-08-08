@@ -17,7 +17,6 @@ export {
   // Result types
   type PeriodTransferResult,
   type StreamingResult,
-
 } from './getCaveatAvailableAmount';
 
 export { isValid7702Implementation } from './isValid7702Implementation';
