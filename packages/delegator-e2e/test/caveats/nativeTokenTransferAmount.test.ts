@@ -5,12 +5,16 @@ import {
   createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createDelegation,
   createExecution,
   Implementation,
   toMetaMaskSmartAccount,
   ExecutionMode,
-  type MetaMaskSmartAccount,
+  ROOT_AUTHORITY,
+  createDelegation,
+} from '@metamask/delegation-toolkit';
+import type {
+  MetaMaskSmartAccount,
+  Delegation,
 } from '@metamask/delegation-toolkit';
 import {
   gasPrice,
@@ -83,14 +87,16 @@ const runTest_expectSuccess = async (
   const bobAddress = bobSmartAccount.address;
   const aliceAddress = aliceSmartAccount.address;
 
-  const delegation = createDelegation({
-    to: bobAddress,
-    from: aliceAddress,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'nativeTokenTransferAmount',
-      { maxAmount: allowance },
-    ),
-  });
+  const delegation: Delegation = {
+    delegate: bobAddress,
+    delegator: aliceAddress,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('nativeTokenTransferAmount', { maxAmount: allowance })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -153,13 +159,170 @@ const runTest_expectFailure = async (
   const bobAddress = bobSmartAccount.address;
   const aliceAddress = aliceSmartAccount.address;
 
+  const delegation: Delegation = {
+    delegate: bobAddress,
+    delegator: aliceAddress,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('nativeTokenTransferAmount', { maxAmount: allowance })
+      .build(),
+    signature: '0x',
+  };
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: bobAddress,
+    value: transferAmount,
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  const balanceBefore = await publicClient.getBalance({
+    address: bobAddress,
+  });
+
+  await expect(
+    sponsoredBundlerClient.sendUserOperation({
+      account: bobSmartAccount,
+      calls: [
+        {
+          to: bobSmartAccount.address,
+          data: redeemData,
+        },
+      ],
+      ...gasPrice,
+    }),
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+
+  const balanceAfter = await publicClient.getBalance({
+    address: bobAddress,
+  });
+  expect(balanceAfter, 'Expected balance to remain unchanged').toEqual(
+    balanceBefore,
+  );
+};
+
+test('Scope: Bob redeems the delegation with an allowed amount using nativeTokenTransferAmount scope', async () => {
+  const allowance = parseEther('1');
+  const transferAmount = parseEther('0.5');
+
+  await runScopeTest_expectSuccess(allowance, transferAmount);
+});
+
+test('Scope: Bob attempts to redeem the delegation with an amount exceeding the allowance using nativeTokenTransferAmount scope', async () => {
+  const allowance = parseEther('1');
+  const transferAmount = parseEther('1.5');
+
+  await runScopeTest_expectFailure(
+    allowance,
+    transferAmount,
+    'NativeTokenTransferAmountEnforcer:allowance-exceeded',
+  );
+});
+
+const runScopeTest_expectSuccess = async (
+  allowance: bigint,
+  transferAmount: bigint,
+) => {
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
   const delegation = createDelegation({
+    environment: aliceSmartAccount.environment,
     to: bobAddress,
     from: aliceAddress,
-    caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-      'nativeTokenTransferAmount',
-      { maxAmount: allowance },
-    ),
+    scope: {
+      type: 'nativeTokenTransferAmount',
+      maxAmount: allowance,
+    },
+    caveats: [],
+  });
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: bobAddress,
+    value: transferAmount,
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  const balanceBefore = await publicClient.getBalance({
+    address: bobAddress,
+  });
+
+  const userOpHash = await sponsoredBundlerClient.sendUserOperation({
+    account: bobSmartAccount,
+    calls: [
+      {
+        to: bobSmartAccount.address,
+        data: redeemData,
+      },
+    ],
+    ...gasPrice,
+  });
+
+  const receipt = await sponsoredBundlerClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  });
+
+  expectUserOperationToSucceed(receipt);
+
+  const balanceAfter = await publicClient.getBalance({
+    address: bobAddress,
+  });
+
+  expect(
+    balanceAfter - balanceBefore,
+    'Expected balance to increase by transfer amount',
+  ).toEqual(transferAmount);
+};
+
+const runScopeTest_expectFailure = async (
+  allowance: bigint,
+  transferAmount: bigint,
+  expectedError: string,
+) => {
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
+  const delegation = createDelegation({
+    environment: aliceSmartAccount.environment,
+    to: bobAddress,
+    from: aliceAddress,
+    scope: {
+      type: 'nativeTokenTransferAmount',
+      maxAmount: allowance,
+    },
+    caveats: [],
   });
 
   const signedDelegation = {

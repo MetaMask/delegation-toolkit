@@ -20,8 +20,9 @@ import type {
 } from 'viem';
 
 import { type Caveats, resolveCaveats } from './caveatBuilder';
+import type { ScopeConfig } from './caveatBuilder/scope';
 import { CAVEAT_ABI_TYPE_COMPONENTS } from './caveats';
-import type { Delegation } from './types';
+import type { Delegation, DeleGatorEnvironment } from './types';
 
 export {
   ANY_BENEFICIARY,
@@ -189,6 +190,8 @@ export const getDelegationHashOffchain = (input: Delegation): Hex => {
 };
 
 type BaseCreateDelegationOptions = {
+  environment: DeleGatorEnvironment;
+  scope: ScopeConfig;
   from: Hex;
   caveats: Caveats;
   parentDelegation?: Delegation | Hex;

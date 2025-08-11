@@ -13,6 +13,7 @@ import {
   toMetaMaskSmartAccount,
   ExecutionMode,
   type MetaMaskSmartAccount,
+  ROOT_AUTHORITY,
 } from '@metamask/delegation-toolkit';
 import {
   getErc20PeriodTransferEnforcerAvailableAmount,
@@ -72,7 +73,7 @@ beforeEach(async () => {
 
   // Create and deploy Alice's smart account
   aliceSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x1',
@@ -88,7 +89,7 @@ beforeEach(async () => {
 
   // Create Bob's smart account
   bobSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [bob.address, [], [], []],
     deploySalt: '0x2',
@@ -115,15 +116,15 @@ describe('ERC20PeriodTransferEnforcer', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'erc20PeriodTransfer',
-        {
-          tokenAddress: erc20TokenAddress,
-          periodAmount,
-          periodDuration,
-          startDate: currentTime,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'erc20PeriodTransfer',
+        tokenAddress: erc20TokenAddress,
+        periodAmount,
+        periodDuration,
+        startDate: currentTime,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -195,15 +196,15 @@ describe('ERC20PeriodTransferEnforcer', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'erc20PeriodTransfer',
-        {
-          tokenAddress: erc20TokenAddress,
-          periodAmount,
-          periodDuration,
-          startDate: futureStartDate,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'erc20PeriodTransfer',
+        tokenAddress: erc20TokenAddress,
+        periodAmount,
+        periodDuration,
+        startDate: futureStartDate,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -272,15 +273,15 @@ describe('ERC20PeriodTransferEnforcer', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'erc20PeriodTransfer',
-        {
-          tokenAddress: erc20TokenAddress,
-          periodAmount,
-          periodDuration,
-          startDate,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'erc20PeriodTransfer',
+        tokenAddress: erc20TokenAddress,
+        periodAmount,
+        periodDuration,
+        startDate,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -356,16 +357,16 @@ describe('ERC20StreamingEnforcer', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'erc20Streaming',
-        {
-          tokenAddress: erc20TokenAddress,
-          initialAmount,
-          maxAmount,
-          amountPerSecond,
-          startTime: currentTime,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'erc20Streaming',
+        tokenAddress: erc20TokenAddress,
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime: currentTime,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -452,16 +453,16 @@ describe('ERC20StreamingEnforcer', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'erc20Streaming',
-        {
-          tokenAddress: erc20TokenAddress,
-          initialAmount,
-          maxAmount,
-          amountPerSecond,
-          startTime: futureStartTime,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'erc20Streaming',
+        tokenAddress: erc20TokenAddress,
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime: futureStartTime,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -530,16 +531,16 @@ describe('ERC20StreamingEnforcer', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'erc20Streaming',
-        {
-          tokenAddress: erc20TokenAddress,
-          initialAmount,
-          maxAmount,
-          amountPerSecond,
-          startTime: pastStartTime,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'erc20Streaming',
+        tokenAddress: erc20TokenAddress,
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime: pastStartTime,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -622,21 +623,23 @@ describe('MultiTokenPeriodEnforcer', () => {
     const periodDuration = 3600; // 1 hour
 
     // Create delegation with multi-token period caveat
-    const delegation = createDelegation({
-      to: bobSmartAccount.address,
-      from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'multiTokenPeriod',
-        [
+    const delegation = {
+      delegate: bobSmartAccount.address,
+      delegator: aliceSmartAccount.address,
+      authority: ROOT_AUTHORITY as `0x${string}`,
+      caveats: createCaveatBuilder(aliceSmartAccount.environment)
+        .addCaveat('multiTokenPeriod', [
           {
             token: erc20TokenAddress,
             periodAmount,
             periodDuration,
             startDate: currentTime,
           },
-        ],
-      ),
-    });
+        ])
+        .build(),
+      salt: '0x1' as `0x${string}`,
+      signature: '0x1',
+    };
 
     const signedDelegation = {
       ...delegation,
@@ -716,21 +719,23 @@ describe('MultiTokenPeriodEnforcer', () => {
     const transferAmount = parseEther('2');
     const futureStartDate = currentTime + 2 * periodDuration;
 
-    const delegation = createDelegation({
-      to: bobSmartAccount.address,
-      from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'multiTokenPeriod',
-        [
+    const delegation = {
+      delegate: bobSmartAccount.address,
+      delegator: aliceSmartAccount.address,
+      authority: ROOT_AUTHORITY as `0x${string}`,
+      caveats: createCaveatBuilder(aliceSmartAccount.environment)
+        .addCaveat('multiTokenPeriod', [
           {
             token: erc20TokenAddress,
             periodAmount,
             periodDuration,
             startDate: futureStartDate,
           },
-        ],
-      ),
-    });
+        ])
+        .build(),
+      salt: '0x1' as `0x${string}`,
+      signature: '0x1',
+    };
 
     const signedDelegation = {
       ...delegation,
@@ -800,21 +805,23 @@ describe('MultiTokenPeriodEnforcer', () => {
     const transferAmount = parseEther('2');
     const startDate = currentTime - 2 * periodDuration;
 
-    const delegation = createDelegation({
-      to: bobSmartAccount.address,
-      from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'multiTokenPeriod',
-        [
+    const delegation = {
+      delegate: bobSmartAccount.address,
+      delegator: aliceSmartAccount.address,
+      authority: ROOT_AUTHORITY as `0x${string}`,
+      caveats: createCaveatBuilder(aliceSmartAccount.environment)
+        .addCaveat('multiTokenPeriod', [
           {
             token: erc20TokenAddress,
             periodAmount,
             periodDuration,
             startDate,
           },
-        ],
-      ),
-    });
+        ])
+        .build(),
+      salt: '0x1' as `0x${string}`,
+      signature: '0x1',
+    };
 
     const signedDelegation = {
       ...delegation,
@@ -893,14 +900,14 @@ describe('NativeTokenPeriodTransferEnforcer', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'nativeTokenPeriodTransfer',
-        {
-          periodAmount,
-          periodDuration,
-          startDate: currentTime,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'nativeTokenPeriodTransfer',
+        periodAmount,
+        periodDuration,
+        startDate: currentTime,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -980,14 +987,14 @@ describe('NativeTokenPeriodTransferEnforcer', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'nativeTokenPeriodTransfer',
-        {
-          periodAmount,
-          periodDuration,
-          startDate: futureStartDate,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'nativeTokenPeriodTransfer',
+        periodAmount,
+        periodDuration,
+        startDate: futureStartDate,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -1052,14 +1059,14 @@ describe('NativeTokenPeriodTransferEnforcer', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'nativeTokenPeriodTransfer',
-        {
-          periodAmount,
-          periodDuration,
-          startDate,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'nativeTokenPeriodTransfer',
+        periodAmount,
+        periodDuration,
+        startDate,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -1131,15 +1138,15 @@ describe('NativeTokenStreamingEnforcer', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'nativeTokenStreaming',
-        {
-          initialAmount,
-          maxAmount,
-          amountPerSecond,
-          startTime: currentTime,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'nativeTokenStreaming',
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime: currentTime,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -1221,15 +1228,15 @@ describe('NativeTokenStreamingEnforcer', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'nativeTokenStreaming',
-        {
-          initialAmount,
-          maxAmount,
-          amountPerSecond,
-          startTime: futureStartTime,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'nativeTokenStreaming',
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime: futureStartTime,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -1293,15 +1300,15 @@ describe('NativeTokenStreamingEnforcer', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'nativeTokenStreaming',
-        {
-          initialAmount,
-          maxAmount,
-          amountPerSecond,
-          startTime: pastStartTime,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'nativeTokenStreaming',
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime: pastStartTime,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -1382,15 +1389,15 @@ describe('Generic caveat utils functionality', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'erc20PeriodTransfer',
-        {
-          tokenAddress: erc20TokenAddress,
-          periodAmount,
-          periodDuration,
-          startDate: currentTime,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'erc20PeriodTransfer',
+        tokenAddress: erc20TokenAddress,
+        periodAmount,
+        periodDuration,
+        startDate: currentTime,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -1421,15 +1428,15 @@ describe('Individual action functions vs client extension methods', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'erc20PeriodTransfer',
-        {
-          tokenAddress: erc20TokenAddress,
-          periodAmount,
-          periodDuration,
-          startDate: currentTime,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'erc20PeriodTransfer',
+        tokenAddress: erc20TokenAddress,
+        periodAmount,
+        periodDuration,
+        startDate: currentTime,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -1464,16 +1471,16 @@ describe('Individual action functions vs client extension methods', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'erc20Streaming',
-        {
-          tokenAddress: erc20TokenAddress,
-          initialAmount,
-          maxAmount,
-          amountPerSecond,
-          startTime: currentTime,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'erc20Streaming',
+        tokenAddress: erc20TokenAddress,
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime: currentTime,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -1503,21 +1510,23 @@ describe('Individual action functions vs client extension methods', () => {
     const periodAmount = parseEther('6');
     const periodDuration = 3600; // 1 hour
 
-    const delegation = createDelegation({
-      to: bobSmartAccount.address,
-      from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'multiTokenPeriod',
-        [
+    const delegation = {
+      delegate: bobSmartAccount.address,
+      delegator: aliceSmartAccount.address,
+      authority: ROOT_AUTHORITY as `0x${string}`,
+      caveats: createCaveatBuilder(aliceSmartAccount.environment)
+        .addCaveat('multiTokenPeriod', [
           {
             token: erc20TokenAddress,
             periodAmount,
             periodDuration,
             startDate: currentTime,
           },
-        ],
-      ),
-    });
+        ])
+        .build(),
+      salt: '0x1' as `0x${string}`,
+      signature: '0x1',
+    };
 
     const signedDelegation = {
       ...delegation,
@@ -1552,14 +1561,14 @@ describe('Individual action functions vs client extension methods', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'nativeTokenPeriodTransfer',
-        {
-          periodAmount,
-          periodDuration,
-          startDate: currentTime,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'nativeTokenPeriodTransfer',
+        periodAmount,
+        periodDuration,
+        startDate: currentTime,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {
@@ -1594,15 +1603,15 @@ describe('Individual action functions vs client extension methods', () => {
     const delegation = createDelegation({
       to: bobSmartAccount.address,
       from: aliceSmartAccount.address,
-      caveats: createCaveatBuilder(aliceSmartAccount.environment).addCaveat(
-        'nativeTokenStreaming',
-        {
-          initialAmount,
-          maxAmount,
-          amountPerSecond,
-          startTime: currentTime,
-        },
-      ),
+      environment: aliceSmartAccount.environment,
+      scope: {
+        type: 'nativeTokenStreaming',
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime: currentTime,
+      },
+      caveats: [],
     });
 
     const signedDelegation = {

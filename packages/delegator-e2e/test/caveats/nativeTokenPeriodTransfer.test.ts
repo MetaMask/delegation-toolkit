@@ -5,11 +5,16 @@ import {
   createCaveatBuilder,
 } from '@metamask/delegation-toolkit/utils';
 import {
-  createDelegation,
   Implementation,
   toMetaMaskSmartAccount,
   ExecutionMode,
-  type MetaMaskSmartAccount,
+  ROOT_AUTHORITY,
+  createDelegation,
+  createExecution,
+} from '@metamask/delegation-toolkit';
+import type {
+  MetaMaskSmartAccount,
+  Delegation,
 } from '@metamask/delegation-toolkit';
 
 import {
@@ -77,18 +82,20 @@ const runTest_expectSuccess = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'nativeTokenPeriodTransfer',
-      {
+  const delegation: Delegation = {
+    delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('nativeTokenPeriodTransfer', {
         periodAmount,
         periodDuration,
         startDate,
-      },
-    ),
-  });
+      })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -149,18 +156,20 @@ const runTest_expectFailure = async (
 ) => {
   const { environment } = aliceSmartAccount;
 
-  const delegation = createDelegation({
-    to: delegate,
-    from: delegator.address,
-    caveats: createCaveatBuilder(environment).addCaveat(
-      'nativeTokenPeriodTransfer',
-      {
+  const delegation: Delegation = {
+    delegate,
+    delegator: delegator.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(environment)
+      .addCaveat('nativeTokenPeriodTransfer', {
         periodAmount,
         periodDuration,
         startDate,
-      },
-    ),
-  });
+      })
+      .build(),
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -294,11 +303,14 @@ test('Bob attempts to redeem with invalid terms length', async () => {
   // Create invalid terms length by appending an empty byte
   caveats[0].terms = concat([caveats[0].terms, '0x00']);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
     caveats,
-  });
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -360,11 +372,14 @@ test('Bob attempts to redeem with zero start date', async () => {
     `0x${startDate.toString(16).padStart(64, '0')}`, // zero start date
   ]);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
     caveats,
-  });
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -426,11 +441,14 @@ test('Bob attempts to redeem with zero period amount', async () => {
     `0x${startDate.toString(16).padStart(64, '0')}`, // startDate
   ]);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
     caveats,
-  });
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -492,11 +510,14 @@ test('Bob attempts to redeem with zero period duration', async () => {
     `0x${startDate.toString(16).padStart(64, '0')}`, // startDate
   ]);
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
     caveats,
-  });
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -551,11 +572,14 @@ test('Bob attempts to redeem before start date', async () => {
     })
     .build();
 
-  const delegation = createDelegation({
-    to: bobSmartAccount.address,
-    from: aliceSmartAccount.address,
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
     caveats,
-  });
+    signature: '0x',
+  };
 
   const signedDelegation = {
     ...delegation,
@@ -592,3 +616,163 @@ test('Bob attempts to redeem before start date', async () => {
     }),
   ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 });
+
+test('Scope: Bob redeems the delegation with transfers within period limit using nativeTokenPeriodTransfer scope', async () => {
+  const periodAmount = parseEther('1');
+  const periodDuration = 86400; // 1 day in seconds
+  const startDate = currentTime;
+  const transferAmount = parseEther('0.5');
+
+  await runScopeTest_expectSuccess(
+    periodAmount,
+    periodDuration,
+    startDate,
+    transferAmount,
+  );
+});
+
+test('Scope: Bob attempts to redeem the delegation exceeding period amount using nativeTokenPeriodTransfer scope', async () => {
+  const periodAmount = parseEther('1');
+  const periodDuration = 86400; // 1 day in seconds
+  const startDate = currentTime;
+  const transferAmount = parseEther('1.5');
+
+  await runScopeTest_expectFailure(
+    periodAmount,
+    periodDuration,
+    startDate,
+    transferAmount,
+    'NativeTokenPeriodTransferEnforcer:transfer-amount-exceeded',
+  );
+});
+
+const runScopeTest_expectSuccess = async (
+  periodAmount: bigint,
+  periodDuration: number,
+  startDate: number,
+  transferAmount: bigint,
+) => {
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
+  const delegation = createDelegation({
+    environment: aliceSmartAccount.environment,
+    to: bobAddress,
+    from: aliceAddress,
+    scope: {
+      type: 'nativeTokenPeriodTransfer',
+      periodAmount,
+      periodDuration,
+      startDate,
+    },
+    caveats: [],
+  });
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: bobAddress,
+    value: transferAmount,
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  const balanceBefore = await publicClient.getBalance({
+    address: bobAddress,
+  });
+
+  const userOpHash = await sponsoredBundlerClient.sendUserOperation({
+    account: bobSmartAccount,
+    calls: [
+      {
+        to: bobSmartAccount.address,
+        data: redeemData,
+      },
+    ],
+    ...gasPrice,
+  });
+
+  const receipt = await sponsoredBundlerClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  });
+
+  expectUserOperationToSucceed(receipt);
+
+  const balanceAfter = await publicClient.getBalance({
+    address: bobAddress,
+  });
+
+  expect(balanceAfter).toBe(balanceBefore + transferAmount);
+};
+
+const runScopeTest_expectFailure = async (
+  periodAmount: bigint,
+  periodDuration: number,
+  startDate: number,
+  transferAmount: bigint,
+  expectedError: string,
+) => {
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
+  const delegation = createDelegation({
+    environment: aliceSmartAccount.environment,
+    to: bobAddress,
+    from: aliceAddress,
+    scope: {
+      type: 'nativeTokenPeriodTransfer',
+      periodAmount,
+      periodDuration,
+      startDate,
+    },
+    caveats: [],
+  });
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: bobAddress,
+    value: transferAmount,
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  await expect(
+    sponsoredBundlerClient.sendUserOperation({
+      account: bobSmartAccount,
+      calls: [
+        {
+          to: bobSmartAccount.address,
+          data: redeemData,
+        },
+      ],
+      ...gasPrice,
+    }),
+  ).rejects.toThrow(stringToUnprefixedHex(expectedError));
+};
