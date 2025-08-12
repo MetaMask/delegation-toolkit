@@ -9,16 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.13.0-rc.3]
 
-### Uncategorized
+### Added
 
-- Introducing Caveat "Scopes" ([#51](https://github.com/MetaMask/delegation-toolkit/pull/51))
-- Merge branch 'main' into feat/scopes2
-- chore: deleted scope types
-- chore: using string names for scopes, added e2e tests
-- refactor: separated scopes, and deleted enums
-- Add exhaustiveness check to scope resolution switch statement
-- Remove SpecificActionErc20TransferBatch scope
-- Introduce caveat scopes - Add scope-based caveat builders for common delegation patterns - Update delegation factory functions to require environment and scope configuration - Move CoreCaveatBuilder into it's own file - Move resolveCaveats into it's own file
+- Delegation Scopes and a declarative API to define delegation caveats ([#51](https://github.com/MetaMask/delegation-toolkit/pull/51))
 
 ## [0.13.0-rc.2]
 
@@ -45,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed a bug where `sendTransactionWithDelegation` failed whenever `value` was specified in the parameters. ([#30](https://github.com/metamask/delegation-toolkit/pull/30))
 
-[Unreleased]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.3...HEAD
-[0.13.0-rc.3]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.2...@metamask/delegation-toolkit@0.13.0-rc.3
-[0.13.0-rc.2]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.1...@metamask/delegation-toolkit@0.13.0-rc.2
-[0.13.0-rc.1]: https://github.com/MetaMask/delegation-toolkit/releases/tag/@metamask/delegation-toolkit@0.13.0-rc.1
+[Unreleased]: https://github.com/metamask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.3...HEAD
+[0.13.0-rc.3]: https://github.com/metamask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.2...@metamask/delegation-toolkit@0.13.0-rc.3
+[0.13.0-rc.2]: https://github.com/metamask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.1...@metamask/delegation-toolkit@0.13.0-rc.2
+[0.13.0-rc.1]: https://github.com/metamask/delegation-toolkit/releases/tag/@metamask/delegation-toolkit@0.13.0-rc.1
