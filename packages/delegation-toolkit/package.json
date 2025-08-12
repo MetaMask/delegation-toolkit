@@ -1,6 +1,6 @@
 {
   "name": "@metamask/delegation-toolkit",
-  "version": "0.13.0-rc.2",
+  "version": "0.13.0-rc.3",
   "type": "module",
   "description": "The Delegation Toolkit built on top of Viem - a library for interacting with DeleGator Smart Accounts",
   "license": "(MIT-0 OR Apache-2.0)",
