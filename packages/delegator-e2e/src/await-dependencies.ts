@@ -69,17 +69,14 @@ const deployEnvironment = async () => {
 
   const timeoutRef = setTimeout(() => (hasTimedOut = true), TIMEOUT_MS);
 
-  await waitFor('Blockchain node', nodeUrl);
-
-  const waitingForDependencies = Promise.all([
+  await Promise.all([
+    waitFor('Blockchain node', nodeUrl),
     waitFor('Bundler', bundlerUrl),
     waitFor('Mock paymaster', paymasterUrl),
   ]);
 
   const environment = await deployEnvironment();
   await writeFile('./.gator-env.json', JSON.stringify(environment, null, 2));
-
-  await waitingForDependencies;
 
   clearTimeout(timeoutRef);
 
