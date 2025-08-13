@@ -66,3 +66,10 @@ export {
   createCaveatEnforcerClient,
   type CaveatEnforcerClient,
 } from './actions/caveatEnforcerClient';
+
+export {
+  createInfuraBundlerClient,
+  type InfuraBundlerClient,
+  type GasPriceTier,
+  type UserOperationGasPriceResponse,
+} from './actions/infuraBundlerClient';

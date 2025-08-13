@@ -16,7 +16,7 @@
     "setup": "yarn build && docker compose up -d && npx tsx src/await-dependencies.ts",
     "test": "npx vitest run",
     "test:e2e": "yarn setup && yarn test; EXIT_CODE=$?; yarn teardown; exit $EXIT_CODE",
-    "test:delegation": "npx vitest run --config vitest.standalone.config.ts standalone-tests/delegationWithInfuraTest.test.ts",
+    "test:standalone": "npx vitest --config vitest.standalone.config.ts --run",
     "teardown": "docker compose down"
   },
   "peerDependencies": {
