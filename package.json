@@ -24,6 +24,7 @@
     "lint": "turbo lint",
     "test": "turbo run test --filter='!./packages/delegator-e2e'",
     "test:e2e": "turbo run test:e2e --filter='./packages/delegator-e2e'",
+    "test:delegation": "cd packages/delegator-e2e && yarn test:delegation",
     "test:watch": "turbo run test:watch"
   },
   "devDependencies": {
