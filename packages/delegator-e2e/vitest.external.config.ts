@@ -4,10 +4,10 @@ export default defineConfig({
   test: {
     testTimeout: 120_000,
     hookTimeout: 120_000,
-    // Standalone tests don't need environment setup or shared deployer
+    // External integration tests don't need environment setup or shared deployer
     fileParallelism: true,
-    // No setup files - standalone tests are self-contained
-    include: ['standalone-tests/**/*.test.ts'],
+    // No setup files - external tests are self-contained
+    include: ['external-integration-tests/**/*.test.ts'],
     exclude: ['contracts/**', 'test/**'],
   },
 });

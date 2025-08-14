@@ -1,6 +1,7 @@
-import type { Transport, Chain, Hex } from 'viem';
+import type { Transport, Chain, Hex, Client, Account } from 'viem';
 import {
   createBundlerClient,
+  type BundlerClient,
   type BundlerClientConfig,
   type SmartAccount,
 } from 'viem/account-abstraction';
@@ -28,11 +29,23 @@ export type UserOperationGasPriceResponse = {
 };
 
 /**
+ * Pimlico bundler schema for type-safe RPC method calls
+ */
+/* eslint-disable @typescript-eslint/naming-convention */
+type PimlicoBundlerSchema = [
+  {
+    Method: 'pimlico_getUserOperationGasPrice';
+    Parameters: [];
+    ReturnType: UserOperationGasPriceResponse;
+  },
+];
+
+/**
  * Infura bundler actions for extending bundler clients.
  *
- * @returns A function that takes a bundler client and returns the client extension with Infura bundler actions.
+ * @returns A function that takes a client and returns the client extension with Infura bundler actions.
  */
-const infuraBundlerActions = () => (client: any) => ({
+const infuraBundlerActions = () => (client: Client) => ({
   /**
    * Get user operation gas prices from Infura bundler.
    * Calls the pimlico_getUserOperationGasPrice RPC method.
@@ -45,12 +58,17 @@ const infuraBundlerActions = () => (client: any) => ({
    * ```
    */
   async getUserOperationGasPrice(): Promise<UserOperationGasPriceResponse> {
-    const response = await client.request({
-      method: 'pimlico_getUserOperationGasPrice' as any,
-      params: [] as any,
-    });
+    const pimlicoClient = client as Client<
+      Transport,
+      Chain | undefined,
+      Account | undefined,
+      PimlicoBundlerSchema
+    >;
 
-    return response as unknown as UserOperationGasPriceResponse;
+    return await pimlicoClient.request({
+      method: 'pimlico_getUserOperationGasPrice',
+      params: [],
+    });
   },
 });
 
@@ -61,8 +79,15 @@ export type InfuraBundlerClient<
   TTransport extends Transport = Transport,
   TChain extends Chain | undefined = Chain | undefined,
   TAccount extends SmartAccount | undefined = SmartAccount | undefined,
-> = ReturnType<typeof createBundlerClient<TTransport, TChain, TAccount>> &
-  ReturnType<ReturnType<typeof infuraBundlerActions>>;
+> = BundlerClient<TTransport, TChain, TAccount> & {
+  /**
+   * Get user operation gas prices from Infura bundler.
+   * Calls the pimlico_getUserOperationGasPrice RPC method.
+   *
+   * @returns Promise resolving to gas price tiers (slow, standard, fast).
+   */
+  getUserOperationGasPrice(): Promise<UserOperationGasPriceResponse>;
+};
 
 /**
  * Creates an Infura bundler client extended with Infura bundler actions.
