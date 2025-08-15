@@ -1,3 +1,9 @@
+import type {
+  AccountSigner,
+  PermissionRequest,
+  PermissionResponse,
+  PermissionTypes,
+} from '@metamask/7715-permission-types';
 import type { Account, Chain, Client, RpcSchema, Transport } from 'viem';
 
 /**
@@ -14,14 +20,14 @@ export type SnapAuthorizations = Record<
 >;
 
 /**
- * RPC schema for MetaMask Snap-related methods.
+ * RPC schema for MetaMask related methods.
  *
  * Extends the base RPC schema with methods specific to interacting with Snaps:
  * - `wallet_invokeSnap`: Invokes a method on a specific Snap.
  * - `wallet_getSnaps`: Retrieves all installed Snaps and their authorization status.
  * - `wallet_requestSnaps`: Requests permission to use specific Snaps.
  */
-export type SnapRpcSchema = RpcSchema &
+export type MetaMaskExtensionSchema = RpcSchema &
   [
     {
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -53,6 +59,14 @@ export type SnapRpcSchema = RpcSchema &
       // eslint-disable-next-line @typescript-eslint/naming-convention
       ReturnType: SnapAuthorizations;
     },
+    {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      Method: 'wallet_requestExecutionPermissions';
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      Params: PermissionRequest<AccountSigner, PermissionTypes>[];
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      ReturnType: PermissionResponse<AccountSigner, PermissionTypes>[];
+    },
   ];
 
 /**
@@ -62,11 +76,11 @@ export type SnapRpcSchema = RpcSchema &
  * the standard Viem client interface, with added type safety for
  * Snap-specific methods.
  */
-export type SnapClient = Client<
+export type MetaMaskExtensionClient = Client<
   Transport,
   Chain | undefined,
   Account | undefined,
-  SnapRpcSchema
+  MetaMaskExtensionSchema
 >;
 
 /**
@@ -94,7 +108,7 @@ const isSnapAuthorized = (
  * @param snapId - The ID of the snap to re-authorize.
  * @returns A promise that resolves to a boolean indicating whether the snap was re-authorized.
  */
-const reAuthorize = async (client: SnapClient, snapId: string) => {
+const reAuthorize = async (client: MetaMaskExtensionClient, snapId: string) => {
   const newAuthorizations = await client.request({
     method: 'wallet_requestSnaps',
     params: {
@@ -118,14 +132,12 @@ const reAuthorize = async (client: SnapClient, snapId: string) => {
  * It returns true only if both snaps are successfully authorized.
  */
 export async function ensureSnapsAuthorized(
-  client: SnapClient,
-  snapIds?: { kernelSnapId: string; providerSnapId: string },
+  client: MetaMaskExtensionClient,
+  {
+    kernelSnapId,
+    providerSnapId,
+  }: { kernelSnapId: string; providerSnapId: string },
 ) {
-  const kernelSnapId =
-    snapIds?.kernelSnapId ?? 'npm:@metamask/permissions-kernel-snap';
-  const providerSnapId =
-    snapIds?.providerSnapId ?? 'npm:@metamask/gator-permissions-snap';
-
   const existingAuthorizations = await client.request({
     method: 'wallet_getSnaps',
     params: {} as Record<string, never>,

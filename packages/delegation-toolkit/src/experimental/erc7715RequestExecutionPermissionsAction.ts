@@ -11,7 +11,7 @@ import type {
 } from '@metamask/7715-permission-types';
 import { isHex, toHex, type Address } from 'viem';
 
-import type { SnapClient } from './snapsAuthorization.js';
+import type { MetaMaskExtensionClient } from './snapsAuthorization.js';
 
 type PermissionParameter = {
   type: string;
@@ -125,38 +125,50 @@ export type RequestExecutionPermissionsReturnType = PermissionResponse<
  * @template Signer - The type of the signer, either an Address or Account.
  * @param client - The client to use for the request.
  * @param parameters - The permissions requests to grant.
- * @param kernelSnapId - The ID of the kernel snap to invoke, defaults to 'npm:@metamask/permissions-kernel-snap'.
+ * @param kernelSnapId - The ID of the kernel snap to invoke, undefined to request via the wallet RPC method.
  * @returns A promise that resolves to the permission responses.
  * @description
  * This function formats the permissions requests and invokes the wallet snap to grant permissions.
  * It will throw an error if the permissions could not be granted.
  */
 export async function erc7715RequestExecutionPermissionsAction(
-  client: SnapClient,
+  client: MetaMaskExtensionClient,
   parameters: RequestExecutionPermissionsParameters,
-  kernelSnapId = 'npm:@metamask/permissions-kernel-snap',
+  kernelSnapId: string | undefined,
 ): Promise<RequestExecutionPermissionsReturnType> {
-  const formattedParameters = parameters.map(formatPermissionsRequest);
+  const formattedPermissionRequest = parameters.map(formatPermissionsRequest);
 
-  const result = await client.request(
-    {
-      method: 'wallet_invokeSnap',
-      params: {
-        snapId: kernelSnapId,
-        request: {
-          method: 'wallet_requestExecutionPermissions',
-          params: formattedParameters,
+  let result: PermissionResponse<AccountSigner, PermissionTypes>[] | null;
+
+  if (kernelSnapId) {
+    result = await client.request(
+      {
+        method: 'wallet_invokeSnap',
+        params: {
+          snapId: kernelSnapId,
+          request: {
+            method: 'wallet_requestExecutionPermissions',
+            params: formattedPermissionRequest,
+          },
         },
       },
-    },
-    { retryCount: 0 },
-  );
+      { retryCount: 0 },
+    );
+  } else {
+    result = await client.request(
+      {
+        method: 'wallet_requestExecutionPermissions',
+        params: formattedPermissionRequest,
+      },
+      { retryCount: 0 },
+    );
+  }
 
-  if (result === null) {
+  if (!result) {
     throw new Error('Failed to grant permissions');
   }
 
-  return result as any as RequestExecutionPermissionsReturnType;
+  return result;
 }
 
 /**

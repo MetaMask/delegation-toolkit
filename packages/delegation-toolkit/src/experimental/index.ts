@@ -12,7 +12,7 @@ import {
 import { erc7715RequestExecutionPermissionsAction } from './erc7715RequestExecutionPermissionsAction';
 import type { RequestExecutionPermissionsParameters } from './erc7715RequestExecutionPermissionsAction';
 import { ensureSnapsAuthorized } from './snapsAuthorization';
-import type { SnapClient } from './snapsAuthorization';
+import type { MetaMaskExtensionClient } from './snapsAuthorization';
 
 export {
   erc7715RequestExecutionPermissionsAction as requestExecutionPermissions,
@@ -27,20 +27,48 @@ export {
   type DelegationStorageConfig,
 } from './delegationStorage';
 
+type Erc7715ProviderConfig = {
+  useWalletMethod: boolean;
+  snapIds?: {
+    kernelSnapId?: string;
+    providerSnapId?: string;
+  };
+};
+
 export const erc7715ProviderActions =
-  (snapIds?: { kernelSnapId: string; providerSnapId: string }) =>
+  (erc7715ProviderConfig: Erc7715ProviderConfig = { useWalletMethod: false }) =>
   (client: Client) => ({
     requestExecutionPermissions: async (
       parameters: RequestExecutionPermissionsParameters,
     ) => {
-      if (!(await ensureSnapsAuthorized(client as SnapClient, snapIds))) {
-        throw new Error('Snaps not authorized');
+      const { useWalletMethod, snapIds } = erc7715ProviderConfig;
+
+      let kernelSnapId: string | undefined;
+
+      if (!useWalletMethod) {
+        kernelSnapId =
+          snapIds?.kernelSnapId ?? 'npm:@metamask/permissions-kernel-snap';
+
+        const snapIdsToAuthorize = {
+          kernelSnapId,
+          providerSnapId:
+            snapIds?.providerSnapId ?? 'npm:@metamask/gator-permissions-snap',
+        };
+
+        if (
+          !(await ensureSnapsAuthorized(
+            client as MetaMaskExtensionClient,
+            snapIdsToAuthorize,
+          ))
+        ) {
+          throw new Error('Snaps not authorized');
+        }
       }
 
       return erc7715RequestExecutionPermissionsAction(
-        client as SnapClient,
+        client as MetaMaskExtensionClient,
         parameters,
-        snapIds?.kernelSnapId,
+        kernelSnapId,
       );
     },
   });
