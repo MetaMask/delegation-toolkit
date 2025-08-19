@@ -80,9 +80,10 @@ describe('Caveat Enforcer Client', () => {
       },
       caveatEnforcers: {
         ERC20PeriodTransferEnforcer: randomAddress(),
+        ERC20StreamingEnforcer: randomAddress(),
+        ERC20TransferAmountEnforcer: randomAddress(),
         MultiTokenPeriodEnforcer: randomAddress(),
         NativeTokenPeriodTransferEnforcer: randomAddress(),
-        ERC20StreamingEnforcer: randomAddress(),
         NativeTokenStreamingEnforcer: randomAddress(),
         // Add other enforcers as needed
       },

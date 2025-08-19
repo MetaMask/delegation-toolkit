@@ -1,4 +1,5 @@
 import { type PublicClient, createPublicClient, http, type Hex } from 'viem';
+import { readContract } from 'viem/actions';
 import { sepolia } from 'viem/chains';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -22,7 +23,17 @@ import {
   ERC20StreamingEnforcer,
   NativeTokenStreamingEnforcer,
 } from '../src/contracts';
+import * as ERC20TransferAmountEnforcer from '../src/DelegationFramework/ERC20TransferAmountEnforcer';
 import type { DeleGatorEnvironment } from '../src/types';
+
+// Mock the readContract function
+vi.mock('viem/actions', async () => {
+  const actual = await vi.importActual('viem/actions');
+  return {
+    ...actual,
+    readContract: vi.fn(),
+  };
+});
 
 // Helper function to generate random bytes32
 const randomBytes32 = (): Hex => randomBytes(32);
@@ -79,9 +90,10 @@ describe('Caveat Contract Methods', () => {
       },
       caveatEnforcers: {
         ERC20PeriodTransferEnforcer: randomAddress(),
+        ERC20StreamingEnforcer: randomAddress(),
+        ERC20TransferAmountEnforcer: randomAddress(),
         MultiTokenPeriodEnforcer: randomAddress(),
         NativeTokenPeriodTransferEnforcer: randomAddress(),
-        ERC20StreamingEnforcer: randomAddress(),
         NativeTokenStreamingEnforcer: randomAddress(),
         // Add other enforcers as needed
       },
@@ -466,6 +478,86 @@ describe('Caveat Contract Methods', () => {
           params,
         ),
       ).rejects.toThrow('Contract call failed');
+    });
+  });
+
+  describe('ERC20TransferAmountEnforcer', () => {
+    it('should call getTermsInfo method correctly', async () => {
+      const mockAllowedContract = randomAddress();
+      const mockMaxTokens = 1000000n;
+
+      vi.mocked(readContract).mockResolvedValue([
+        mockAllowedContract,
+        mockMaxTokens,
+      ]);
+
+      const params = createParams({
+        enforcer: 'ERC20TransferAmountEnforcer',
+        terms:
+          '0x1234567890123456789012345678901234567890000000000000000000000000000000000000000000000000000000000001',
+      });
+
+      // Test direct function call
+      const contractAddress =
+        mockEnvironment.caveatEnforcers.ERC20TransferAmountEnforcer;
+      const firstCaveat = params.delegation.caveats[0];
+
+      if (!contractAddress) {
+        throw new Error('ERC20TransferAmountEnforcer not found');
+      }
+      if (!firstCaveat) {
+        throw new Error('No caveats found');
+      }
+
+      const result = await ERC20TransferAmountEnforcer.read.getTermsInfo({
+        client: publicClient,
+        contractAddress,
+        terms: firstCaveat.terms,
+      });
+
+      expect(readContract).toHaveBeenCalledWith(publicClient, {
+        address: contractAddress,
+        abi: expect.any(Array),
+        functionName: 'getTermsInfo',
+        args: [firstCaveat.terms],
+      });
+
+      expect(result).toEqual({
+        allowedContract: mockAllowedContract,
+        maxTokens: mockMaxTokens,
+      });
+    });
+
+    it('should call getSpentAmount method correctly', async () => {
+      const mockSpentAmount = 250000n;
+
+      vi.mocked(readContract).mockResolvedValue(mockSpentAmount);
+
+      const delegationHash = randomBytes32();
+      const delegationManager = randomAddress();
+      const contractAddress =
+        mockEnvironment.caveatEnforcers.ERC20TransferAmountEnforcer;
+
+      if (!contractAddress) {
+        throw new Error('ERC20TransferAmountEnforcer not found');
+      }
+
+      // Test direct function call
+      const result = await ERC20TransferAmountEnforcer.read.getSpentAmount({
+        client: publicClient,
+        contractAddress,
+        delegationManager,
+        delegationHash,
+      });
+
+      expect(readContract).toHaveBeenCalledWith(publicClient, {
+        address: contractAddress,
+        abi: expect.any(Array),
+        functionName: 'spentMap',
+        args: [delegationManager, delegationHash],
+      });
+
+      expect(result).toBe(mockSpentAmount);
     });
   });
 });
