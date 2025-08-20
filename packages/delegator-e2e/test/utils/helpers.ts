@@ -27,6 +27,7 @@ import {
 import CounterMetadata from '../utils/counter/metadata.json';
 import * as ERC20Token from '../../contracts/out/ERC20Token.sol/ERC20Token.json';
 import * as ERC721Token from '../../contracts/out/ERC721Token.sol/ERC721Token.json';
+import * as PayableReceiver from '../../contracts/out/PayableReceiver.sol/PayableReceiver.json';
 import {
   chain,
   nodeUrl,
@@ -49,6 +50,11 @@ const {
   abi: erc721TokenAbi,
   bytecode: { object: erc721TokenBytecode },
 } = ERC721Token;
+
+const {
+  abi: payableReceiverAbi,
+  bytecode: { object: payableReceiverBytecode },
+} = PayableReceiver;
 
 export const transport = http(nodeUrl);
 const deployerAccount = privateKeyToAccount(deployPk);
@@ -395,5 +401,73 @@ export const transferContractOwnership = (newOwner: Hex) => {
     ],
     functionName: 'transferOwnership',
     args: [newOwner],
+  });
+};
+
+export const deployPayableReceiver = async () => {
+  // Deploy the PayableReceiver contract
+  const hash = await deployerClient.deployContract({
+    abi: payableReceiverAbi as Abi,
+    bytecode: payableReceiverBytecode as Hex,
+  });
+
+  // Wait for the transaction receipt to get the deployed contract address
+  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+  if (!receipt.contractAddress) {
+    throw new Error(
+      'Failed to deploy PayableReceiver contract - no contract address in receipt',
+    );
+  }
+
+  return receipt.contractAddress;
+};
+
+export const getPayableReceiverBalance = async (
+  contractAddress: Hex,
+): Promise<bigint> => {
+  return publicClient.readContract({
+    address: contractAddress,
+    abi: payableReceiverAbi as Abi,
+    functionName: 'getBalance',
+    args: [],
+  }) as Promise<bigint>;
+};
+
+export const getPayableReceiverTotalReceived = async (
+  contractAddress: Hex,
+): Promise<bigint> => {
+  return publicClient.readContract({
+    address: contractAddress,
+    abi: payableReceiverAbi as Abi,
+    functionName: 'totalReceived',
+    args: [],
+  }) as Promise<bigint>;
+};
+
+export const getPayableReceiverCallCount = async (
+  contractAddress: Hex,
+): Promise<bigint> => {
+  return publicClient.readContract({
+    address: contractAddress,
+    abi: payableReceiverAbi as Abi,
+    functionName: 'callCount',
+    args: [],
+  }) as Promise<bigint>;
+};
+
+export const encodeReceiveEthCalldata = () => {
+  return encodeFunctionData({
+    abi: payableReceiverAbi as Abi,
+    functionName: 'receiveEth',
+    args: [],
+  });
+};
+
+export const encodeReceiveEthAlternativeCalldata = () => {
+  return encodeFunctionData({
+    abi: payableReceiverAbi as Abi,
+    functionName: 'receiveEthAlternative',
+    args: [],
   });
 };

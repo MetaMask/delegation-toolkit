@@ -316,7 +316,6 @@ test('complete delegation workflow with dynamic gas pricing', async () => {
       type: 'nativeTokenTransferAmount',
       maxAmount: 0n,
     },
-    caveats: [],
   });
 
   // Step 4: Sign delegation

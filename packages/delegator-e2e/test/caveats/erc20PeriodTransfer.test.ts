@@ -968,7 +968,6 @@ const runScopeTest_expectSuccess = async (
       periodDuration,
       startDate,
     },
-    caveats: [],
   });
 
   const signedDelegation = {
@@ -1064,7 +1063,6 @@ const runScopeTest_expectFailure = async (
       periodDuration,
       startDate,
     },
-    caveats: [],
   });
 
   const signedDelegation = {
