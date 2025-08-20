@@ -72,6 +72,34 @@ describe('createNativeTokenTransferCaveatBuilder', () => {
     ]);
   });
 
+  it('creates a native token transfer CaveatBuilder with empty allowedCalldata array (should fall back to default)', () => {
+    const config: NativeTokenTransferScopeConfig = {
+      type: 'nativeTokenTransferAmount',
+      maxAmount: 1000n,
+      allowedCalldata: [], // Empty array should trigger fallback to default exactCalldata
+    };
+
+    const caveatBuilder = createNativeTokenTransferCaveatBuilder(
+      environment,
+      config,
+    );
+
+    const caveats = caveatBuilder.build();
+
+    expect(caveats).to.deep.equal([
+      {
+        enforcer: environment.caveatEnforcers.ExactCalldataEnforcer,
+        args: '0x',
+        terms: '0x',
+      },
+      {
+        enforcer: environment.caveatEnforcers.NativeTokenTransferAmountEnforcer,
+        args: '0x',
+        terms: toHex(config.maxAmount, { size: 32 }),
+      },
+    ]);
+  });
+
   it('creates a native token transfer CaveatBuilder with allowed calldata', () => {
     const config: NativeTokenTransferScopeConfig = {
       type: 'nativeTokenTransferAmount',

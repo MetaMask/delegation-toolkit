@@ -39,7 +39,7 @@ export function createNativeTokenStreamingCaveatBuilder(
   const caveatBuilder = createCaveatBuilder(environment);
 
   // Add calldata restrictions
-  if (allowedCalldata) {
+  if (allowedCalldata && allowedCalldata.length > 0) {
     allowedCalldata.forEach((calldataConfig) => {
       caveatBuilder.addCaveat('allowedCalldata', calldataConfig);
     });
