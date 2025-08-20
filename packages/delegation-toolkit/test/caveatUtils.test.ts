@@ -22,8 +22,9 @@ import {
   NativeTokenPeriodTransferEnforcer,
   ERC20StreamingEnforcer,
   NativeTokenStreamingEnforcer,
+  ERC20TransferAmountEnforcer,
+  NativeTokenTransferAmountEnforcer,
 } from '../src/contracts';
-import * as ERC20TransferAmountEnforcer from '../src/DelegationFramework/ERC20TransferAmountEnforcer';
 import type { DeleGatorEnvironment } from '../src/types';
 
 // Mock the readContract function
@@ -95,6 +96,7 @@ describe('Caveat Contract Methods', () => {
         MultiTokenPeriodEnforcer: randomAddress(),
         NativeTokenPeriodTransferEnforcer: randomAddress(),
         NativeTokenStreamingEnforcer: randomAddress(),
+        NativeTokenTransferAmountEnforcer: randomAddress(),
         // Add other enforcers as needed
       },
     } as DeleGatorEnvironment;
@@ -549,6 +551,80 @@ describe('Caveat Contract Methods', () => {
         delegationManager,
         delegationHash,
       });
+
+      expect(readContract).toHaveBeenCalledWith(publicClient, {
+        address: contractAddress,
+        abi: expect.any(Array),
+        functionName: 'spentMap',
+        args: [delegationManager, delegationHash],
+      });
+
+      expect(result).toBe(mockSpentAmount);
+    });
+  });
+
+  describe('NativeTokenTransferAmountEnforcer', () => {
+    it('should call getTermsInfo method correctly', async () => {
+      const mockAllowance = 1000000000000000000n; // 1 ETH in wei
+
+      vi.mocked(readContract).mockResolvedValue(mockAllowance);
+
+      const params = createParams({
+        enforcer: 'NativeTokenTransferAmountEnforcer',
+        terms:
+          '0x0000000000000000000000000000000000000000000000000de0b6b3a7640000',
+      });
+
+      // Test direct function call
+      const contractAddress =
+        mockEnvironment.caveatEnforcers.NativeTokenTransferAmountEnforcer;
+      const firstCaveat = params.delegation.caveats[0];
+
+      if (!contractAddress) {
+        throw new Error('NativeTokenTransferAmountEnforcer not found');
+      }
+      if (!firstCaveat) {
+        throw new Error('No caveats found in delegation');
+      }
+
+      const result = await NativeTokenTransferAmountEnforcer.read.getTermsInfo({
+        client: publicClient,
+        contractAddress,
+        terms: firstCaveat.terms,
+      });
+
+      expect(readContract).toHaveBeenCalledWith(publicClient, {
+        address: contractAddress,
+        abi: expect.any(Array),
+        functionName: 'getTermsInfo',
+        args: [firstCaveat.terms],
+      });
+
+      expect(result).toBe(mockAllowance);
+    });
+
+    it('should call getSpentAmount method correctly', async () => {
+      const mockSpentAmount = 500000000000000000n; // 0.5 ETH in wei
+
+      vi.mocked(readContract).mockResolvedValue(mockSpentAmount);
+
+      const delegationHash = randomBytes32();
+      const delegationManager = randomAddress();
+      const contractAddress =
+        mockEnvironment.caveatEnforcers.NativeTokenTransferAmountEnforcer;
+
+      if (!contractAddress) {
+        throw new Error('NativeTokenTransferAmountEnforcer not found');
+      }
+
+      // Test direct function call
+      const result =
+        await NativeTokenTransferAmountEnforcer.read.getSpentAmount({
+          client: publicClient,
+          contractAddress,
+          delegationManager,
+          delegationHash,
+        });
 
       expect(readContract).toHaveBeenCalledWith(publicClient, {
         address: contractAddress,

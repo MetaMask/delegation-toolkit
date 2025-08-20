@@ -85,6 +85,7 @@ describe('Caveat Enforcer Client', () => {
         MultiTokenPeriodEnforcer: randomAddress(),
         NativeTokenPeriodTransferEnforcer: randomAddress(),
         NativeTokenStreamingEnforcer: randomAddress(),
+        NativeTokenTransferAmountEnforcer: randomAddress(),
         // Add other enforcers as needed
       },
     } as DeleGatorEnvironment;
