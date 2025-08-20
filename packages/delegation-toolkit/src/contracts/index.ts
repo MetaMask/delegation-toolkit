@@ -10,6 +10,7 @@ import * as MultiSigDeleGator from '../DelegationFramework/MultiSigDeleGator';
 import * as MultiTokenPeriodEnforcer from '../DelegationFramework/MultiTokenPeriodEnforcer';
 import * as NativeTokenPeriodTransferEnforcer from '../DelegationFramework/NativeTokenPeriodTransferEnforcer';
 import * as NativeTokenStreamingEnforcer from '../DelegationFramework/NativeTokenStreamingEnforcer';
+import * as NativeTokenTransferAmountEnforcer from '../DelegationFramework/NativeTokenTransferAmountEnforcer';
 import * as Ownable2Step from '../DelegationFramework/Ownable2Step';
 import * as Pausable from '../DelegationFramework/Pausable';
 import * as SimpleFactory from '../DelegationFramework/SimpleFactory';
@@ -38,6 +39,7 @@ export {
   MultiTokenPeriodEnforcer,
   NativeTokenPeriodTransferEnforcer,
   NativeTokenStreamingEnforcer,
+  NativeTokenTransferAmountEnforcer,
 };
 
 export type {
