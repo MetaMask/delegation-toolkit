@@ -854,7 +854,6 @@ const runScopeTest_expectSuccess = async (
       amountPerSecond,
       startTime,
     },
-    caveats: [],
   });
 
   const signedDelegation = {
@@ -952,7 +951,6 @@ const runScopeTest_expectFailure = async (
       amountPerSecond,
       startTime,
     },
-    caveats: [],
   });
 
   const signedDelegation = {

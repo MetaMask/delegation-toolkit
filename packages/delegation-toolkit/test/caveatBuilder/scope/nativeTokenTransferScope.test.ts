@@ -10,11 +10,12 @@ describe('createNativeTokenTransferCaveatBuilder', () => {
   const environment = {
     caveatEnforcers: {
       ExactCalldataEnforcer: randomAddress(),
+      AllowedCalldataEnforcer: randomAddress(),
       NativeTokenTransferAmountEnforcer: randomAddress(),
     },
   } as unknown as DeleGatorEnvironment;
 
-  it('creates a native token transfer CaveatBuilder', () => {
+  it('creates a native token transfer CaveatBuilder with default empty calldata', () => {
     const config: NativeTokenTransferScopeConfig = {
       type: 'nativeTokenTransferAmount',
       maxAmount: 1000n,
@@ -39,5 +40,70 @@ describe('createNativeTokenTransferCaveatBuilder', () => {
         terms: toHex(config.maxAmount, { size: 32 }),
       },
     ]);
+  });
+
+  it('creates a native token transfer CaveatBuilder with exact calldata', () => {
+    const config: NativeTokenTransferScopeConfig = {
+      type: 'nativeTokenTransferAmount',
+      maxAmount: 1000n,
+      exactCalldata: {
+        calldata: '0x1234abcd',
+      },
+    };
+
+    const caveatBuilder = createNativeTokenTransferCaveatBuilder(
+      environment,
+      config,
+    );
+
+    const caveats = caveatBuilder.build();
+
+    expect(caveats).to.deep.equal([
+      {
+        enforcer: environment.caveatEnforcers.ExactCalldataEnforcer,
+        args: '0x',
+        terms: '0x1234abcd',
+      },
+      {
+        enforcer: environment.caveatEnforcers.NativeTokenTransferAmountEnforcer,
+        args: '0x',
+        terms: toHex(config.maxAmount, { size: 32 }),
+      },
+    ]);
+  });
+
+  it('creates a native token transfer CaveatBuilder with allowed calldata', () => {
+    const config: NativeTokenTransferScopeConfig = {
+      type: 'nativeTokenTransferAmount',
+      maxAmount: 1000n,
+      allowedCalldata: [
+        {
+          startIndex: 4,
+          value: '0x1234',
+        },
+        {
+          startIndex: 8,
+          value: '0xabcd',
+        },
+      ],
+    };
+
+    const caveatBuilder = createNativeTokenTransferCaveatBuilder(
+      environment,
+      config,
+    );
+
+    const caveats = caveatBuilder.build();
+
+    expect(caveats).to.have.lengthOf(3);
+    expect(caveats[0]?.enforcer).to.equal(
+      environment.caveatEnforcers.AllowedCalldataEnforcer,
+    );
+    expect(caveats[1]?.enforcer).to.equal(
+      environment.caveatEnforcers.AllowedCalldataEnforcer,
+    );
+    expect(caveats[2]?.enforcer).to.equal(
+      environment.caveatEnforcers.NativeTokenTransferAmountEnforcer,
+    );
   });
 });

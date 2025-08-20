@@ -102,7 +102,6 @@ describe('Ownership Transfer Caveat', () => {
         type: 'ownershipTransfer',
         contractAddress,
       },
-      caveats: [],
     });
 
     // Sign the delegation
@@ -166,7 +165,6 @@ describe('Ownership Transfer Caveat', () => {
         type: 'ownershipTransfer',
         contractAddress, // Only allows this specific contract
       },
-      caveats: [],
     });
 
     // Sign the delegation
@@ -250,7 +248,6 @@ describe('Ownership Transfer Caveat', () => {
         type: 'ownershipTransfer',
         contractAddress,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -308,7 +305,6 @@ describe('Ownership Transfer Caveat', () => {
         type: 'ownershipTransfer',
         contractAddress, // Only allows this specific contract
       },
-      caveats: [],
     });
 
     const signedDelegation = {

@@ -124,7 +124,6 @@ describe('ERC20PeriodTransferEnforcer', () => {
         periodDuration,
         startDate: currentTime,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -204,7 +203,6 @@ describe('ERC20PeriodTransferEnforcer', () => {
         periodDuration,
         startDate: futureStartDate,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -281,7 +279,6 @@ describe('ERC20PeriodTransferEnforcer', () => {
         periodDuration,
         startDate,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -366,7 +363,6 @@ describe('ERC20StreamingEnforcer', () => {
         amountPerSecond,
         startTime: currentTime,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -462,7 +458,6 @@ describe('ERC20StreamingEnforcer', () => {
         amountPerSecond,
         startTime: futureStartTime,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -540,7 +535,6 @@ describe('ERC20StreamingEnforcer', () => {
         amountPerSecond,
         startTime: pastStartTime,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -907,7 +901,6 @@ describe('NativeTokenPeriodTransferEnforcer', () => {
         periodDuration,
         startDate: currentTime,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -994,7 +987,6 @@ describe('NativeTokenPeriodTransferEnforcer', () => {
         periodDuration,
         startDate: futureStartDate,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -1066,7 +1058,6 @@ describe('NativeTokenPeriodTransferEnforcer', () => {
         periodDuration,
         startDate,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -1146,7 +1137,6 @@ describe('NativeTokenStreamingEnforcer', () => {
         amountPerSecond,
         startTime: currentTime,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -1236,7 +1226,6 @@ describe('NativeTokenStreamingEnforcer', () => {
         amountPerSecond,
         startTime: futureStartTime,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -1308,7 +1297,6 @@ describe('NativeTokenStreamingEnforcer', () => {
         amountPerSecond,
         startTime: pastStartTime,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -1397,7 +1385,6 @@ describe('Generic caveat utils functionality', () => {
         periodDuration,
         startDate: currentTime,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -1436,7 +1423,6 @@ describe('Individual action functions vs client extension methods', () => {
         periodDuration,
         startDate: currentTime,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -1480,7 +1466,6 @@ describe('Individual action functions vs client extension methods', () => {
         amountPerSecond,
         startTime: currentTime,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -1568,7 +1553,6 @@ describe('Individual action functions vs client extension methods', () => {
         periodDuration,
         startDate: currentTime,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -1611,7 +1595,6 @@ describe('Individual action functions vs client extension methods', () => {
         amountPerSecond,
         startTime: currentTime,
       },
-      caveats: [],
     });
 
     const signedDelegation = {

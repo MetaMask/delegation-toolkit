@@ -1,6 +1,8 @@
 import type { DeleGatorEnvironment } from '../../types';
+import type { AllowedCalldataBuilderConfig } from '../allowedCalldataBuilder';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
+import type { ExactCalldataBuilderConfig } from '../exactCalldataBuilder';
 import type {
   nativeTokenStreaming,
   NativeTokenStreamingBuilderConfig,
@@ -8,6 +10,8 @@ import type {
 
 export type NativeTokenStreamingScopeConfig = {
   type: typeof nativeTokenStreaming;
+  allowedCalldata?: AllowedCalldataBuilderConfig[];
+  exactCalldata?: ExactCalldataBuilderConfig;
 } & NativeTokenStreamingBuilderConfig;
 
 /**
@@ -23,14 +27,38 @@ export function createNativeTokenStreamingCaveatBuilder(
   environment: DeleGatorEnvironment,
   config: NativeTokenStreamingScopeConfig,
 ): CoreCaveatBuilder {
-  return createCaveatBuilder(environment)
-    .addCaveat('exactCalldata', {
-      calldata: '0x',
-    })
-    .addCaveat('nativeTokenStreaming', {
-      initialAmount: config.initialAmount,
-      maxAmount: config.maxAmount,
-      amountPerSecond: config.amountPerSecond,
-      startTime: config.startTime,
+  const {
+    initialAmount,
+    maxAmount,
+    amountPerSecond,
+    startTime,
+    allowedCalldata,
+    exactCalldata,
+  } = config;
+
+  const caveatBuilder = createCaveatBuilder(environment);
+
+  // Add calldata restrictions
+  if (allowedCalldata) {
+    allowedCalldata.forEach((calldataConfig) => {
+      caveatBuilder.addCaveat('allowedCalldata', calldataConfig);
     });
+  } else if (exactCalldata) {
+    caveatBuilder.addCaveat('exactCalldata', exactCalldata);
+  } else {
+    // Default behavior: only allow empty calldata
+    caveatBuilder.addCaveat('exactCalldata', {
+      calldata: '0x',
+    });
+  }
+
+  // Add native token streaming restriction
+  caveatBuilder.addCaveat('nativeTokenStreaming', {
+    initialAmount,
+    maxAmount,
+    amountPerSecond,
+    startTime,
+  });
+
+  return caveatBuilder;
 }

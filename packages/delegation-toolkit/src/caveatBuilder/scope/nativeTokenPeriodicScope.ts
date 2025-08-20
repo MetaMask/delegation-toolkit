@@ -1,6 +1,8 @@
 import type { DeleGatorEnvironment } from '../../types';
+import type { AllowedCalldataBuilderConfig } from '../allowedCalldataBuilder';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
+import type { ExactCalldataBuilderConfig } from '../exactCalldataBuilder';
 import type {
   nativeTokenPeriodTransfer,
   NativeTokenPeriodTransferBuilderConfig,
@@ -8,6 +10,8 @@ import type {
 
 export type NativeTokenPeriodicScopeConfig = {
   type: typeof nativeTokenPeriodTransfer;
+  allowedCalldata?: AllowedCalldataBuilderConfig[];
+  exactCalldata?: ExactCalldataBuilderConfig;
 } & NativeTokenPeriodTransferBuilderConfig;
 
 /**
@@ -23,13 +27,36 @@ export function createNativeTokenPeriodicCaveatBuilder(
   environment: DeleGatorEnvironment,
   config: NativeTokenPeriodicScopeConfig,
 ): CoreCaveatBuilder {
-  return createCaveatBuilder(environment)
-    .addCaveat('exactCalldata', {
-      calldata: '0x',
-    })
-    .addCaveat('nativeTokenPeriodTransfer', {
-      periodAmount: config.periodAmount,
-      periodDuration: config.periodDuration,
-      startDate: config.startDate,
+  const {
+    periodAmount,
+    periodDuration,
+    startDate,
+    allowedCalldata,
+    exactCalldata,
+  } = config;
+
+  const caveatBuilder = createCaveatBuilder(environment);
+
+  // Add calldata restrictions
+  if (allowedCalldata) {
+    allowedCalldata.forEach((calldataConfig) => {
+      caveatBuilder.addCaveat('allowedCalldata', calldataConfig);
     });
+  } else if (exactCalldata) {
+    caveatBuilder.addCaveat('exactCalldata', exactCalldata);
+  } else {
+    // Default behavior: only allow empty calldata
+    caveatBuilder.addCaveat('exactCalldata', {
+      calldata: '0x',
+    });
+  }
+
+  // Add native token period transfer restriction
+  caveatBuilder.addCaveat('nativeTokenPeriodTransfer', {
+    periodAmount,
+    periodDuration,
+    startDate,
+  });
+
+  return caveatBuilder;
 }

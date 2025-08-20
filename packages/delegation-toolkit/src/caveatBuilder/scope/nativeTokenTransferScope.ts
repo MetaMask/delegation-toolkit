@@ -1,6 +1,8 @@
 import type { DeleGatorEnvironment } from '../../types';
+import type { AllowedCalldataBuilderConfig } from '../allowedCalldataBuilder';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
+import type { ExactCalldataBuilderConfig } from '../exactCalldataBuilder';
 import type {
   nativeTokenTransferAmount,
   NativeTokenTransferAmountBuilderConfig,
@@ -8,6 +10,8 @@ import type {
 
 export type NativeTokenTransferScopeConfig = {
   type: typeof nativeTokenTransferAmount;
+  allowedCalldata?: AllowedCalldataBuilderConfig[];
+  exactCalldata?: ExactCalldataBuilderConfig;
 } & NativeTokenTransferAmountBuilderConfig;
 
 /**
@@ -23,11 +27,28 @@ export function createNativeTokenTransferCaveatBuilder(
   environment: DeleGatorEnvironment,
   config: NativeTokenTransferScopeConfig,
 ): CoreCaveatBuilder {
-  return createCaveatBuilder(environment)
-    .addCaveat('exactCalldata', {
-      calldata: '0x',
-    })
-    .addCaveat('nativeTokenTransferAmount', {
-      maxAmount: config.maxAmount,
+  const { maxAmount, allowedCalldata, exactCalldata } = config;
+
+  const caveatBuilder = createCaveatBuilder(environment);
+
+  // Add calldata restrictions
+  if (allowedCalldata) {
+    allowedCalldata.forEach((calldataConfig) => {
+      caveatBuilder.addCaveat('allowedCalldata', calldataConfig);
     });
+  } else if (exactCalldata) {
+    caveatBuilder.addCaveat('exactCalldata', exactCalldata);
+  } else {
+    // Default behavior: only allow empty calldata
+    caveatBuilder.addCaveat('exactCalldata', {
+      calldata: '0x',
+    });
+  }
+
+  // Add native token transfer amount restriction
+  caveatBuilder.addCaveat('nativeTokenTransferAmount', {
+    maxAmount,
+  });
+
+  return caveatBuilder;
 }
