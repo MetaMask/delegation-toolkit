@@ -1,4 +1,4 @@
-import type { Address, Hex, PublicClient } from 'viem';
+import type { Address, Hex, Client } from 'viem';
 
 import { getDelegationHashOffchain } from '../delegation';
 import * as ERC20PeriodTransferEnforcer from '../DelegationFramework/ERC20PeriodTransferEnforcer';
@@ -114,13 +114,13 @@ function getEnforcerAddress({
 /**
  * Get available amount for ERC20 period transfer enforcer.
  *
- * @param client - The viem public client.
+ * @param client - The viem client.
  * @param environment - The delegator environment.
  * @param params - The parameters for the ERC20 period transfer enforcer.
  * @returns Promise resolving to the period transfer result.
  */
 export async function getErc20PeriodTransferEnforcerAvailableAmount(
-  client: PublicClient,
+  client: Client,
   environment: DeleGatorEnvironment,
   params: CaveatEnforcerParams,
 ): Promise<PeriodTransferResult> {
@@ -151,13 +151,13 @@ export async function getErc20PeriodTransferEnforcerAvailableAmount(
 /**
  * Get available amount for ERC20 streaming enforcer.
  *
- * @param client - The viem public client.
+ * @param client - The viem client.
  * @param environment - The delegator environment.
  * @param params - The parameters for the ERC20 streaming enforcer.
  * @returns Promise resolving to the streaming result.
  */
 export async function getErc20StreamingEnforcerAvailableAmount(
-  client: PublicClient,
+  client: Client,
   environment: DeleGatorEnvironment,
   params: CaveatEnforcerParams,
 ): Promise<StreamingResult> {
@@ -187,13 +187,13 @@ export async function getErc20StreamingEnforcerAvailableAmount(
 /**
  * Get available amount for multi-token period enforcer.
  *
- * @param client - The viem public client.
+ * @param client - The viem client.
  * @param environment - The delegator environment.
  * @param params - The parameters for the multi-token period enforcer.
  * @returns Promise resolving to the period transfer result.
  */
 export async function getMultiTokenPeriodEnforcerAvailableAmount(
-  client: PublicClient,
+  client: Client,
   environment: DeleGatorEnvironment,
   params: CaveatEnforcerParams,
 ): Promise<PeriodTransferResult> {
@@ -224,13 +224,13 @@ export async function getMultiTokenPeriodEnforcerAvailableAmount(
 /**
  * Get available amount for native token period transfer enforcer.
  *
- * @param client - The viem public client.
+ * @param client - The viem client.
  * @param environment - The delegator environment.
  * @param params - The parameters for the native token period transfer enforcer.
  * @returns Promise resolving to the period transfer result.
  */
 export async function getNativeTokenPeriodTransferEnforcerAvailableAmount(
-  client: PublicClient,
+  client: Client,
   environment: DeleGatorEnvironment,
   params: CaveatEnforcerParams,
 ): Promise<PeriodTransferResult> {
@@ -260,13 +260,13 @@ export async function getNativeTokenPeriodTransferEnforcerAvailableAmount(
 /**
  * Get available amount for native token streaming enforcer.
  *
- * @param client - The viem public client.
+ * @param client - The viem client.
  * @param environment - The delegator environment.
  * @param params - The parameters for the native token streaming enforcer.
  * @returns Promise resolving to the streaming result.
  */
 export async function getNativeTokenStreamingEnforcerAvailableAmount(
-  client: PublicClient,
+  client: Client,
   environment: DeleGatorEnvironment,
   params: CaveatEnforcerParams,
 ): Promise<StreamingResult> {
@@ -302,7 +302,7 @@ export async function getNativeTokenStreamingEnforcerAvailableAmount(
  */
 export const caveatEnforcerActions =
   ({ environment }: { environment: DeleGatorEnvironment }) =>
-  (client: PublicClient) => ({
+  (client: Client) => ({
     /**
      * Get available amount for ERC20 period transfer enforcer.
      *

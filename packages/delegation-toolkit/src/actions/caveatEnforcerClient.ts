@@ -1,4 +1,4 @@
-import type { PublicClient } from 'viem';
+import type { Client, Transport, Chain, Account } from 'viem';
 
 import type { DeleGatorEnvironment } from '../types';
 import {
@@ -10,25 +10,34 @@ import {
 
 /**
  * Type for client extended with caveat enforcer actions.
+ * This extends the base Client type to avoid pollution from PublicClient actions.
  */
-export type CaveatEnforcerClient = PublicClient &
+export type CaveatEnforcerClient<
+  TTransport extends Transport = Transport,
+  TChain extends Chain | undefined = Chain | undefined,
+  TAccount extends Account | undefined = Account | undefined,
+> = Client<TTransport, TChain, TAccount> &
   ReturnType<ReturnType<typeof caveatEnforcerActions>>;
 
 /**
  * Create a viem client extended with caveat enforcer actions.
  *
  * @param params - The parameters object.
- * @param params.client - The viem public client.
+ * @param params.client - The viem client (can be any client type).
  * @param params.environment - The delegator environment.
  * @returns The extended client with caveat enforcer actions.
  */
-export function createCaveatEnforcerClient({
+export function createCaveatEnforcerClient<
+  TTransport extends Transport = Transport,
+  TChain extends Chain | undefined = Chain | undefined,
+  TAccount extends Account | undefined = Account | undefined,
+>({
   client,
   environment,
 }: {
-  client: PublicClient;
+  client: Client<TTransport, TChain, TAccount>;
   environment: DeleGatorEnvironment;
-}): CaveatEnforcerClient {
+}): CaveatEnforcerClient<TTransport, TChain, TAccount> {
   return client.extend(caveatEnforcerActions({ environment }));
 }
 
