@@ -10,7 +10,6 @@ import {
 
 /**
  * Type for client extended with caveat enforcer actions.
- * This extends the base Client type to avoid pollution from PublicClient actions.
  */
 export type CaveatEnforcerClient<
   TTransport extends Transport = Transport,
@@ -23,7 +22,7 @@ export type CaveatEnforcerClient<
  * Create a viem client extended with caveat enforcer actions.
  *
  * @param params - The parameters object.
- * @param params.client - The viem client (can be any client type).
+ * @param params.client - The viem client.
  * @param params.environment - The delegator environment.
  * @returns The extended client with caveat enforcer actions.
  */
