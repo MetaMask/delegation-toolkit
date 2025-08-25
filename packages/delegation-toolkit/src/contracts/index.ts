@@ -6,6 +6,7 @@ import * as ERC20PeriodTransferEnforcer from '../DelegationFramework/ERC20Period
 import * as ERC20StreamingEnforcer from '../DelegationFramework/ERC20StreamingEnforcer';
 import * as ERC20TransferAmountEnforcer from '../DelegationFramework/ERC20TransferAmountEnforcer';
 import * as HybridDeleGator from '../DelegationFramework/HybridDeleGator';
+import * as IdEnforcer from '../DelegationFramework/IdEnforcer';
 import * as MultiSigDeleGator from '../DelegationFramework/MultiSigDeleGator';
 import * as MultiTokenPeriodEnforcer from '../DelegationFramework/MultiTokenPeriodEnforcer';
 import * as NativeTokenPeriodTransferEnforcer from '../DelegationFramework/NativeTokenPeriodTransferEnforcer';
@@ -29,6 +30,7 @@ export {
   EIP712,
   EntryPoint,
   HybridDeleGator,
+  IdEnforcer,
   MultiSigDeleGator,
   Ownable2Step,
   Pausable,
