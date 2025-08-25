@@ -56,7 +56,7 @@ describe('IdEnforcer read functions', () => {
     });
 
     it('should handle different ID values in terms', async () => {
-      const testCases: Array<{ id: bigint; terms: Hex }> = [
+      const testCases: { id: bigint; terms: Hex }[] = [
         {
           id: 0n,
           terms:
