@@ -18,4 +18,5 @@ export type {
     PermissionResponse,
     RevokeExecutionPermissionRequestParams,
     RevokeExecutionPermissionResponseResult,
+    MetaMaskBasePermissionData,
 } from './types';
