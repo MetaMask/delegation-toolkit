@@ -21,6 +21,7 @@ export type NativeTokenPeriodicScopeConfig = {
  * @param config - Configuration object containing native token periodic transfer parameters.
  * @returns A configured caveat builder with native token period transfer and exact calldata caveats.
  * @throws Error if any of the native token periodic transfer parameters are invalid.
+ * @throws Error if both allowedCalldata and exactCalldata are provided simultaneously.
  * @throws Error if the environment is not properly configured.
  */
 export function createNativeTokenPeriodicCaveatBuilder(
@@ -34,6 +35,12 @@ export function createNativeTokenPeriodicCaveatBuilder(
     allowedCalldata,
     exactCalldata,
   } = config;
+
+  if (allowedCalldata && allowedCalldata.length > 0 && exactCalldata) {
+    throw new Error(
+      'Cannot specify both allowedCalldata and exactCalldata. Please use only one calldata restriction type.',
+    );
+  }
 
   const caveatBuilder = createCaveatBuilder(environment);
 

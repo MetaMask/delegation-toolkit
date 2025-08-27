@@ -21,6 +21,7 @@ export type NativeTokenTransferScopeConfig = {
  * @param config - Configuration object containing native token transfer parameters.
  * @returns A configured caveat builder with native token transfer amount and exact calldata caveats.
  * @throws Error if any of the native token transfer parameters are invalid.
+ * @throws Error if both allowedCalldata and exactCalldata are provided simultaneously.
  * @throws Error if the environment is not properly configured.
  */
 export function createNativeTokenTransferCaveatBuilder(
@@ -28,6 +29,12 @@ export function createNativeTokenTransferCaveatBuilder(
   config: NativeTokenTransferScopeConfig,
 ): CoreCaveatBuilder {
   const { maxAmount, allowedCalldata, exactCalldata } = config;
+
+  if (allowedCalldata && allowedCalldata.length > 0 && exactCalldata) {
+    throw new Error(
+      'Cannot specify both allowedCalldata and exactCalldata. Please use only one calldata restriction type.',
+    );
+  }
 
   const caveatBuilder = createCaveatBuilder(environment);
 

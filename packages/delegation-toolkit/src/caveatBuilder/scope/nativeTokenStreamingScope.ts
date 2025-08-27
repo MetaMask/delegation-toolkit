@@ -21,6 +21,7 @@ export type NativeTokenStreamingScopeConfig = {
  * @param config - Configuration object containing native token streaming parameters.
  * @returns A configured caveat builder with native token streaming and exact calldata caveats.
  * @throws Error if any of the native token streaming parameters are invalid.
+ * @throws Error if both allowedCalldata and exactCalldata are provided simultaneously.
  * @throws Error if the environment is not properly configured.
  */
 export function createNativeTokenStreamingCaveatBuilder(
@@ -35,6 +36,12 @@ export function createNativeTokenStreamingCaveatBuilder(
     allowedCalldata,
     exactCalldata,
   } = config;
+
+  if (allowedCalldata && allowedCalldata.length > 0 && exactCalldata) {
+    throw new Error(
+      'Cannot specify both allowedCalldata and exactCalldata. Please use only one calldata restriction type.',
+    );
+  }
 
   const caveatBuilder = createCaveatBuilder(environment);
 

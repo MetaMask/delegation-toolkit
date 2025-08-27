@@ -291,6 +291,44 @@ describe('createDelegation', () => {
       signature: '0x',
     });
   });
+
+  it('should create a delegation with scope-only caveats when caveats parameter is undefined', () => {
+    const result = createDelegation({
+      environment: delegatorEnvironment,
+      scope: erc20Scope,
+      to: mockDelegate,
+      from: mockDelegator,
+      caveats: undefined,
+    });
+
+    expect(result).to.deep.equal({
+      delegate: mockDelegate,
+      delegator: mockDelegator,
+      authority: ROOT_AUTHORITY,
+      caveats: [...erc20ScopeCaveats],
+      salt: '0x',
+      signature: '0x',
+    });
+  });
+
+  it('should create a delegation with scope-only caveats when caveats parameter is null', () => {
+    const result = createDelegation({
+      environment: delegatorEnvironment,
+      scope: erc20Scope,
+      to: mockDelegate,
+      from: mockDelegator,
+      caveats: null as any,
+    });
+
+    expect(result).to.deep.equal({
+      delegate: mockDelegate,
+      delegator: mockDelegator,
+      authority: ROOT_AUTHORITY,
+      caveats: [...erc20ScopeCaveats],
+      salt: '0x',
+      signature: '0x',
+    });
+  });
 });
 
 describe('createOpenDelegation', () => {
@@ -390,6 +428,42 @@ describe('createOpenDelegation', () => {
       environment: delegatorEnvironment,
       scope: erc20Scope,
       from: mockDelegator,
+    });
+
+    expect(result).to.deep.equal({
+      delegate: '0x0000000000000000000000000000000000000a11',
+      delegator: mockDelegator,
+      authority: ROOT_AUTHORITY,
+      caveats: [...erc20ScopeCaveats],
+      salt: '0x',
+      signature: '0x',
+    });
+  });
+
+  it('should create an open delegation with scope-only caveats when caveats parameter is undefined', () => {
+    const result = createOpenDelegation({
+      environment: delegatorEnvironment,
+      scope: erc20Scope,
+      from: mockDelegator,
+      caveats: undefined,
+    });
+
+    expect(result).to.deep.equal({
+      delegate: '0x0000000000000000000000000000000000000a11',
+      delegator: mockDelegator,
+      authority: ROOT_AUTHORITY,
+      caveats: [...erc20ScopeCaveats],
+      salt: '0x',
+      signature: '0x',
+    });
+  });
+
+  it('should create an open delegation with scope-only caveats when caveats parameter is null', () => {
+    const result = createOpenDelegation({
+      environment: delegatorEnvironment,
+      scope: erc20Scope,
+      from: mockDelegator,
+      caveats: null as any,
     });
 
     expect(result).to.deep.equal({
