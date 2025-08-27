@@ -17,6 +17,7 @@ import * as NonceEnforcer from '../DelegationFramework/NonceEnforcer';
 import * as Ownable2Step from '../DelegationFramework/Ownable2Step';
 import * as Pausable from '../DelegationFramework/Pausable';
 import * as SimpleFactory from '../DelegationFramework/SimpleFactory';
+import * as SpecificActionERC20TransferBatchEnforcer from '../DelegationFramework/SpecificActionERC20TransferBatchEnforcer';
 
 export {
   isContractDeployed,
@@ -39,6 +40,7 @@ export {
   Ownable2Step,
   Pausable,
   SimpleFactory,
+  SpecificActionERC20TransferBatchEnforcer,
   ERC20PeriodTransferEnforcer,
   ERC20StreamingEnforcer,
   ERC20TransferAmountEnforcer,
