@@ -118,33 +118,31 @@ export async function signUserOperation<
  * ```
  */
 export function signUserOperationAction() {
-  return {
-    signUserOperation:
-      (
-        parameters: Omit<SignUserOperationParameters, 'chainId'> & {
-          chainId?: number;
-        },
-      ) =>
-      async <
-        TChain extends Chain | undefined,
-        TAccount extends Account | undefined,
-      >(
-        client: Client<Transport, TChain, TAccount> & {
-          signTypedData: WalletClient['signTypedData'];
-        },
-      ) =>
-        signUserOperation(client, {
-          chainId:
-            parameters.chainId ??
-            (() => {
-              if (!client.chain?.id) {
-                throw new BaseError(
-                  'Chain ID is required. Either provide it in parameters or configure the client with a chain.',
-                );
-              }
-              return client.chain.id;
-            })(),
-          ...parameters,
-        }),
-  };
+  return <
+    TChain extends Chain | undefined,
+    TAccount extends Account | undefined,
+  >(
+    client: Client<Transport, TChain, TAccount> & {
+      signTypedData: WalletClient['signTypedData'];
+    },
+  ) => ({
+    signUserOperation: async (
+      parameters: Omit<SignUserOperationParameters, 'chainId'> & {
+        chainId?: number;
+      },
+    ) =>
+      signUserOperation(client, {
+        chainId:
+          parameters.chainId ??
+          (() => {
+            if (!client.chain?.id) {
+              throw new BaseError(
+                'Chain ID is required. Either provide it in parameters or configure the client with a chain.',
+              );
+            }
+            return client.chain.id;
+          })(),
+        ...parameters,
+      }),
+  });
 }

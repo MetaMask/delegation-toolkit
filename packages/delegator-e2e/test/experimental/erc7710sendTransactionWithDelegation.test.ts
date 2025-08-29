@@ -20,7 +20,6 @@ import {
 import { erc7710WalletActions } from '@metamask/delegation-toolkit/experimental';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import {
-  createClient,
   Address,
   createWalletClient,
   getContract,
@@ -37,19 +36,19 @@ import CounterMetadata from '../utils/counter/metadata.json';
 
 let aliceSmartAccount: MetaMaskSmartAccount<Implementation.Hybrid>;
 let bob: Account;
+let bobPrivateKey: `0x${string}`;
 let aliceCounterContractAddress: Address;
 let permissionsContext: Hex;
 let signedDelegation: Delegation;
 
 beforeEach(async () => {
   const alice = privateKeyToAccount(generatePrivateKey());
-  bob = privateKeyToAccount(generatePrivateKey());
+  bobPrivateKey = generatePrivateKey();
+  bob = privateKeyToAccount(bobPrivateKey);
   await fundAddress(bob.address);
 
-  const client = createClient({ transport, chain });
-
   aliceSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x',
@@ -157,11 +156,7 @@ test('Bob redelegates to Carol, who redeems the delegation to call increment() o
   const signedRedelegation: Delegation = {
     ...redelegation,
     signature: await signDelegation({
-      signer: createWalletClient({
-        account: bob,
-        transport,
-        chain,
-      }),
+      privateKey: bobPrivateKey,
       delegation: redelegation,
       delegationManager,
       chainId: chain.id,
