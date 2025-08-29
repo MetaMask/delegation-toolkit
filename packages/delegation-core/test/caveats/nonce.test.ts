@@ -292,7 +292,7 @@ describe('createNonceTerms', () => {
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
       ]);
 
-      const hexResult = createNonceTerms({ nonce: hexNonce });
+      const hexResult = createNonceTerms({ nonce: hexNonce as `0x${string}` });
       const uint8Result = createNonceTerms({ nonce: uint8Nonce });
 
       expect(hexResult).toStrictEqual(uint8Result);
@@ -302,7 +302,7 @@ describe('createNonceTerms', () => {
       const hexNonce = '0x01';
       const uint8Nonce = new Uint8Array([0x01]);
 
-      const hexResult = createNonceTerms({ nonce: hexNonce });
+      const hexResult = createNonceTerms({ nonce: hexNonce as `0x${string}` });
       const uint8Result = createNonceTerms({ nonce: uint8Nonce });
 
       const expected =

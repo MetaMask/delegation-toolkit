@@ -1,11 +1,11 @@
 import { SpecificActionERC20TransferBatchEnforcer } from '@metamask/delegation-abis';
-import type { Client, Hex } from 'viem';
+import type { Address, Client, Hex } from 'viem';
 import { readContract } from 'viem/actions';
 
 export type ReadUsedDelegationsParameters = {
   client: Client;
-  contractAddress: `0x${string}`;
-  delegationManager: `0x${string}`;
+  contractAddress: Address;
+  delegationManager: Address;
   delegationHash: Hex;
 };
 

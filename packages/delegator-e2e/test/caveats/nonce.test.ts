@@ -28,14 +28,14 @@ import {
 } from '../utils/helpers';
 import CounterMetadata from '../utils/counter/metadata.json';
 
-import { Address, encodeFunctionData, parseEther, toHex } from 'viem';
+import { type Address, encodeFunctionData, parseEther, toHex } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
 let aliceSmartAccount: MetaMaskSmartAccount;
 let bobSmartAccount: MetaMaskSmartAccount;
 let aliceCounter: CounterContract;
-let nonceEnforcerAddress: `0x${string}`;
+let nonceEnforcerAddress: Address;
 
 beforeEach(async () => {
   const alice = privateKeyToAccount(generatePrivateKey());

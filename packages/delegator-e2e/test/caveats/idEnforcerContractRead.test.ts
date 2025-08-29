@@ -25,7 +25,13 @@ import {
   randomBytes,
   stringToUnprefixedHex,
 } from '../utils/helpers';
-import { encodeFunctionData, hexToBigInt, toHex, pad } from 'viem';
+import {
+  encodeFunctionData,
+  hexToBigInt,
+  toHex,
+  pad,
+  type Address,
+} from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import CounterMetadata from '../utils/counter/metadata.json';
@@ -33,7 +39,7 @@ import CounterMetadata from '../utils/counter/metadata.json';
 let aliceSmartAccount: MetaMaskSmartAccount;
 let bobSmartAccount: MetaMaskSmartAccount;
 let aliceCounter: CounterContract;
-let idEnforcerAddress: `0x${string}`;
+let idEnforcerAddress: Address;
 
 /**
  * These tests verify the IdEnforcer contract read functionality.

@@ -1,4 +1,4 @@
-import { createWalletClient, http, type Address } from 'viem';
+import { createWalletClient, http, type Address, type Hex } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -69,9 +69,7 @@ describe('NonceEnforcer execute functions', () => {
 
       testAddresses.forEach((address) => {
         const mockData = `0x${address.slice(2)}`;
-        vi.mocked(encodeFunctionData).mockReturnValue(
-          mockData as `0x${string}`,
-        );
+        vi.mocked(encodeFunctionData).mockReturnValue(mockData as Hex);
 
         const result = NonceEnforcer.encode.incrementNonce(address);
 

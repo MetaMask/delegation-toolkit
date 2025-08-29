@@ -1,5 +1,5 @@
 import { concat, size, toHex } from 'viem';
-import type { Address } from 'viem';
+import type { Address, Hex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { specificActionERC20TransferBatchBuilder } from '../../src/caveatBuilder/specificActionERC20TransferBatchBuilder';
@@ -19,7 +19,7 @@ describe('specificActionERC20TransferBatchBuilder()', () => {
     recipient: Address,
     amount: bigint,
     target: Address,
-    calldata: `0x${string}`,
+    calldata: Hex,
   ) => {
     const config = {
       tokenAddress,

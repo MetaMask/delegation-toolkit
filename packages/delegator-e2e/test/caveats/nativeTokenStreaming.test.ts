@@ -26,7 +26,7 @@ import {
   randomAddress,
   stringToUnprefixedHex,
 } from '../utils/helpers';
-import { encodeFunctionData, Hex, parseEther } from 'viem';
+import { encodeFunctionData, Hex, parseEther, type Address } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { concat } from 'viem';
@@ -530,7 +530,7 @@ const runTest_expectSuccess = async (
   amountPerSecond: bigint,
   startTime: number,
   transferAmount: bigint,
-  recipient: `0x${string}`,
+  recipient: Address,
 ) => {
   const { environment } = aliceSmartAccount;
 
@@ -611,7 +611,7 @@ const runTest_expectFailure = async (
   amountPerSecond: bigint,
   startTime: number,
   transferAmount: bigint,
-  recipient: `0x${string}`,
+  recipient: Address,
   expectedError: string,
 ) => {
   const { environment } = aliceSmartAccount;
