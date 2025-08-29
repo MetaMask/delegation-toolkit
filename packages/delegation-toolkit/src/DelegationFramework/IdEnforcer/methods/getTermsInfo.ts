@@ -12,7 +12,7 @@ export const read = async ({
   client,
   contractAddress,
   terms,
-}: ReadGetTermsInfoParameters) => {
+}: ReadGetTermsInfoParameters): Promise<bigint> => {
   const id = await readContract(client, {
     address: contractAddress,
     abi: IdEnforcer.abi,

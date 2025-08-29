@@ -14,7 +14,7 @@ export const read = async ({
   contractAddress,
   delegationManager,
   delegationHash,
-}: ReadCallCountsParameters) => {
+}: ReadCallCountsParameters): Promise<bigint> => {
   const count = await readContract(client, {
     address: contractAddress,
     abi: LimitedCallsEnforcer.abi,

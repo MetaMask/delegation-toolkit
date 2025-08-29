@@ -8,11 +8,16 @@ export type ReadGetTermsInfoParameters = {
   terms: Hex;
 };
 
+export type TermsData = {
+  allowedContract: Address;
+  maxTokens: bigint;
+};
+
 export const read = async ({
   client,
   contractAddress,
   terms,
-}: ReadGetTermsInfoParameters) => {
+}: ReadGetTermsInfoParameters): Promise<TermsData> => {
   const [allowedContract, maxTokens] = await readContract(client, {
     address: contractAddress,
     abi: ERC20TransferAmountEnforcer.abi,

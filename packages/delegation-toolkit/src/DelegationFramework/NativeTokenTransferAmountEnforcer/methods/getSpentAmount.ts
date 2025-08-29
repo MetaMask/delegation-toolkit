@@ -14,7 +14,7 @@ export const read = async ({
   contractAddress,
   delegationManager,
   delegationHash,
-}: ReadGetSpentAmountParameters) => {
+}: ReadGetSpentAmountParameters): Promise<bigint> => {
   const amount = await readContract(client, {
     address: contractAddress,
     abi: NativeTokenTransferAmountEnforcer.abi,
