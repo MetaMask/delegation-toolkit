@@ -29,13 +29,13 @@ import {
   getErc721Owner,
   stringToUnprefixedHex,
 } from '../utils/helpers';
-import { encodeFunctionData } from 'viem';
+import { encodeFunctionData, type Address } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
 let aliceSmartAccount: MetaMaskSmartAccount;
 let bobSmartAccount: MetaMaskSmartAccount;
-let erc721TokenAddress: `0x${string}`;
+let erc721TokenAddress: Address;
 let tokenId: bigint;
 
 /**
@@ -71,7 +71,7 @@ beforeEach(async () => {
     signatory: { account: bob },
   });
 
-  erc721TokenAddress = (await deployErc721Token()) as `0x${string}`;
+  erc721TokenAddress = (await deployErc721Token()) as Address;
 
   // Mint a token to Alice's smart account
   tokenId = (await mintErc721Token(
@@ -82,10 +82,10 @@ beforeEach(async () => {
 
 const runTest_expectSuccess = async (
   delegator: MetaMaskSmartAccount,
-  delegate: `0x${string}`,
-  tokenAddress: `0x${string}`,
+  delegate: Address,
+  tokenAddress: Address,
   tokenId: bigint,
-  recipient: `0x${string}`,
+  recipient: Address,
 ) => {
   const { environment } = delegator;
 
@@ -180,11 +180,11 @@ const runTest_expectSuccess = async (
 
 const runTest_expectFailure = async (
   delegator: MetaMaskSmartAccount,
-  delegate: `0x${string}`,
-  tokenAddress: `0x${string}`,
+  delegate: Address,
+  tokenAddress: Address,
   allowedTokenId: bigint,
   actualTokenId: bigint,
-  recipient: `0x${string}`,
+  recipient: Address,
   expectedError: string,
 ) => {
   const { environment } = delegator;
@@ -269,7 +269,7 @@ const runTest_expectFailure = async (
 };
 
 test('maincase: Bob redeems the delegation and transfers the allowed ERC721 token', async () => {
-  const recipient = randomAddress() as `0x${string}`;
+  const recipient = randomAddress() as Address;
 
   await runTest_expectSuccess(
     aliceSmartAccount,
@@ -281,7 +281,7 @@ test('maincase: Bob redeems the delegation and transfers the allowed ERC721 toke
 });
 
 test('Bob attempts to redeem the delegation with wrong token ID', async () => {
-  const recipient = randomAddress() as `0x${string}`;
+  const recipient = randomAddress() as Address;
   const wrongTokenId = tokenId + 1n;
 
   // Mint the wrong token ID so it exists
@@ -370,7 +370,7 @@ const runScopeTest_expectSuccess = async (
         },
       ],
       functionName: 'transferFrom',
-      args: [aliceAddress, recipient as `0x${string}`, tokenId],
+      args: [aliceAddress, recipient as Address, tokenId],
     }),
   });
 
@@ -385,7 +385,7 @@ const runScopeTest_expectSuccess = async (
   });
 
   const recipientBalanceBefore = await getErc721Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc721TokenAddress,
   );
 
@@ -407,7 +407,7 @@ const runScopeTest_expectSuccess = async (
   expectUserOperationToSucceed(receipt);
 
   const recipientBalanceAfter = await getErc721Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc721TokenAddress,
   );
 
@@ -419,7 +419,7 @@ const runScopeTest_expectSuccess = async (
   ).toEqual(recipientBalanceBefore + 1n);
 
   expect(tokenOwner, 'Expected token to be owned by recipient').toEqual(
-    recipient as `0x${string}`,
+    recipient as Address,
   );
 };
 
@@ -483,7 +483,7 @@ const runScopeTest_expectFailure = async (
   });
 
   const recipientBalanceBefore = await getErc721Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc721TokenAddress,
   );
 
@@ -501,7 +501,7 @@ const runScopeTest_expectFailure = async (
   ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 
   const recipientBalanceAfter = await getErc721Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc721TokenAddress,
   );
 

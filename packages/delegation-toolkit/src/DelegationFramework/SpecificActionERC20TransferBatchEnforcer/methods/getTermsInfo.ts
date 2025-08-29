@@ -1,18 +1,18 @@
 import { SpecificActionERC20TransferBatchEnforcer } from '@metamask/delegation-abis';
-import type { Client, Hex } from 'viem';
+import type { Address, Client, Hex } from 'viem';
 import { readContract } from 'viem/actions';
 
 export type ReadGetTermsInfoParameters = {
   client: Client;
-  contractAddress: `0x${string}`;
+  contractAddress: Address;
   terms: Hex;
 };
 
 export type TermsData = {
-  tokenAddress: `0x${string}`;
-  recipient: `0x${string}`;
+  tokenAddress: Address;
+  recipient: Address;
   amount: bigint;
-  firstTarget: `0x${string}`;
+  firstTarget: Address;
   firstCalldata: Hex;
 };
 

@@ -1,15 +1,15 @@
 import { NonceEnforcer } from '@metamask/delegation-abis';
-import type { Account, Chain, Client, Transport } from 'viem';
+import type { Account, Address, Chain, Client, Transport } from 'viem';
 import { encodeFunctionData } from 'viem';
 import { simulateContract, writeContract } from 'viem/actions';
 
 export type SimulateIncrementNonceParameters = {
   client: Client<Transport, Chain, Account>;
-  contractAddress: `0x${string}`;
-  delegationManager: `0x${string}`;
+  contractAddress: Address;
+  delegationManager: Address;
 };
 
-export const encode = (delegationManager: `0x${string}`) => {
+export const encode = (delegationManager: Address) => {
   return encodeFunctionData({
     abi: NonceEnforcer.abi,
     functionName: 'incrementNonce',

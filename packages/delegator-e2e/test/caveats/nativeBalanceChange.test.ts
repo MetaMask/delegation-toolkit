@@ -24,7 +24,7 @@ import {
   fundAddress,
   stringToUnprefixedHex,
 } from '../utils/helpers';
-import { concat, encodeFunctionData, parseEther } from 'viem';
+import { concat, encodeFunctionData, parseEther, type Address } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
@@ -181,7 +181,7 @@ test('Bob attempts to redeem with invalid terms length', async () => {
 });
 
 const testRun_expectSuccess = async (
-  recipient: `0x${string}`,
+  recipient: Address,
   requiredChange: bigint,
   actualChange: bigint,
   changeType: BalanceChangeType,
@@ -270,7 +270,7 @@ const testRun_expectSuccess = async (
 };
 
 const testRun_expectFailure = async (
-  recipient: `0x${string}`,
+  recipient: Address,
   requiredChange: bigint,
   actualChange: bigint,
   changeType: BalanceChangeType,

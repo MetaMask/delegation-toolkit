@@ -25,7 +25,7 @@ import {
   stringToUnprefixedHex,
 } from '../utils/helpers';
 import CounterMetadata from '../utils/counter/metadata.json';
-import { Address, encodeFunctionData, parseEther } from 'viem';
+import { type Address, encodeFunctionData, parseEther } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
@@ -86,7 +86,7 @@ test('Bob redeems the delegation with multiple allowed redeemers', async () => {
 
 const runTest_expectSuccess = async (
   newCount: bigint,
-  allowedRedeemers: `0x${string}`[],
+  allowedRedeemers: Address[],
 ) => {
   const bobAddress = bobSmartAccount.address;
   const aliceAddress = aliceSmartAccount.address;
@@ -166,7 +166,7 @@ const runTest_expectSuccess = async (
 
 const runTest_expectFailure = async (
   newCount: bigint,
-  allowedRedeemers: `0x${string}`[],
+  allowedRedeemers: Address[],
   expectedError: string,
 ) => {
   const bobAddress = bobSmartAccount.address;

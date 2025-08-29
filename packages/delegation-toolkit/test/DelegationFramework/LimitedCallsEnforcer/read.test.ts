@@ -1,4 +1,5 @@
 import { createPublicClient, http, type Address, type Hex } from 'viem';
+import { readContract } from 'viem/actions';
 import { sepolia } from 'viem/chains';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -37,7 +38,6 @@ describe('LimitedCallsEnforcer read functions', () => {
     it('should call readContract with correct parameters and return limit', async () => {
       const mockLimit = 5n;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockLimit);
 
       const result = await LimitedCallsEnforcer.read.getTermsInfo({
@@ -86,7 +86,6 @@ describe('LimitedCallsEnforcer read functions', () => {
       ];
 
       for (const testCase of testCases) {
-        const { readContract } = await import('viem/actions');
         vi.mocked(readContract).mockResolvedValue(testCase.limit);
 
         const result = await LimitedCallsEnforcer.read.getTermsInfo({
@@ -112,7 +111,6 @@ describe('LimitedCallsEnforcer read functions', () => {
       const largeLimitTerms: Hex =
         '0x8000000000000000000000000000000000000000000000000000000000000000';
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(largeLimit);
 
       const result = await LimitedCallsEnforcer.read.getTermsInfo({
@@ -132,7 +130,6 @@ describe('LimitedCallsEnforcer read functions', () => {
     });
 
     it('should propagate readContract errors', async () => {
-      const { readContract } = await import('viem/actions');
       const mockError = new Error('Invalid terms length');
 
       vi.mocked(readContract).mockRejectedValue(mockError);
@@ -151,7 +148,6 @@ describe('LimitedCallsEnforcer read functions', () => {
     it('should call readContract with correct parameters and return call count', async () => {
       const mockCallCount = 3n;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockCallCount);
 
       const result = await LimitedCallsEnforcer.read.callCounts({
@@ -181,7 +177,6 @@ describe('LimitedCallsEnforcer read functions', () => {
       ];
 
       for (const testCase of testCases) {
-        const { readContract } = await import('viem/actions');
         vi.mocked(readContract).mockResolvedValue(testCase.callCount);
 
         const result = await LimitedCallsEnforcer.read.callCounts({
@@ -209,7 +204,6 @@ describe('LimitedCallsEnforcer read functions', () => {
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef';
       const mockCallCount = 7n;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockCallCount);
 
       const result = await LimitedCallsEnforcer.read.callCounts({
@@ -232,7 +226,6 @@ describe('LimitedCallsEnforcer read functions', () => {
     it('should handle zero call count for new delegations', async () => {
       const mockCallCount = 0n;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockCallCount);
 
       const result = await LimitedCallsEnforcer.read.callCounts({
@@ -253,7 +246,6 @@ describe('LimitedCallsEnforcer read functions', () => {
     });
 
     it('should propagate readContract errors', async () => {
-      const { readContract } = await import('viem/actions');
       const mockError = new Error('Network error');
 
       vi.mocked(readContract).mockRejectedValue(mockError);
@@ -293,7 +285,6 @@ describe('LimitedCallsEnforcer read functions', () => {
       const emptyTerms: Hex = '0x';
       const mockLimit = 0n;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockLimit);
 
       const result = await LimitedCallsEnforcer.read.getTermsInfo({
@@ -313,13 +304,11 @@ describe('LimitedCallsEnforcer read functions', () => {
     });
 
     it('should handle zero addresses', async () => {
-      const zeroAddress: `0x${string}` =
-        '0x0000000000000000000000000000000000000000';
+      const zeroAddress: Address = '0x0000000000000000000000000000000000000000';
       const zeroHash: Hex =
         '0x0000000000000000000000000000000000000000000000000000000000000000';
       const mockCallCount = 0n;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockCallCount);
 
       const result = await LimitedCallsEnforcer.read.callCounts({
@@ -344,7 +333,6 @@ describe('LimitedCallsEnforcer read functions', () => {
         '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
       const mockCallCount = 42n;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockCallCount);
 
       const result = await LimitedCallsEnforcer.read.callCounts({

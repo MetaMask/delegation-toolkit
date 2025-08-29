@@ -29,13 +29,19 @@ import {
   getErc20Balance,
   stringToUnprefixedHex,
 } from '../utils/helpers';
-import { encodeFunctionData, parseEther, concat, toHex } from 'viem';
+import {
+  encodeFunctionData,
+  parseEther,
+  concat,
+  toHex,
+  type Address,
+} from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
 let aliceSmartAccount: MetaMaskSmartAccount;
 let bobSmartAccount: MetaMaskSmartAccount;
-let erc20TokenAddress: `0x${string}`;
+let erc20TokenAddress: Address;
 
 /**
  * These tests verify the ERC20 transfer amount caveat functionality.
@@ -70,7 +76,7 @@ beforeEach(async () => {
     signatory: { account: bob },
   });
 
-  erc20TokenAddress = (await deployErc20Token()) as `0x${string}`;
+  erc20TokenAddress = (await deployErc20Token()) as Address;
   await fundAddressWithErc20Token(
     aliceSmartAccount.address,
     erc20TokenAddress,
@@ -80,7 +86,7 @@ beforeEach(async () => {
 
 const runTest_expectSuccess = async (
   delegator: MetaMaskSmartAccount,
-  delegate: `0x${string}`,
+  delegate: Address,
   maxAmount: bigint,
   transferAmount: bigint,
   recipient: string,
@@ -125,7 +131,7 @@ const runTest_expectSuccess = async (
         },
       ],
       functionName: 'transfer',
-      args: [recipient as `0x${string}`, transferAmount],
+      args: [recipient as Address, transferAmount],
     }),
   });
 
@@ -140,7 +146,7 @@ const runTest_expectSuccess = async (
   });
 
   const recipientBalanceBefore = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -162,7 +168,7 @@ const runTest_expectSuccess = async (
   expectUserOperationToSucceed(receipt);
 
   const recipientBalanceAfter = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -174,7 +180,7 @@ const runTest_expectSuccess = async (
 
 const runTest_expectFailure = async (
   delegator: MetaMaskSmartAccount,
-  delegate: `0x${string}`,
+  delegate: Address,
   maxAmount: bigint,
   transferAmount: bigint,
   recipient: string,
@@ -220,7 +226,7 @@ const runTest_expectFailure = async (
         },
       ],
       functionName: 'transfer',
-      args: [recipient as `0x${string}`, transferAmount],
+      args: [recipient as Address, transferAmount],
     }),
   });
 
@@ -235,7 +241,7 @@ const runTest_expectFailure = async (
   });
 
   const recipientBalanceBefore = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -253,7 +259,7 @@ const runTest_expectFailure = async (
   ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 
   const recipientBalanceAfter = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -479,7 +485,7 @@ describe('ERC20TransferAmountEnforcer Utilities E2E Tests', () => {
 
     // Verify the total transferred amount is correct
     const recipientBalance = await getErc20Balance(
-      recipient as `0x${string}`,
+      recipient as Address,
       erc20TokenAddress,
     );
     expect(recipientBalance).toBe(transferAmount1 + transferAmount2);
@@ -566,7 +572,7 @@ describe('ERC20TransferAmountEnforcer Utilities E2E Tests', () => {
           },
         ],
         functionName: 'transfer',
-        args: [recipient as `0x${string}`, transferAmount],
+        args: [recipient as Address, transferAmount],
       }),
     });
 
@@ -607,7 +613,7 @@ describe('ERC20TransferAmountEnforcer Utilities E2E Tests', () => {
 
     // Verify recipient didn't receive any tokens
     const recipientBalance = await getErc20Balance(
-      recipient as `0x${string}`,
+      recipient as Address,
       erc20TokenAddress,
     );
     expect(recipientBalance).toBe(0n);
@@ -777,7 +783,7 @@ const runScopeTest_expectSuccess = async (
         },
       ],
       functionName: 'transfer',
-      args: [recipient as `0x${string}`, transferAmount],
+      args: [recipient as Address, transferAmount],
     }),
   });
 
@@ -792,7 +798,7 @@ const runScopeTest_expectSuccess = async (
   });
 
   const recipientBalanceBefore = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -814,7 +820,7 @@ const runScopeTest_expectSuccess = async (
   expectUserOperationToSucceed(receipt);
 
   const recipientBalanceAfter = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -868,7 +874,7 @@ const runScopeTest_expectFailure = async (
         },
       ],
       functionName: 'transfer',
-      args: [recipient as `0x${string}`, transferAmount],
+      args: [recipient as Address, transferAmount],
     }),
   });
 
@@ -883,7 +889,7 @@ const runScopeTest_expectFailure = async (
   });
 
   const recipientBalanceBefore = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -901,7 +907,7 @@ const runScopeTest_expectFailure = async (
   ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 
   const recipientBalanceAfter = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -1127,7 +1133,7 @@ describe('ERC20TransferAmountEnforcer Utilities E2E Tests', () => {
 
     // Verify the total transferred amount is correct
     const recipientBalance = await getErc20Balance(
-      recipient as `0x${string}`,
+      recipient as Address,
       erc20TokenAddress,
     );
     expect(recipientBalance).toBe(transferAmount1 + transferAmount2);
@@ -1214,7 +1220,7 @@ describe('ERC20TransferAmountEnforcer Utilities E2E Tests', () => {
           },
         ],
         functionName: 'transfer',
-        args: [recipient as `0x${string}`, transferAmount],
+        args: [recipient as Address, transferAmount],
       }),
     });
 
@@ -1255,7 +1261,7 @@ describe('ERC20TransferAmountEnforcer Utilities E2E Tests', () => {
 
     // Verify recipient didn't receive any tokens
     const recipientBalance = await getErc20Balance(
-      recipient as `0x${string}`,
+      recipient as Address,
       erc20TokenAddress,
     );
     expect(recipientBalance).toBe(0n);

@@ -26,7 +26,7 @@ import {
   randomBytes,
   stringToUnprefixedHex,
 } from '../utils/helpers';
-import { encodeFunctionData, hexToBigInt, toHex } from 'viem';
+import { encodeFunctionData, hexToBigInt, toHex, type Address } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import CounterMetadata from '../utils/counter/metadata.json';
@@ -34,7 +34,7 @@ import CounterMetadata from '../utils/counter/metadata.json';
 let aliceSmartAccount: MetaMaskSmartAccount;
 let bobSmartAccount: MetaMaskSmartAccount;
 let aliceCounter: CounterContract;
-let limitedCallsEnforcerAddress: `0x${string}`;
+let limitedCallsEnforcerAddress: Address;
 
 beforeEach(async () => {
   const alice = privateKeyToAccount(generatePrivateKey());

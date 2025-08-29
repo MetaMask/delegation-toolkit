@@ -6,6 +6,7 @@ import {
   concat,
   toHex,
 } from 'viem';
+import { readContract } from 'viem/actions';
 import { sepolia } from 'viem/chains';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -40,7 +41,6 @@ describe('SpecificActionERC20TransferBatchEnforcer read functions', () => {
     it('should call readContract with correct parameters', async () => {
       const mockIsUsed = true;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockIsUsed);
 
       const result =
@@ -62,7 +62,6 @@ describe('SpecificActionERC20TransferBatchEnforcer read functions', () => {
     });
 
     it('should return false for unused delegation', async () => {
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(false);
 
       const result =
@@ -77,7 +76,6 @@ describe('SpecificActionERC20TransferBatchEnforcer read functions', () => {
     });
 
     it('should return true for used delegation', async () => {
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(true);
 
       const result =
@@ -98,8 +96,6 @@ describe('SpecificActionERC20TransferBatchEnforcer read functions', () => {
         '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef12',
         '0xdeadbeefcafebabe0123456789abcdef0123456789abcdef0123456789abcdef',
       ];
-
-      const { readContract } = await import('viem/actions');
 
       for (const hash of testCases) {
         vi.mocked(readContract).mockResolvedValue(false);
@@ -123,7 +119,6 @@ describe('SpecificActionERC20TransferBatchEnforcer read functions', () => {
     it('should handle errors from readContract', async () => {
       const mockError = new Error('Contract call failed');
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockRejectedValue(mockError);
 
       await expect(
@@ -162,7 +157,6 @@ describe('SpecificActionERC20TransferBatchEnforcer read functions', () => {
         firstCalldata,
       ]);
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockTermsData);
 
       const result =
@@ -207,8 +201,6 @@ describe('SpecificActionERC20TransferBatchEnforcer read functions', () => {
             '0xa9059cbb000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045' as Hex,
         },
       ];
-
-      const { readContract } = await import('viem/actions');
 
       for (const testCase of testCases) {
         const terms = concat([
@@ -255,7 +247,6 @@ describe('SpecificActionERC20TransferBatchEnforcer read functions', () => {
         firstCalldata,
       ]);
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockTermsData);
 
       const result =
@@ -293,7 +284,6 @@ describe('SpecificActionERC20TransferBatchEnforcer read functions', () => {
         firstCalldata,
       ]);
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockTermsData);
 
       const result =
@@ -310,7 +300,6 @@ describe('SpecificActionERC20TransferBatchEnforcer read functions', () => {
       const mockError = new Error('Invalid terms length');
       const terms = '0x1234' as Hex; // Invalid short terms
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockRejectedValue(mockError);
 
       await expect(

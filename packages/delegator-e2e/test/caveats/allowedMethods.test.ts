@@ -25,7 +25,13 @@ import {
   publicClient,
   stringToUnprefixedHex,
 } from '../utils/helpers';
-import { encodeFunctionData, AbiFunction, Hex, toFunctionSelector } from 'viem';
+import {
+  encodeFunctionData,
+  AbiFunction,
+  Hex,
+  toFunctionSelector,
+  type Address,
+} from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import CounterMetadata from '../utils/counter/metadata.json';
@@ -264,7 +270,7 @@ test('Scope: Bob redeems the delegation with an allowed method using functionCal
   const allowedMethod = 'increment()';
 
   await runScopeTest_expectSuccess(
-    [aliceCounter.address as `0x${string}`],
+    [aliceCounter.address as Address],
     [allowedMethod],
   );
 });
@@ -274,7 +280,7 @@ test('Scope: Bob attempts to redeem the delegation with a disallowed method usin
   const disallowedMethod = 'setCount(uint256)';
 
   await runScopeTest_expectFailure(
-    [aliceCounter.address as `0x${string}`],
+    [aliceCounter.address as Address],
     [allowedMethod],
     disallowedMethod,
     'AllowedMethodsEnforcer:method-not-allowed',
@@ -282,7 +288,7 @@ test('Scope: Bob attempts to redeem the delegation with a disallowed method usin
 });
 
 const runScopeTest_expectSuccess = async (
-  targets: `0x${string}`[],
+  targets: Address[],
   selectors: string[],
 ) => {
   const bobAddress = bobSmartAccount.address;
@@ -348,7 +354,7 @@ const runScopeTest_expectSuccess = async (
 };
 
 const runScopeTest_expectFailure = async (
-  targets: `0x${string}`[],
+  targets: Address[],
   selectors: string[],
   callMethod: string,
   expectedError: string,

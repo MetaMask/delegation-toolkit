@@ -1,4 +1,5 @@
 import { createPublicClient, http, type Address, type Hex } from 'viem';
+import { readContract } from 'viem/actions';
 import { sepolia } from 'viem/chains';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -39,7 +40,6 @@ describe('ERC20TransferAmountEnforcer read functions', () => {
       const mockAllowedContract = randomAddress();
       const mockMaxTokens = 1000000n;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue([
         mockAllowedContract,
         mockMaxTokens,
@@ -70,7 +70,6 @@ describe('ERC20TransferAmountEnforcer read functions', () => {
       const differentTerms =
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd000000000000000000000000000000000000000000000000000000000000002';
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue([
         mockAllowedContract,
         mockMaxTokens,
@@ -100,7 +99,6 @@ describe('ERC20TransferAmountEnforcer read functions', () => {
     it('should call readContract with correct parameters and return spent amount', async () => {
       const mockSpentAmount = 250000n;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockSpentAmount);
 
       const result = await ERC20TransferAmountEnforcer.read.getSpentAmount({
@@ -123,7 +121,6 @@ describe('ERC20TransferAmountEnforcer read functions', () => {
     it('should handle zero spent amount', async () => {
       const mockSpentAmount = 0n;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockSpentAmount);
 
       const result = await ERC20TransferAmountEnforcer.read.getSpentAmount({
@@ -148,7 +145,6 @@ describe('ERC20TransferAmountEnforcer read functions', () => {
       const differentDelegationHash = randomBytes32();
       const mockSpentAmount = 750000n;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockSpentAmount);
 
       const result = await ERC20TransferAmountEnforcer.read.getSpentAmount({

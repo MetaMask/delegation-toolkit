@@ -15,7 +15,14 @@ import {
   type Delegation,
 } from '@metamask/delegation-toolkit';
 import { SpecificActionERC20TransferBatchEnforcer } from '@metamask/delegation-toolkit/contracts';
-import { encodeFunctionData, type Hex, parseEther, concat, toHex } from 'viem';
+import {
+  encodeFunctionData,
+  type Hex,
+  parseEther,
+  concat,
+  toHex,
+  type Address,
+} from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
 import {
@@ -39,7 +46,7 @@ let aliceSmartAccount: MetaMaskSmartAccount;
 let bobSmartAccount: MetaMaskSmartAccount;
 let aliceCounter: CounterContract;
 let erc20TokenAddress: Hex;
-let specificActionERC20TransferBatchEnforcerAddress: `0x${string}`;
+let specificActionERC20TransferBatchEnforcerAddress: Address;
 
 /**
  * These tests verify the specific action ERC20 transfer batch caveat functionality.

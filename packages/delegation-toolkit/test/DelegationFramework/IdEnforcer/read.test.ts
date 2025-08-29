@@ -1,4 +1,5 @@
 import { createPublicClient, http, type Address, type Hex } from 'viem';
+import { readContract } from 'viem/actions';
 import { sepolia } from 'viem/chains';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -36,7 +37,6 @@ describe('IdEnforcer read functions', () => {
     it('should call readContract with correct parameters and return id', async () => {
       const mockId = 123n;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockId);
 
       const result = await IdEnforcer.read.getTermsInfo({
@@ -80,7 +80,6 @@ describe('IdEnforcer read functions', () => {
       ];
 
       for (const testCase of testCases) {
-        const { readContract } = await import('viem/actions');
         vi.mocked(readContract).mockResolvedValue(testCase.id);
 
         const result = await IdEnforcer.read.getTermsInfo({
@@ -106,7 +105,6 @@ describe('IdEnforcer read functions', () => {
       const largeIdTerms: Hex =
         '0x8000000000000000000000000000000000000000000000000000000000000000';
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(largeId);
 
       const result = await IdEnforcer.read.getTermsInfo({
@@ -126,7 +124,6 @@ describe('IdEnforcer read functions', () => {
     });
 
     it('should propagate readContract errors', async () => {
-      const { readContract } = await import('viem/actions');
       const mockError = new Error('Invalid terms length');
 
       vi.mocked(readContract).mockRejectedValue(mockError);
@@ -146,7 +143,6 @@ describe('IdEnforcer read functions', () => {
       const id = 123n;
       const mockIsUsed = false;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockIsUsed);
 
       const result = await IdEnforcer.read.getIsUsed({
@@ -175,7 +171,6 @@ describe('IdEnforcer read functions', () => {
       ];
 
       for (const testCase of testCases) {
-        const { readContract } = await import('viem/actions');
         vi.mocked(readContract).mockResolvedValue(testCase.isUsed);
 
         const result = await IdEnforcer.read.getIsUsed({
@@ -204,7 +199,6 @@ describe('IdEnforcer read functions', () => {
       const alternativeDelegator = randomAddress();
       const mockIsUsed = true;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockIsUsed);
 
       const result = await IdEnforcer.read.getIsUsed({
@@ -230,7 +224,6 @@ describe('IdEnforcer read functions', () => {
       const mockIsUsed = false;
 
       for (const testId of testIds) {
-        const { readContract } = await import('viem/actions');
         vi.mocked(readContract).mockResolvedValue(mockIsUsed);
 
         const result = await IdEnforcer.read.getIsUsed({
@@ -255,7 +248,7 @@ describe('IdEnforcer read functions', () => {
 
     it('should propagate readContract errors', async () => {
       const id = 123n;
-      const { readContract } = await import('viem/actions');
+
       const mockError = new Error('Network error');
 
       vi.mocked(readContract).mockRejectedValue(mockError);
@@ -294,7 +287,6 @@ describe('IdEnforcer read functions', () => {
       const emptyTerms: Hex = '0x';
       const mockId = 0n;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockId);
 
       const result = await IdEnforcer.read.getTermsInfo({
@@ -314,12 +306,10 @@ describe('IdEnforcer read functions', () => {
     });
 
     it('should handle zero addresses', async () => {
-      const zeroAddress: `0x${string}` =
-        '0x0000000000000000000000000000000000000000';
+      const zeroAddress: Address = '0x0000000000000000000000000000000000000000';
       const id = 123n;
       const mockIsUsed = false;
 
-      const { readContract } = await import('viem/actions');
       vi.mocked(readContract).mockResolvedValue(mockIsUsed);
 
       const result = await IdEnforcer.read.getIsUsed({

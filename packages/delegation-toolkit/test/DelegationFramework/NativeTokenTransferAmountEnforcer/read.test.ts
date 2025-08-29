@@ -1,4 +1,5 @@
 import { createPublicClient, http, type Address, type Hex } from 'viem';
+import { readContract } from 'viem/actions';
 import { sepolia } from 'viem/chains';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -34,10 +35,9 @@ describe('NativeTokenTransferAmountEnforcer read functions', () => {
 
   describe('getTermsInfo', () => {
     it('should call readContract with correct parameters and return allowance', async () => {
-      const { readContract } = await import('viem/actions');
       const mockAllowance = 1000000000000000000n; // 1 ETH in wei
 
-      (readContract as any).mockResolvedValue(mockAllowance);
+      vi.mocked(readContract).mockResolvedValue(mockAllowance);
 
       const result = await NativeTokenTransferAmountEnforcer.read.getTermsInfo({
         client,
@@ -56,7 +56,6 @@ describe('NativeTokenTransferAmountEnforcer read functions', () => {
     });
 
     it('should handle different allowance amounts', async () => {
-      const { readContract } = await import('viem/actions');
       const testCases = [
         0n, // Zero allowance
         500000000000000000n, // 0.5 ETH
@@ -65,7 +64,7 @@ describe('NativeTokenTransferAmountEnforcer read functions', () => {
       ];
 
       for (const allowance of testCases) {
-        (readContract as any).mockResolvedValue(allowance);
+        vi.mocked(readContract).mockResolvedValue(allowance);
 
         const result =
           await NativeTokenTransferAmountEnforcer.read.getTermsInfo({
@@ -79,10 +78,9 @@ describe('NativeTokenTransferAmountEnforcer read functions', () => {
     });
 
     it('should propagate readContract errors', async () => {
-      const { readContract } = await import('viem/actions');
       const mockError = new Error('Contract call failed');
 
-      (readContract as any).mockRejectedValue(mockError);
+      vi.mocked(readContract).mockRejectedValue(mockError);
 
       await expect(
         NativeTokenTransferAmountEnforcer.read.getTermsInfo({
@@ -96,10 +94,9 @@ describe('NativeTokenTransferAmountEnforcer read functions', () => {
 
   describe('getSpentAmount', () => {
     it('should call readContract with correct parameters and return spent amount', async () => {
-      const { readContract } = await import('viem/actions');
       const mockSpentAmount = 500000000000000000n; // 0.5 ETH in wei
 
-      (readContract as any).mockResolvedValue(mockSpentAmount);
+      vi.mocked(readContract).mockResolvedValue(mockSpentAmount);
 
       const result =
         await NativeTokenTransferAmountEnforcer.read.getSpentAmount({
@@ -120,7 +117,6 @@ describe('NativeTokenTransferAmountEnforcer read functions', () => {
     });
 
     it('should handle different spent amounts', async () => {
-      const { readContract } = await import('viem/actions');
       const testCases = [
         0n, // No spending yet
         100000000000000000n, // 0.1 ETH
@@ -129,7 +125,7 @@ describe('NativeTokenTransferAmountEnforcer read functions', () => {
       ];
 
       for (const spentAmount of testCases) {
-        (readContract as any).mockResolvedValue(spentAmount);
+        vi.mocked(readContract).mockResolvedValue(spentAmount);
 
         const result =
           await NativeTokenTransferAmountEnforcer.read.getSpentAmount({
@@ -144,10 +140,9 @@ describe('NativeTokenTransferAmountEnforcer read functions', () => {
     });
 
     it('should work with different delegation hashes and managers', async () => {
-      const { readContract } = await import('viem/actions');
       const mockSpentAmount = 750000000000000000n; // 0.75 ETH
 
-      (readContract as any).mockResolvedValue(mockSpentAmount);
+      vi.mocked(readContract).mockResolvedValue(mockSpentAmount);
 
       const alternativeDelegationManager = randomAddress();
       const alternativeDelegationHash = randomBytes32();
@@ -171,10 +166,9 @@ describe('NativeTokenTransferAmountEnforcer read functions', () => {
     });
 
     it('should propagate readContract errors', async () => {
-      const { readContract } = await import('viem/actions');
       const mockError = new Error('Network error');
 
-      (readContract as any).mockRejectedValue(mockError);
+      vi.mocked(readContract).mockRejectedValue(mockError);
 
       await expect(
         NativeTokenTransferAmountEnforcer.read.getSpentAmount({

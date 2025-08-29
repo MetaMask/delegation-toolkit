@@ -1,4 +1,4 @@
-import { getAddress } from 'viem';
+import { getAddress, type Address, type Hex } from 'viem';
 import { describe, it, expect } from 'vitest';
 
 import { randomAddress } from './utils';
@@ -709,14 +709,12 @@ describe('signDelegation', () => {
   const mockDelegation = {
     delegate: mockDelegate,
     delegator: mockDelegator,
-    authority: ROOT_AUTHORITY as `0x${string}`,
+    authority: ROOT_AUTHORITY as Address,
     caveats: [mockCaveat],
-    salt: '0x123' as `0x${string}`,
+    salt: '0x123' as Hex,
   };
 
-  // Use a valid 20-byte address for delegationManager
-  const delegationManager =
-    '0x1234567890123456789012345678901234567890' as `0x${string}`;
+  const delegationManager = '0xDelegationManager' as Address;
   const chainId = 1;
 
   it('should sign a delegation successfully', async () => {
@@ -737,7 +735,7 @@ describe('signDelegation', () => {
     const delegationWithoutCaveats = {
       ...mockDelegation,
       caveats: [],
-      salt: '0x123' as `0x${string}`,
+      salt: '0x123' as Hex,
     };
 
     await expect(
@@ -756,7 +754,7 @@ describe('signDelegation', () => {
     const delegationWithoutCaveats = {
       ...mockDelegation,
       caveats: [],
-      salt: '0x123' as `0x${string}`,
+      salt: '0x123' as Hex,
     };
 
     const signature = await signDelegation({
