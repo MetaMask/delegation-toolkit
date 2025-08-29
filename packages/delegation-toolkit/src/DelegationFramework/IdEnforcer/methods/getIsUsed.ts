@@ -16,7 +16,7 @@ export const read = async ({
   delegationManager,
   delegator,
   id,
-}: ReadGetIsUsedParameters) => {
+}: ReadGetIsUsedParameters): Promise<boolean> => {
   const isUsed = await readContract(client, {
     address: contractAddress,
     abi: IdEnforcer.abi,
