@@ -1,8 +1,6 @@
 /* eslint-disable */
 // experimental actions will be moved here once they have stabilized
 
-// signDelegation action will be added here
-
 export {
   // Individual action functions
   getErc20PeriodTransferEnforcerAvailableAmount,
@@ -20,3 +18,18 @@ export {
 } from './getCaveatAvailableAmount';
 
 export { isValid7702Implementation } from './isValid7702Implementation';
+
+// Signing actions
+export {
+  signDelegation,
+  signDelegationAction,
+  type SignDelegationParameters,
+  type SignDelegationReturnType,
+} from './signDelegationAction';
+
+export {
+  signUserOperation,
+  signUserOperationAction,
+  type SignUserOperationParameters,
+  type SignUserOperationReturnType,
+} from './signUserOperationAction';

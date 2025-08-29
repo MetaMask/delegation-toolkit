@@ -8,16 +8,7 @@ import {
   ROOT_AUTHORITY,
 } from '@metamask/delegation-core';
 import { hashMessage, toBytes, toHex, getAddress } from 'viem';
-import type {
-  TypedData,
-  AbiParameter,
-  Address,
-  WalletClient,
-  Account,
-  Chain,
-  Transport,
-  Hex,
-} from 'viem';
+import type { TypedData, AbiParameter, Address, Hex } from 'viem';
 
 import { type Caveats, resolveCaveats } from './caveatBuilder';
 import type { ScopeConfig } from './caveatBuilder/scope';
@@ -265,9 +256,9 @@ export const createOpenDelegation = (
 };
 
 /**
- * Signs a delegation.
+ * Signs a delegation using a private key.
  * @param params - The parameters for signing the delegation.
- * @param params.signer - The wallet client to use for signing.
+ * @param params.privateKey - The private key to use for signing.
  * @param params.delegation - The delegation to sign.
  * @param params.delegationManager - The address of the delegation manager contract.
  * @param params.chainId - The chain ID for the signature.
@@ -277,7 +268,7 @@ export const createOpenDelegation = (
  * @returns The signed delegation.
  */
 export const signDelegation = async ({
-  signer,
+  privateKey,
   delegation,
   delegationManager,
   chainId,
@@ -285,7 +276,7 @@ export const signDelegation = async ({
   version = '1',
   allowInsecureUnrestrictedDelegation = false,
 }: {
-  signer: WalletClient<Transport, Chain, Account>;
+  privateKey: `0x${string}`;
   delegation: Omit<Delegation, 'signature'>;
   delegationManager: Address;
   chainId: number;
@@ -307,8 +298,10 @@ export const signDelegation = async ({
     );
   }
 
-  return signer.signTypedData({
-    account: signer.account,
+  const { signTypedData } = await import('viem/accounts');
+
+  return signTypedData({
+    privateKey,
     domain: {
       chainId,
       name,

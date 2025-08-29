@@ -1,6 +1,5 @@
-import { stub } from 'sinon';
 import { getAddress } from 'viem';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 import { randomAddress } from './utils';
 import {
@@ -596,15 +595,8 @@ describe('decodePermissionContexts', () => {
 });
 
 describe('signDelegation', () => {
-  const mockSigner = {
-    signTypedData: stub().resolves('mockSignature'),
-    account: { address: '0xSignerAccount' },
-    cacheTime: 0,
-    chain: {},
-    key: 'mockKey',
-    name: 'mockName',
-    transport: {},
-  };
+  const mockPrivateKey =
+    '0x1234567890123456789012345678901234567890123456789012345678901234' as `0x${string}`;
 
   const mockDelegation = {
     delegate: mockDelegate,
@@ -614,23 +606,23 @@ describe('signDelegation', () => {
     salt: '0x123' as `0x${string}`,
   };
 
-  const delegationManager = '0xDelegationManager' as `0x${string}`;
+  // Use a valid 20-byte address for delegationManager
+  const delegationManager =
+    '0x1234567890123456789012345678901234567890' as `0x${string}`;
   const chainId = 1;
-
-  beforeEach(() => {
-    mockSigner.signTypedData.resetHistory();
-  });
 
   it('should sign a delegation successfully', async () => {
     const signature = await signDelegation({
-      signer: mockSigner as any,
+      privateKey: mockPrivateKey,
       delegation: mockDelegation,
       delegationManager,
       chainId,
     });
 
-    expect(signature).to.equal('mockSignature');
-    expect(mockSigner.signTypedData.calledOnce).to.equal(true);
+    expect(signature).to.be.a('string');
+    expect(signature).to.match(/^0x[a-fA-F0-9]+$/u);
+    // ECDSA signature should be 65 bytes (130 hex chars) + 0x prefix = 132 total chars
+    expect(signature).to.have.length(132);
   });
 
   it('should throw an error if no caveats are provided and allowInsecureUnrestrictedDelegation is false', async () => {
@@ -642,7 +634,7 @@ describe('signDelegation', () => {
 
     await expect(
       signDelegation({
-        signer: mockSigner as any,
+        privateKey: mockPrivateKey,
         delegation: delegationWithoutCaveats,
         delegationManager,
         chainId,
@@ -660,14 +652,16 @@ describe('signDelegation', () => {
     };
 
     const signature = await signDelegation({
-      signer: mockSigner as any,
+      privateKey: mockPrivateKey,
       delegation: delegationWithoutCaveats,
       delegationManager,
       chainId,
       allowInsecureUnrestrictedDelegation: true,
     });
 
-    expect(signature).to.equal('mockSignature');
-    expect(mockSigner.signTypedData.calledOnce).to.equal(true);
+    expect(signature).to.be.a('string');
+    expect(signature).to.match(/^0x[a-fA-F0-9]+$/u);
+    // ECDSA signature should be 65 bytes (130 hex chars) + 0x prefix = 132 total chars
+    expect(signature).to.have.length(132);
   });
 });

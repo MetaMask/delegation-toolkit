@@ -1,13 +1,5 @@
 import { concat, encodeAbiParameters, keccak256, pad, toHex } from 'viem';
-import type {
-  Account,
-  Address,
-  Chain,
-  Hex,
-  Transport,
-  TypedData,
-  WalletClient,
-} from 'viem';
+import type { Address, Hex, TypedData } from 'viem';
 import { toPackedUserOperation } from 'viem/account-abstraction';
 
 import type { OptionalUserOpProps, PackedUserOperationStruct } from './types';
@@ -266,9 +258,9 @@ export const SIGNABLE_USER_OP_TYPED_DATA: TypedData = {
 } as const;
 
 /**
- * Signs a user operation using the provided signatory.
+ * Signs a user operation using a private key.
  * @param params - The parameters for signing the user operation.
- * @param params.signer - The signatory to use for signing.
+ * @param params.privateKey - The private key to use for signing.
  * @param params.userOperation - The user operation to sign.
  * @param params.entryPoint - The entry point contract address.
  * @param params.chainId - The chain ID that the entry point is deployed on.
@@ -279,7 +271,7 @@ export const SIGNABLE_USER_OP_TYPED_DATA: TypedData = {
  * @returns The signature of the user operation.
  */
 export const signUserOperation = async ({
-  signer,
+  privateKey,
   userOperation,
   entryPoint,
   chainId,
@@ -287,7 +279,7 @@ export const signUserOperation = async ({
   address,
   version = '1',
 }: {
-  signer: WalletClient<Transport, Chain, Account>;
+  privateKey: `0x${string}`;
   userOperation: Omit<UserOperationV07, 'signature'>;
   entryPoint: { address: Address };
   chainId: number;
@@ -300,8 +292,10 @@ export const signUserOperation = async ({
     signature: '0x',
   });
 
-  return signer.signTypedData({
-    account: signer.account,
+  const { signTypedData } = await import('viem/accounts');
+
+  return signTypedData({
+    privateKey,
     domain: {
       chainId,
       name,
