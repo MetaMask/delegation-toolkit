@@ -1,5 +1,6 @@
 import { createWalletClient, http, type Address, type Hex } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import * as viemActions from 'viem/actions';
 import { sepolia } from 'viem/chains';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -89,8 +90,9 @@ describe('NonceEnforcer execute functions', () => {
       const mockRequest = { to: contractAddress, data: '0x123' };
       const mockSimulateResult = { request: mockRequest, result: undefined };
 
-      const { simulateContract } = await import('viem/actions');
-      vi.mocked(simulateContract).mockResolvedValue(mockSimulateResult as any);
+      vi.mocked(viemActions.simulateContract).mockResolvedValue(
+        mockSimulateResult as any,
+      );
 
       const result = await NonceEnforcer.simulate.incrementNonce({
         client,
@@ -98,7 +100,7 @@ describe('NonceEnforcer execute functions', () => {
         delegationManager,
       });
 
-      expect(simulateContract).toHaveBeenCalledWith(client, {
+      expect(viemActions.simulateContract).toHaveBeenCalledWith(client, {
         address: contractAddress,
         abi: expect.any(Array),
         functionName: 'incrementNonce',
@@ -111,8 +113,7 @@ describe('NonceEnforcer execute functions', () => {
     it('should handle simulation errors', async () => {
       const mockError = new Error('Simulation failed');
 
-      const { simulateContract } = await import('viem/actions');
-      vi.mocked(simulateContract).mockRejectedValue(mockError);
+      vi.mocked(viemActions.simulateContract).mockRejectedValue(mockError);
 
       await expect(
         NonceEnforcer.simulate.incrementNonce({
@@ -128,8 +129,9 @@ describe('NonceEnforcer execute functions', () => {
       const mockRequest = { to: contractAddress, data: '0x456' };
       const mockSimulateResult = { request: mockRequest, result: undefined };
 
-      const { simulateContract } = await import('viem/actions');
-      vi.mocked(simulateContract).mockResolvedValue(mockSimulateResult as any);
+      vi.mocked(viemActions.simulateContract).mockResolvedValue(
+        mockSimulateResult as any,
+      );
 
       const result = await NonceEnforcer.simulate.incrementNonce({
         client,
@@ -137,7 +139,7 @@ describe('NonceEnforcer execute functions', () => {
         delegationManager: differentManager,
       });
 
-      expect(simulateContract).toHaveBeenCalledWith(client, {
+      expect(viemActions.simulateContract).toHaveBeenCalledWith(client, {
         address: contractAddress,
         abi: expect.any(Array),
         functionName: 'incrementNonce',
@@ -155,9 +157,10 @@ describe('NonceEnforcer execute functions', () => {
       const mockRequest = { to: contractAddress, data: '0x123' };
       const mockSimulateResult = { request: mockRequest, result: undefined };
 
-      const { simulateContract, writeContract } = await import('viem/actions');
-      vi.mocked(simulateContract).mockResolvedValue(mockSimulateResult as any);
-      vi.mocked(writeContract).mockResolvedValue(mockHash);
+      vi.mocked(viemActions.simulateContract).mockResolvedValue(
+        mockSimulateResult as any,
+      );
+      vi.mocked(viemActions.writeContract).mockResolvedValue(mockHash);
 
       const result = await NonceEnforcer.execute.incrementNonce({
         client,
@@ -165,14 +168,17 @@ describe('NonceEnforcer execute functions', () => {
         delegationManager,
       });
 
-      expect(simulateContract).toHaveBeenCalledWith(client, {
+      expect(viemActions.simulateContract).toHaveBeenCalledWith(client, {
         address: contractAddress,
         abi: expect.any(Array),
         functionName: 'incrementNonce',
         args: [delegationManager],
       });
 
-      expect(writeContract).toHaveBeenCalledWith(client, mockRequest);
+      expect(viemActions.writeContract).toHaveBeenCalledWith(
+        client,
+        mockRequest,
+      );
 
       expect(result).toBe(mockHash);
     });
@@ -182,9 +188,10 @@ describe('NonceEnforcer execute functions', () => {
       const mockRequest = { to: contractAddress, data: '0x123' };
       const mockSimulateResult = { request: mockRequest, result: undefined };
 
-      const { simulateContract, writeContract } = await import('viem/actions');
-      vi.mocked(simulateContract).mockResolvedValue(mockSimulateResult as any);
-      vi.mocked(writeContract).mockRejectedValue(mockError);
+      vi.mocked(viemActions.simulateContract).mockResolvedValue(
+        mockSimulateResult as any,
+      );
+      vi.mocked(viemActions.writeContract).mockRejectedValue(mockError);
 
       await expect(
         NonceEnforcer.execute.incrementNonce({
@@ -202,9 +209,10 @@ describe('NonceEnforcer execute functions', () => {
       const mockRequest = { to: differentContract, data: '0x456' };
       const mockSimulateResult = { request: mockRequest, result: undefined };
 
-      const { simulateContract, writeContract } = await import('viem/actions');
-      vi.mocked(simulateContract).mockResolvedValue(mockSimulateResult as any);
-      vi.mocked(writeContract).mockResolvedValue(mockHash);
+      vi.mocked(viemActions.simulateContract).mockResolvedValue(
+        mockSimulateResult as any,
+      );
+      vi.mocked(viemActions.writeContract).mockResolvedValue(mockHash);
 
       const result = await NonceEnforcer.execute.incrementNonce({
         client,
@@ -212,14 +220,17 @@ describe('NonceEnforcer execute functions', () => {
         delegationManager,
       });
 
-      expect(simulateContract).toHaveBeenCalledWith(client, {
+      expect(viemActions.simulateContract).toHaveBeenCalledWith(client, {
         address: differentContract,
         abi: expect.any(Array),
         functionName: 'incrementNonce',
         args: [delegationManager],
       });
 
-      expect(writeContract).toHaveBeenCalledWith(client, mockRequest);
+      expect(viemActions.writeContract).toHaveBeenCalledWith(
+        client,
+        mockRequest,
+      );
 
       expect(result).toBe(mockHash);
     });
@@ -263,9 +274,10 @@ describe('NonceEnforcer execute functions', () => {
       const { encodeFunctionData } = await import('viem');
       vi.mocked(encodeFunctionData).mockReturnValue(mockEncodedData);
 
-      const { simulateContract, writeContract } = await import('viem/actions');
-      vi.mocked(simulateContract).mockResolvedValue(mockSimulateResult as any);
-      vi.mocked(writeContract).mockResolvedValue(mockHash);
+      vi.mocked(viemActions.simulateContract).mockResolvedValue(
+        mockSimulateResult as any,
+      );
+      vi.mocked(viemActions.writeContract).mockResolvedValue(mockHash);
 
       // Step 1: Encode
       const encodedData =
@@ -295,14 +307,17 @@ describe('NonceEnforcer execute functions', () => {
         args: [delegationManager],
       });
 
-      expect(simulateContract).toHaveBeenCalledWith(client, {
+      expect(viemActions.simulateContract).toHaveBeenCalledWith(client, {
         address: contractAddress,
         abi: expect.any(Array),
         functionName: 'incrementNonce',
         args: [delegationManager],
       });
 
-      expect(writeContract).toHaveBeenCalledWith(client, mockRequest);
+      expect(viemActions.writeContract).toHaveBeenCalledWith(
+        client,
+        mockRequest,
+      );
     });
   });
 });
