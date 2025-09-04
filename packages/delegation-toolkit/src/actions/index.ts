@@ -22,14 +22,14 @@ export { isValid7702Implementation } from './isValid7702Implementation';
 // Signing actions
 export {
   signDelegation,
-  signDelegationAction,
+  signDelegationActions,
   type SignDelegationParameters,
   type SignDelegationReturnType,
-} from './signDelegationAction';
+} from './signDelegation';
 
 export {
   signUserOperation,
-  signUserOperationAction,
+  signUserOperationActions,
   type SignUserOperationParameters,
   type SignUserOperationReturnType,
-} from './signUserOperationAction';
+} from './signUserOperation';

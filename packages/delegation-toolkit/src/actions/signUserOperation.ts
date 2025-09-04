@@ -7,10 +7,9 @@ import type {
   WalletClient,
 } from 'viem';
 import { BaseError } from 'viem';
-import { toPackedUserOperation } from 'viem/account-abstraction';
 import { parseAccount } from 'viem/accounts';
 
-import { SIGNABLE_USER_OP_TYPED_DATA } from '../userOp';
+import { prepareSignUserOperationTypedData } from '../userOp';
 import type { UserOperationV07 } from '../userOp';
 
 export type SignUserOperationParameters = {
@@ -39,12 +38,7 @@ export type SignUserOperationReturnType = `0x${string}`;
  * @returns The signature of the user operation.
  * @example
  * ```ts
- * const walletClient = createWalletClient({
- *   chain: mainnet,
- *   transport: http()
- * }).extend(signUserOperationAction());
- *
- * const signature = await walletClient.signUserOperation({
+ * const signature = await signUserOperation(walletClient, {
  *   userOperation: {
  *     sender: '0x...',
  *     nonce: 0n,
@@ -87,22 +81,18 @@ export async function signUserOperation<
 
   const account = parseAccount(accountParam);
 
-  const packedUserOp = toPackedUserOperation({
-    ...userOperation,
-    signature: '0x',
+  const typedData = prepareSignUserOperationTypedData({
+    userOperation,
+    entryPoint,
+    chainId,
+    name,
+    address,
+    version,
   });
 
   return client.signTypedData({
     account,
-    domain: {
-      chainId,
-      name,
-      version,
-      verifyingContract: address,
-    },
-    types: SIGNABLE_USER_OP_TYPED_DATA,
-    primaryType: 'PackedUserOperation',
-    message: { ...packedUserOp, entryPoint: entryPoint.address },
+    ...typedData,
   });
 }
 
@@ -114,10 +104,10 @@ export async function signUserOperation<
  * const walletClient = createWalletClient({
  *   chain: mainnet,
  *   transport: http()
- * }).extend(signUserOperationAction());
+ * }).extend(signUserOperationActions());
  * ```
  */
-export function signUserOperationAction() {
+export function signUserOperationActions() {
   return <
     TChain extends Chain | undefined,
     TAccount extends Account | undefined,

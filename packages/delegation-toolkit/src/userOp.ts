@@ -1,6 +1,7 @@
 import { concat, encodeAbiParameters, keccak256, pad, toHex } from 'viem';
 import type { Address, Hex, TypedData } from 'viem';
 import { toPackedUserOperation } from 'viem/account-abstraction';
+import { signTypedData } from 'viem/accounts';
 
 import type { OptionalUserOpProps, PackedUserOperationStruct } from './types';
 
@@ -258,6 +259,53 @@ export const SIGNABLE_USER_OP_TYPED_DATA: TypedData = {
 } as const;
 
 /**
+ * Prepares typed data for user operation signing.
+ * This is an internal helper function that's not exposed in the public API.
+ *
+ * @param params - The parameters for preparing the typed data.
+ * @param params.userOperation - The user operation to prepare for signing.
+ * @param params.entryPoint - The entry point contract address.
+ * @param params.entryPoint.address - The address of the entry point contract.
+ * @param params.chainId - The chain ID that the entry point is deployed on.
+ * @param params.name - The name of the domain of the implementation contract.
+ * @param params.version - The version of the domain of the implementation contract.
+ * @param params.address - The address of the smart account.
+ * @returns The prepared typed data for signing.
+ */
+export const prepareSignUserOperationTypedData = ({
+  userOperation,
+  entryPoint,
+  chainId,
+  name,
+  address,
+  version = '1',
+}: {
+  userOperation: Omit<UserOperationV07, 'signature'>;
+  entryPoint: { address: Address };
+  chainId: number;
+  name: 'HybridDeleGator' | 'MultiSigDeleGator';
+  address: Address;
+  version?: string;
+}) => {
+  const packedUserOp = toPackedUserOperation({
+    ...userOperation,
+    signature: '0x',
+  });
+
+  return {
+    domain: {
+      chainId,
+      name,
+      version,
+      verifyingContract: address,
+    },
+    types: SIGNABLE_USER_OP_TYPED_DATA,
+    primaryType: 'PackedUserOperation' as const,
+    message: { ...packedUserOp, entryPoint: entryPoint.address },
+  };
+};
+
+/**
  * Signs a user operation using a private key.
  * @param params - The parameters for signing the user operation.
  * @param params.privateKey - The private key to use for signing.
@@ -287,23 +335,17 @@ export const signUserOperation = async ({
   name: 'HybridDeleGator' | 'MultiSigDeleGator';
   version?: string;
 }) => {
-  const packedUserOp = toPackedUserOperation({
-    ...userOperation,
-    signature: '0x',
+  const typedData = prepareSignUserOperationTypedData({
+    userOperation,
+    entryPoint,
+    chainId,
+    name,
+    address,
+    version,
   });
-
-  const { signTypedData } = await import('viem/accounts');
 
   return signTypedData({
     privateKey,
-    domain: {
-      chainId,
-      name,
-      version,
-      verifyingContract: address,
-    },
-    types: SIGNABLE_USER_OP_TYPED_DATA,
-    primaryType: 'PackedUserOperation',
-    message: { ...packedUserOp, entryPoint: entryPoint.address },
+    ...typedData,
   });
 };

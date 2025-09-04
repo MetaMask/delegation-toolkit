@@ -9,10 +9,7 @@ import type {
 import { BaseError } from 'viem';
 import { parseAccount } from 'viem/accounts';
 
-import {
-  toDelegationStruct,
-  SIGNABLE_DELEGATION_TYPED_DATA,
-} from '../delegation';
+import { prepareSignDelegationTypedData } from '../delegation';
 import type { Delegation } from '../types';
 
 export type SignDelegationParameters = {
@@ -41,12 +38,7 @@ export type SignDelegationReturnType = `0x${string}`;
  * @returns The signature of the delegation.
  * @example
  * ```ts
- * const walletClient = createWalletClient({
- *   chain: mainnet,
- *   transport: http()
- * }).extend(signDelegationAction());
- *
- * const signature = await walletClient.signDelegation({
+ * const signature = await signDelegation(walletClient, {
  *   delegation: {
  *     delegate: '0x...',
  *     delegator: '0x...',
@@ -84,31 +76,18 @@ export async function signDelegation<
 
   const account = parseAccount(accountParam);
 
-  const delegationStruct = toDelegationStruct({
-    ...delegation,
-    signature: '0x',
+  const typedData = prepareSignDelegationTypedData({
+    delegation,
+    delegationManager,
+    chainId,
+    name,
+    version,
+    allowInsecureUnrestrictedDelegation,
   });
-
-  if (
-    delegationStruct.caveats.length === 0 &&
-    !allowInsecureUnrestrictedDelegation
-  ) {
-    throw new Error(
-      'No caveats found. If you definitely want to sign a delegation without caveats, set `allowInsecureUnrestrictedDelegation` to `true`.',
-    );
-  }
 
   return client.signTypedData({
     account,
-    domain: {
-      chainId,
-      name,
-      version,
-      verifyingContract: delegationManager,
-    },
-    types: SIGNABLE_DELEGATION_TYPED_DATA,
-    primaryType: 'Delegation',
-    message: delegationStruct,
+    ...typedData,
   });
 }
 
@@ -120,10 +99,10 @@ export async function signDelegation<
  * const walletClient = createWalletClient({
  *   chain: mainnet,
  *   transport: http()
- * }).extend(signDelegationAction());
+ * }).extend(signDelegationActions());
  * ```
  */
-export function signDelegationAction() {
+export function signDelegationActions() {
   return <
     TChain extends Chain | undefined,
     TAccount extends Account | undefined,
