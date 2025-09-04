@@ -43,7 +43,7 @@ export function createFunctionCallCaveatBuilder(
     throw new Error('Invalid Function Call configuration');
   }
 
-  if (allowedCalldata && allowedCalldata.length > 0 && exactCalldata) {
+  if ((allowedCalldata?.length ?? 0) > 0 && exactCalldata) {
     throw new Error(
       'Cannot specify both allowedCalldata and exactCalldata. Please use only one calldata restriction type.',
     );
@@ -53,8 +53,8 @@ export function createFunctionCallCaveatBuilder(
     .addCaveat('allowedTargets', { targets })
     .addCaveat('allowedMethods', { selectors });
 
-  if (allowedCalldata && allowedCalldata.length > 0) {
-    allowedCalldata.forEach((calldataConfig) => {
+  if ((allowedCalldata?.length ?? 0) > 0) {
+    allowedCalldata!.forEach((calldataConfig) => {
       caveatBuilder.addCaveat('allowedCalldata', calldataConfig);
     });
   } else if (exactCalldata) {
