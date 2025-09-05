@@ -261,11 +261,13 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
 });
 
 test('Bob increments the counter with a delegation from a multisig account', async () => {
-  const signers = [
-    privateKeyToAccount(generatePrivateKey()),
-    privateKeyToAccount(generatePrivateKey()),
-    privateKeyToAccount(generatePrivateKey()),
+  const privateKeys = [
+    generatePrivateKey(),
+    generatePrivateKey(),
+    generatePrivateKey(),
   ];
+  const signers = privateKeys.map((pk) => privateKeyToAccount(pk));
+
   // take all but the first signer as the signatory
   const signatory = signers.slice(1).map((account) => ({
     account,
@@ -297,12 +299,12 @@ test('Bob increments the counter with a delegation from a multisig account', asy
     caveats: [],
   });
 
-  // Get signatures from each signer
+  // Get signatures from each signer (using stored private keys)
   const signatures: PartialSignature[] = await Promise.all(
-    signers.slice(1).map(async (signer) => {
-      const wallet = createWalletClient({ account: signer, transport, chain });
+    privateKeys.slice(1).map(async (privateKey, index) => {
+      const signer = signers[index + 1]; // corresponding signer account
       const signature = await signDelegation({
-        signer: wallet,
+        privateKey,
         delegation,
         delegationManager: multisigSmartAccount.environment.DelegationManager,
         chainId: chain.id,

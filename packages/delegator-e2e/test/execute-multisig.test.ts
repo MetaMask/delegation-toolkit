@@ -23,13 +23,7 @@ import {
 } from '@metamask/delegation-toolkit';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
-import {
-  Account,
-  createClient,
-  createWalletClient,
-  encodeFunctionData,
-  parseEther,
-} from 'viem';
+import { Account, encodeFunctionData, parseEther } from 'viem';
 import { chain } from '../src/config';
 import { sponsoredBundlerClient } from './utils/helpers';
 import CounterMetadata from './utils/counter/metadata.json';
@@ -37,22 +31,23 @@ import CounterMetadata from './utils/counter/metadata.json';
 let aliceSmartAccount: MetaMaskSmartAccount<Implementation.MultiSig>;
 
 let signers: Account[];
+let privateKeys: `0x${string}`[];
 
 beforeEach(async () => {
-  signers = [
-    privateKeyToAccount(generatePrivateKey()),
-    privateKeyToAccount(generatePrivateKey()),
-    privateKeyToAccount(generatePrivateKey()),
+  privateKeys = [
+    generatePrivateKey(),
+    generatePrivateKey(),
+    generatePrivateKey(),
   ];
+  signers = privateKeys.map((pk) => privateKeyToAccount(pk));
+
   // take all but the first signer as the signatory
   const signatory = signers.slice(1).map((account) => ({
     account,
   }));
 
-  const client = createClient({ transport, chain });
-
   aliceSmartAccount = await toMetaMaskSmartAccount({
-    client,
+    client: publicClient,
     implementation: Implementation.MultiSig,
     deployParams: [signers.map((account) => account.address), 2n],
     deploySalt: '0x',
@@ -144,11 +139,10 @@ test('Send a useroperation with an aggregated signature', async () => {
 
   // signatures could be gathered asyncronously by different parties
   const partialSignatures: PartialSignature[] = await Promise.all(
-    signers.slice(1).map(async (signer) => {
-      const wallet = createWalletClient({ account: signer, transport, chain });
-
+    privateKeys.slice(1).map(async (privateKey, index) => {
+      const signer = signers[index + 1]; // corresponding signer account
       const partialSignature = await signUserOperation({
-        signer: wallet,
+        privateKey,
         userOperation,
         address: aliceSmartAccount.address,
         entryPoint: { address: aliceSmartAccount.entryPoint.address },

@@ -8,16 +8,8 @@ import {
   ROOT_AUTHORITY,
 } from '@metamask/delegation-core';
 import { hashMessage, toBytes, toHex, getAddress } from 'viem';
-import type {
-  TypedData,
-  AbiParameter,
-  Address,
-  WalletClient,
-  Account,
-  Chain,
-  Transport,
-  Hex,
-} from 'viem';
+import type { TypedData, AbiParameter, Address, Hex } from 'viem';
+import { signTypedData } from 'viem/accounts';
 
 import { type Caveats, resolveCaveats } from './caveatBuilder';
 import type { ScopeConfig } from './caveatBuilder/scope';
@@ -265,19 +257,18 @@ export const createOpenDelegation = (
 };
 
 /**
- * Signs a delegation.
- * @param params - The parameters for signing the delegation.
- * @param params.signer - The wallet client to use for signing.
- * @param params.delegation - The delegation to sign.
+ * Prepares typed data for delegation signing (internal helper function).
+ * @param params - The parameters for preparing the typed data.
+ * @param params.delegation - The delegation to prepare for signing.
  * @param params.delegationManager - The address of the delegation manager contract.
  * @param params.chainId - The chain ID for the signature.
  * @param params.name - The name of the contract.
  * @param params.version - The version of the contract.
  * @param params.allowInsecureUnrestrictedDelegation - Whether to allow insecure unrestricted delegation.
- * @returns The signed delegation.
+ * @returns The typed data parameters ready for signing.
+ * @internal
  */
-export const signDelegation = async ({
-  signer,
+export const prepareSignDelegationTypedData = ({
   delegation,
   delegationManager,
   chainId,
@@ -285,7 +276,6 @@ export const signDelegation = async ({
   version = '1',
   allowInsecureUnrestrictedDelegation = false,
 }: {
-  signer: WalletClient<Transport, Chain, Account>;
   delegation: Omit<Delegation, 'signature'>;
   delegationManager: Address;
   chainId: number;
@@ -307,8 +297,7 @@ export const signDelegation = async ({
     );
   }
 
-  return signer.signTypedData({
-    account: signer.account,
+  return {
     domain: {
       chainId,
       name,
@@ -316,7 +305,51 @@ export const signDelegation = async ({
       verifyingContract: delegationManager,
     },
     types: SIGNABLE_DELEGATION_TYPED_DATA,
-    primaryType: 'Delegation',
+    primaryType: 'Delegation' as const,
     message: delegationStruct,
+  };
+};
+
+/**
+ * Signs a delegation using a private key.
+ * @param params - The parameters for signing the delegation.
+ * @param params.privateKey - The private key to use for signing.
+ * @param params.delegation - The delegation to sign.
+ * @param params.delegationManager - The address of the delegation manager contract.
+ * @param params.chainId - The chain ID for the signature.
+ * @param params.name - The name of the contract.
+ * @param params.version - The version of the contract.
+ * @param params.allowInsecureUnrestrictedDelegation - Whether to allow insecure unrestricted delegation.
+ * @returns The signed delegation.
+ */
+export const signDelegation = async ({
+  privateKey,
+  delegation,
+  delegationManager,
+  chainId,
+  name = 'DelegationManager',
+  version = '1',
+  allowInsecureUnrestrictedDelegation = false,
+}: {
+  privateKey: Hex;
+  delegation: Omit<Delegation, 'signature'>;
+  delegationManager: Address;
+  chainId: number;
+  name?: string;
+  version?: string;
+  allowInsecureUnrestrictedDelegation?: boolean;
+}) => {
+  const typedData = prepareSignDelegationTypedData({
+    delegation,
+    delegationManager,
+    chainId,
+    name,
+    version,
+    allowInsecureUnrestrictedDelegation,
+  });
+
+  return signTypedData({
+    privateKey,
+    ...typedData,
   });
 };
