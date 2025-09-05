@@ -714,7 +714,8 @@ describe('signDelegation', () => {
     salt: '0x123' as Hex,
   };
 
-  const delegationManager = '0xDelegationManager' as Address;
+  const delegationManager =
+    '0x1234567890123456789012345678901234567890' as Address;
   const chainId = 1;
 
   it('should sign a delegation successfully', async () => {
