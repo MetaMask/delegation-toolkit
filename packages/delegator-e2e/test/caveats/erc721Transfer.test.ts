@@ -468,7 +468,7 @@ const runScopeTest_expectFailure = async (
         },
       ],
       functionName: 'transferFrom',
-      args: [aliceAddress, recipient as `0x${string}`, actualTokenId],
+      args: [aliceAddress, recipient as Address, actualTokenId],
     }),
   });
 
