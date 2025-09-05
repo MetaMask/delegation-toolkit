@@ -40,6 +40,7 @@ import {
   type Hex,
   parseEther,
   encodePacked,
+  type Address,
 } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
@@ -626,7 +627,7 @@ describe('MultiTokenPeriodEnforcer', () => {
     const delegation = {
       delegate: bobSmartAccount.address,
       delegator: aliceSmartAccount.address,
-      authority: ROOT_AUTHORITY as `0x${string}`,
+      authority: ROOT_AUTHORITY as Address,
       caveats: createCaveatBuilder(aliceSmartAccount.environment)
         .addCaveat('multiTokenPeriod', [
           {
@@ -637,7 +638,7 @@ describe('MultiTokenPeriodEnforcer', () => {
           },
         ])
         .build(),
-      salt: '0x1' as `0x${string}`,
+      salt: '0x1' as Hex,
       signature: '0x1',
     };
 
@@ -722,7 +723,7 @@ describe('MultiTokenPeriodEnforcer', () => {
     const delegation = {
       delegate: bobSmartAccount.address,
       delegator: aliceSmartAccount.address,
-      authority: ROOT_AUTHORITY as `0x${string}`,
+      authority: ROOT_AUTHORITY as Address,
       caveats: createCaveatBuilder(aliceSmartAccount.environment)
         .addCaveat('multiTokenPeriod', [
           {
@@ -733,7 +734,7 @@ describe('MultiTokenPeriodEnforcer', () => {
           },
         ])
         .build(),
-      salt: '0x1' as `0x${string}`,
+      salt: '0x1' as Hex,
       signature: '0x1',
     };
 
@@ -808,7 +809,7 @@ describe('MultiTokenPeriodEnforcer', () => {
     const delegation = {
       delegate: bobSmartAccount.address,
       delegator: aliceSmartAccount.address,
-      authority: ROOT_AUTHORITY as `0x${string}`,
+      authority: ROOT_AUTHORITY as Address,
       caveats: createCaveatBuilder(aliceSmartAccount.environment)
         .addCaveat('multiTokenPeriod', [
           {
@@ -819,7 +820,7 @@ describe('MultiTokenPeriodEnforcer', () => {
           },
         ])
         .build(),
-      salt: '0x1' as `0x${string}`,
+      salt: '0x1' as Hex,
       signature: '0x1',
     };
 
@@ -1513,7 +1514,7 @@ describe('Individual action functions vs client extension methods', () => {
     const delegation = {
       delegate: bobSmartAccount.address,
       delegator: aliceSmartAccount.address,
-      authority: ROOT_AUTHORITY as `0x${string}`,
+      authority: ROOT_AUTHORITY as Address,
       caveats: createCaveatBuilder(aliceSmartAccount.environment)
         .addCaveat('multiTokenPeriod', [
           {
@@ -1524,7 +1525,7 @@ describe('Individual action functions vs client extension methods', () => {
           },
         ])
         .build(),
-      salt: '0x1' as `0x${string}`,
+      salt: '0x1' as Hex,
       signature: '0x1',
     };
 

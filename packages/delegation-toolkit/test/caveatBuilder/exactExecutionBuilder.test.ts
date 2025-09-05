@@ -1,5 +1,5 @@
 import { concat, toHex } from 'viem';
-import type { Address } from 'viem';
+import type { Address, Hex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { exactExecutionBuilder } from '../../src/caveatBuilder/exactExecutionBuilder';
@@ -14,7 +14,7 @@ describe('exactExecutionBuilder()', () => {
   const buildWithParams = (execution: {
     target: Address;
     value: bigint;
-    callData: `0x${string}`;
+    callData: Hex;
   }) => {
     const config = { execution };
     return exactExecutionBuilder(environment, config);
@@ -28,7 +28,7 @@ describe('exactExecutionBuilder()', () => {
           execution: {
             target: invalidAddress,
             value: 0n,
-            callData: '0x' as `0x${string}`,
+            callData: '0x' as Hex,
           },
         };
         buildWithParams(config.execution);
@@ -41,7 +41,7 @@ describe('exactExecutionBuilder()', () => {
           execution: {
             target: randomAddress(),
             value: -1n,
-            callData: '0x' as `0x${string}`,
+            callData: '0x' as Hex,
           },
         };
         buildWithParams(config.execution);
@@ -54,7 +54,7 @@ describe('exactExecutionBuilder()', () => {
           execution: {
             target: randomAddress(),
             value: 0n,
-            callData: 'invalid' as `0x${string}`,
+            callData: 'invalid' as Hex,
           },
         };
         buildWithParams(config.execution);
@@ -68,7 +68,7 @@ describe('exactExecutionBuilder()', () => {
           execution: {
             target: nonChecksummedAddress,
             value: 0n,
-            callData: '0x' as `0x${string}`,
+            callData: '0x' as Hex,
           },
         };
         buildWithParams(config.execution);
@@ -81,7 +81,7 @@ describe('exactExecutionBuilder()', () => {
       const execution = {
         target: randomAddress(),
         value: 1000000000000000000n, // 1 ETH
-        callData: '0x12345678' as `0x${string}`,
+        callData: '0x12345678' as Hex,
       };
       const config = { execution };
       const caveat = buildWithParams(config.execution);
