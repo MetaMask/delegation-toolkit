@@ -387,7 +387,7 @@ describe('ERC20TransferAmountEnforcer Utilities E2E Tests', () => {
           },
         ],
         functionName: 'transfer',
-        args: [recipient as `0x${string}`, transferAmount1],
+        args: [recipient as Address, transferAmount1],
       }),
     });
 
@@ -444,7 +444,7 @@ describe('ERC20TransferAmountEnforcer Utilities E2E Tests', () => {
           },
         ],
         functionName: 'transfer',
-        args: [recipient as `0x${string}`, transferAmount2],
+        args: [recipient as Address, transferAmount2],
       }),
     });
 

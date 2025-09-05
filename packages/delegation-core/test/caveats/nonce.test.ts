@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { createNonceTerms } from '../../src/caveats/nonce';
+import type { Hex } from '../../src/types';
 
 describe('createNonceTerms', () => {
   const EXPECTED_BYTE_LENGTH = 32; // 32 bytes for nonce
@@ -292,7 +293,7 @@ describe('createNonceTerms', () => {
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
       ]);
 
-      const hexResult = createNonceTerms({ nonce: hexNonce as `0x${string}` });
+      const hexResult = createNonceTerms({ nonce: hexNonce as Hex });
       const uint8Result = createNonceTerms({ nonce: uint8Nonce });
 
       expect(hexResult).toStrictEqual(uint8Result);
@@ -302,7 +303,7 @@ describe('createNonceTerms', () => {
       const hexNonce = '0x01';
       const uint8Nonce = new Uint8Array([0x01]);
 
-      const hexResult = createNonceTerms({ nonce: hexNonce as `0x${string}` });
+      const hexResult = createNonceTerms({ nonce: hexNonce as Hex });
       const uint8Result = createNonceTerms({ nonce: uint8Nonce });
 
       const expected =
@@ -316,7 +317,7 @@ describe('createNonceTerms', () => {
       const hexNonce = `0x${maxBytes.map((b) => b.toString(16)).join('')}`;
       const uint8Nonce = new Uint8Array(maxBytes);
 
-      const hexResult = createNonceTerms({ nonce: hexNonce as `0x${string}` });
+      const hexResult = createNonceTerms({ nonce: hexNonce as Hex });
       const uint8Result = createNonceTerms({ nonce: uint8Nonce });
 
       const expected =
@@ -407,7 +408,7 @@ describe('createNonceTerms', () => {
     it('handles very large hex strings correctly', () => {
       // Test exactly at the 32-byte boundary
       const maxHex = `0x${'ff'.repeat(32)}`;
-      const result = createNonceTerms({ nonce: maxHex as `0x${string}` });
+      const result = createNonceTerms({ nonce: maxHex as Hex });
       expect(result).toStrictEqual(maxHex);
     });
 
