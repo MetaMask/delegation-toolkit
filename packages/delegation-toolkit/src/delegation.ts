@@ -185,10 +185,9 @@ type BaseCreateDelegationOptions = {
   environment: DeleGatorEnvironment;
   scope: ScopeConfig;
   from: Hex;
-  caveats: Caveats;
+  caveats?: Caveats;
   parentDelegation?: Delegation | Hex;
   salt?: Hex;
-  allowInsecureUnrestrictedDelegation?: boolean;
 };
 
 /**

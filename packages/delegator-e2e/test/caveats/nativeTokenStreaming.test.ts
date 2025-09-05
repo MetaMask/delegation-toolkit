@@ -25,6 +25,11 @@ import {
   fundAddress,
   randomAddress,
   stringToUnprefixedHex,
+  deployPayableReceiver,
+  getPayableReceiverBalance,
+  getPayableReceiverTotalReceived,
+  encodeReceiveEthCalldata,
+  encodeReceiveEthAlternativeCalldata,
 } from '../utils/helpers';
 import { encodeFunctionData, Hex, parseEther } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
@@ -34,6 +39,7 @@ import { concat } from 'viem';
 let aliceSmartAccount: MetaMaskSmartAccount;
 let bobSmartAccount: MetaMaskSmartAccount;
 let currentTime: number;
+let payableReceiverAddress: Hex;
 
 /**
  * These tests verify the native token streaming caveat functionality.
@@ -77,6 +83,8 @@ beforeEach(async () => {
 
   const { timestamp } = await publicClient.getBlock({ blockTag: 'latest' });
   currentTime = Number(timestamp);
+
+  payableReceiverAddress = await deployPayableReceiver();
 });
 
 test('maincase: Bob redeems the delegation with initial amount available', async () => {
@@ -739,7 +747,6 @@ const runScopeTest_expectSuccess = async (
       amountPerSecond,
       startTime,
     },
-    caveats: [],
   });
 
   const signedDelegation = {
@@ -818,7 +825,6 @@ const runScopeTest_expectFailure = async (
       amountPerSecond,
       startTime,
     },
-    caveats: [],
   });
 
   const signedDelegation = {
@@ -868,3 +874,324 @@ const runScopeTest_expectFailure = async (
     'Expected recipient balance to remain unchanged',
   ).toEqual(recipientBalanceBefore);
 };
+
+test('Caveat with exactCalldata: Bob successfully redeems with exact calldata match', async () => {
+  const initialAmount = parseEther('0.5');
+  const maxAmount = parseEther('2');
+  const amountPerSecond = parseEther('0.1');
+  const startTime = currentTime;
+  const transferAmount = parseEther('0.5');
+  const exactCalldata = encodeReceiveEthCalldata();
+
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
+  const delegation: Delegation = {
+    delegate: bobAddress,
+    delegator: aliceAddress,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('nativeTokenStreaming', {
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime,
+      })
+      .addCaveat('exactCalldata', { calldata: exactCalldata })
+      .build(),
+    signature: '0x',
+  };
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: payableReceiverAddress,
+    value: transferAmount,
+    callData: exactCalldata, // Exact match
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  const contractBalanceBefore = await getPayableReceiverBalance(
+    payableReceiverAddress,
+  );
+  const totalReceivedBefore = await getPayableReceiverTotalReceived(
+    payableReceiverAddress,
+  );
+
+  const userOpHash = await sponsoredBundlerClient.sendUserOperation({
+    account: bobSmartAccount,
+    calls: [
+      {
+        to: bobSmartAccount.address,
+        data: redeemData,
+      },
+    ],
+    ...gasPrice,
+  });
+
+  const receipt = await sponsoredBundlerClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  });
+
+  expectUserOperationToSucceed(receipt);
+
+  const contractBalanceAfter = await getPayableReceiverBalance(
+    payableReceiverAddress,
+  );
+  const totalReceivedAfter = await getPayableReceiverTotalReceived(
+    payableReceiverAddress,
+  );
+
+  expect(
+    contractBalanceAfter - contractBalanceBefore,
+    'Expected contract balance to increase by transfer amount',
+  ).toEqual(transferAmount);
+
+  expect(
+    totalReceivedAfter - totalReceivedBefore,
+    'Expected totalReceived to increase by transfer amount',
+  ).toEqual(transferAmount);
+});
+
+test('Caveat with exactCalldata: Bob fails to redeem with wrong calldata', async () => {
+  const initialAmount = parseEther('0.5');
+  const maxAmount = parseEther('2');
+  const amountPerSecond = parseEther('0.1');
+  const startTime = currentTime;
+  const transferAmount = parseEther('0.5');
+  const exactCalldata = encodeReceiveEthCalldata();
+  const wrongCalldata = encodeReceiveEthAlternativeCalldata(); // Different function
+
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
+  const delegation: Delegation = {
+    delegate: bobAddress,
+    delegator: aliceAddress,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('nativeTokenStreaming', {
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime,
+      })
+      .addCaveat('exactCalldata', { calldata: exactCalldata })
+      .build(),
+    signature: '0x',
+  };
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: payableReceiverAddress,
+    value: transferAmount,
+    callData: wrongCalldata, // Wrong calldata
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  await expect(
+    sponsoredBundlerClient.sendUserOperation({
+      account: bobSmartAccount,
+      calls: [
+        {
+          to: bobSmartAccount.address,
+          data: redeemData,
+        },
+      ],
+      ...gasPrice,
+    }),
+  ).rejects.toThrow(
+    stringToUnprefixedHex('ExactCalldataEnforcer:invalid-calldata'),
+  );
+});
+
+test('Caveat with allowedCalldata: Bob successfully redeems with allowed calldata pattern', async () => {
+  const initialAmount = parseEther('0.5');
+  const maxAmount = parseEther('2');
+  const amountPerSecond = parseEther('0.1');
+  const startTime = currentTime;
+  const transferAmount = parseEther('0.5');
+  const allowedCalldata = { startIndex: 0, value: encodeReceiveEthCalldata() };
+
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
+  const delegation: Delegation = {
+    delegate: bobAddress,
+    delegator: aliceAddress,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('nativeTokenStreaming', {
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime,
+      })
+      .addCaveat('allowedCalldata', allowedCalldata)
+      .build(),
+    signature: '0x',
+  };
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: payableReceiverAddress,
+    value: transferAmount,
+    callData: encodeReceiveEthCalldata(), // Matches allowed calldata
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  const contractBalanceBefore = await getPayableReceiverBalance(
+    payableReceiverAddress,
+  );
+  const totalReceivedBefore = await getPayableReceiverTotalReceived(
+    payableReceiverAddress,
+  );
+
+  const userOpHash = await sponsoredBundlerClient.sendUserOperation({
+    account: bobSmartAccount,
+    calls: [
+      {
+        to: bobSmartAccount.address,
+        data: redeemData,
+      },
+    ],
+    ...gasPrice,
+  });
+
+  const receipt = await sponsoredBundlerClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  });
+
+  expectUserOperationToSucceed(receipt);
+
+  const contractBalanceAfter = await getPayableReceiverBalance(
+    payableReceiverAddress,
+  );
+  const totalReceivedAfter = await getPayableReceiverTotalReceived(
+    payableReceiverAddress,
+  );
+
+  expect(
+    contractBalanceAfter - contractBalanceBefore,
+    'Expected contract balance to increase by transfer amount',
+  ).toEqual(transferAmount);
+
+  expect(
+    totalReceivedAfter - totalReceivedBefore,
+    'Expected totalReceived to increase by transfer amount',
+  ).toEqual(transferAmount);
+});
+
+test('Caveat with allowedCalldata: Bob fails to redeem with disallowed calldata pattern', async () => {
+  const initialAmount = parseEther('0.5');
+  const maxAmount = parseEther('2');
+  const amountPerSecond = parseEther('0.1');
+  const startTime = currentTime;
+  const transferAmount = parseEther('0.5');
+  const allowedCalldata = { startIndex: 0, value: encodeReceiveEthCalldata() }; // Only allow specific calldata
+
+  const bobAddress = bobSmartAccount.address;
+  const aliceAddress = aliceSmartAccount.address;
+
+  const delegation: Delegation = {
+    delegate: bobAddress,
+    delegator: aliceAddress,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('nativeTokenStreaming', {
+        initialAmount,
+        maxAmount,
+        amountPerSecond,
+        startTime,
+      })
+      .addCaveat('allowedCalldata', allowedCalldata)
+      .build(),
+    signature: '0x',
+  };
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const execution = createExecution({
+    target: payableReceiverAddress,
+    value: transferAmount,
+    callData: encodeReceiveEthAlternativeCalldata(), // Different from allowed calldata
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  await expect(
+    sponsoredBundlerClient.sendUserOperation({
+      account: bobSmartAccount,
+      calls: [
+        {
+          to: bobSmartAccount.address,
+          data: redeemData,
+        },
+      ],
+      ...gasPrice,
+    }),
+  ).rejects.toThrow(
+    stringToUnprefixedHex('AllowedCalldataEnforcer:invalid-calldata'),
+  );
+});

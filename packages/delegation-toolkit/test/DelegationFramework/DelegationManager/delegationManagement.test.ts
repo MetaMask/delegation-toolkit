@@ -91,7 +91,6 @@ describe('DelegationManager - Delegation Management', () => {
           targets: [alice.address],
           selectors: ['0x00000000'],
         },
-        caveats: [],
       });
 
       const encodedData = DelegationManager.encode.disableDelegation({
@@ -117,7 +116,6 @@ describe('DelegationManager - Delegation Management', () => {
           targets: [alice.address],
           selectors: ['0x00000000'],
         },
-        caveats: [],
       });
 
       const encodedData = DelegationManager.encode.enableDelegation({
@@ -143,7 +141,6 @@ describe('DelegationManager - Delegation Management', () => {
           targets: [alice.address],
           selectors: ['0x00000000'],
         },
-        caveats: [],
       });
 
       const execution = createExecution({

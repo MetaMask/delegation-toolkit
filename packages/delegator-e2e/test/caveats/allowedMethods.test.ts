@@ -297,7 +297,6 @@ const runScopeTest_expectSuccess = async (
       targets,
       selectors,
     },
-    caveats: [],
   });
 
   const signedDelegation = {
@@ -366,7 +365,6 @@ const runScopeTest_expectFailure = async (
       targets,
       selectors,
     },
-    caveats: [],
   });
 
   const signedDelegation = {

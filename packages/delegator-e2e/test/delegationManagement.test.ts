@@ -86,7 +86,6 @@ test('delegation management lifecycle: create, disable, enable, and check status
       targets: [aliceCounter.address],
       selectors: ['increment()'],
     },
-    caveats: [],
   });
 
   const signedDelegation = {
@@ -256,7 +255,6 @@ test('only delegator can disable their own delegation', async () => {
       targets: [aliceCounter.address],
       selectors: ['increment()'],
     },
-    caveats: [],
   });
 
   // Bob attempts to disable Alice's delegation (should fail)
@@ -290,7 +288,6 @@ test('only delegator can enable their own delegation', async () => {
       targets: [aliceCounter.address],
       selectors: ['increment()'],
     },
-    caveats: [],
   });
 
   // Alice disables the delegation first
@@ -347,7 +344,6 @@ test('disabling non-existent delegation should succeed silently', async () => {
       targets: [aliceCounter.address],
       selectors: ['increment()'],
     },
-    caveats: [],
   });
 
   // Alice disables the delegation even though it was never used
@@ -395,7 +391,6 @@ test('can check delegation status using disabledDelegations', async () => {
       targets: [aliceCounter.address],
       selectors: ['increment()'],
     },
-    caveats: [],
   });
 
   const delegation2 = createDelegation({
@@ -407,7 +402,6 @@ test('can check delegation status using disabledDelegations', async () => {
       targets: [aliceCounter.address],
       selectors: ['decrement()'],
     },
-    caveats: [],
   });
 
   const delegationHash1 = getDelegationHashOffchain(delegation1);

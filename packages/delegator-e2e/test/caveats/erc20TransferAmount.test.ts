@@ -328,7 +328,6 @@ const runScopeTest_expectSuccess = async (
       tokenAddress: erc20TokenAddress,
       maxAmount,
     },
-    caveats: [],
   });
 
   const signedDelegation = {
@@ -420,7 +419,6 @@ const runScopeTest_expectFailure = async (
       tokenAddress: erc20TokenAddress,
       maxAmount,
     },
-    caveats: [],
   });
 
   const signedDelegation = {
