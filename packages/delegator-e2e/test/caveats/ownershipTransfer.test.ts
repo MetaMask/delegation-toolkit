@@ -62,6 +62,7 @@ describe('Ownership Transfer Caveat', () => {
       deploySalt: '0x2',
       signatory: { account: bobAccount },
     });
+    await deploySmartAccount(bobSmartAccount);
 
     // Deploy an ERC721 contract that Alice will own (and can transfer ownership of)
     contractAddress = (await deployErc721Token(
