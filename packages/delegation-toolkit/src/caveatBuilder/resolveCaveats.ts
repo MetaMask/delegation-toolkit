@@ -10,7 +10,7 @@ export type Caveats = CaveatBuilder | (Caveat | CoreCaveatConfiguration)[];
  * @param config - The configuration for the caveat builder.
  * @param config.environment - The environment to be used for the caveat builder.
  * @param config.scope - The scope to be used for the caveat builder.
- * @param config.caveats - The caveats to be resolved, which can be either a CaveatBuilder or an array of Caveat or CaveatConfiguration.
+ * @param config.caveats - The caveats to be resolved, which can be either a CaveatBuilder or an array of Caveat or CaveatConfiguration. Optional - if not provided, only scope caveats will be used.
  * @returns The resolved array of caveats.
  */
 export const resolveCaveats = ({
@@ -20,27 +20,29 @@ export const resolveCaveats = ({
 }: {
   environment: DeleGatorEnvironment;
   scope: ScopeConfig;
-  caveats: Caveats;
+  caveats?: Caveats;
 }) => {
   const scopeCaveatBuilder = createCaveatBuilderFromScope(environment, scope);
 
-  if ('build' in caveats && typeof caveats.build === 'function') {
-    (caveats as CaveatBuilder).build().forEach((caveat) => {
-      scopeCaveatBuilder.addCaveat(caveat);
-    });
-  } else if (Array.isArray(caveats)) {
-    caveats.forEach((caveat) => {
-      try {
-        if ('type' in caveat) {
-          const { type, ...config } = caveat;
-          scopeCaveatBuilder.addCaveat(type, config);
-        } else {
-          scopeCaveatBuilder.addCaveat(caveat);
+  if (caveats) {
+    if ('build' in caveats && typeof caveats.build === 'function') {
+      (caveats as CaveatBuilder).build().forEach((caveat) => {
+        scopeCaveatBuilder.addCaveat(caveat);
+      });
+    } else if (Array.isArray(caveats)) {
+      caveats.forEach((caveat) => {
+        try {
+          if ('type' in caveat) {
+            const { type, ...config } = caveat;
+            scopeCaveatBuilder.addCaveat(type, config);
+          } else {
+            scopeCaveatBuilder.addCaveat(caveat);
+          }
+        } catch (error) {
+          throw new Error(`Invalid caveat: ${(error as Error).message}`);
         }
-      } catch (error) {
-        throw new Error(`Invalid caveat: ${(error as Error).message}`);
-      }
-    });
+      });
+    }
   }
 
   return scopeCaveatBuilder.build();

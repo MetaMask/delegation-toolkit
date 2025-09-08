@@ -102,7 +102,6 @@ test('maincase: Bob increments the counter with a delegation from Alice', async 
       targets: [aliceCounterContractAddress],
       selectors: ['increment()'],
     },
-    caveats: [],
   });
 
   const signedDelegation = {
@@ -212,7 +211,6 @@ test("Bob attempts to increment the counter with a delegation from Alice that do
       targets: [aliceCounterContractAddress],
       selectors: ['notTheRightFunction()'],
     },
-    caveats: [],
   });
 
   const signedDelegation = {
@@ -296,7 +294,6 @@ test('Bob increments the counter with a delegation from a multisig account', asy
       targets: [counterContract.address],
       selectors: ['increment()'],
     },
-    caveats: [],
   });
 
   // Get signatures from each signer (using stored private keys)

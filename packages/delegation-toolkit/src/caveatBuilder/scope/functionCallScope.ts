@@ -31,6 +31,7 @@ const isFunctionCallConfig = (
  * @param config - Configuration object containing allowed targets, methods, and optionally calldata.
  * @returns A configured caveat builder with the specified caveats.
  * @throws Error if any of the required parameters are invalid.
+ * @throws Error if both allowedCalldata and exactCalldata are provided simultaneously.
  */
 export function createFunctionCallCaveatBuilder(
   environment: DeleGatorEnvironment,
@@ -42,16 +43,21 @@ export function createFunctionCallCaveatBuilder(
     throw new Error('Invalid Function Call configuration');
   }
 
+  if (allowedCalldata && allowedCalldata.length > 0 && exactCalldata) {
+    throw new Error(
+      'Cannot specify both allowedCalldata and exactCalldata. Please use only one calldata restriction type.',
+    );
+  }
+
   const caveatBuilder = createCaveatBuilder(environment)
     .addCaveat('allowedTargets', { targets })
     .addCaveat('allowedMethods', { selectors });
 
-  if (allowedCalldata) {
+  if (allowedCalldata && allowedCalldata.length > 0) {
     allowedCalldata.forEach((calldataConfig) => {
       caveatBuilder.addCaveat('allowedCalldata', calldataConfig);
     });
-  }
-  if (exactCalldata) {
+  } else if (exactCalldata) {
     caveatBuilder.addCaveat('exactCalldata', exactCalldata);
   }
 

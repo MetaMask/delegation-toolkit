@@ -97,7 +97,6 @@ test('infuraBundlerClient should work for delegation redemption', async () => {
       type: 'nativeTokenTransferAmount',
       maxAmount: 0n,
     },
-    caveats: [],
   });
 
   const signedDelegation = {

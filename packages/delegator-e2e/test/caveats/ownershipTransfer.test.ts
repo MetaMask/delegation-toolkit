@@ -62,6 +62,7 @@ describe('Ownership Transfer Caveat', () => {
       deploySalt: '0x2',
       signatory: { account: bobAccount },
     });
+    await deploySmartAccount(bobSmartAccount);
 
     // Deploy an ERC721 contract that Alice will own (and can transfer ownership of)
     contractAddress = (await deployErc721Token(
@@ -102,7 +103,6 @@ describe('Ownership Transfer Caveat', () => {
         type: 'ownershipTransfer',
         contractAddress,
       },
-      caveats: [],
     });
 
     // Sign the delegation
@@ -166,7 +166,6 @@ describe('Ownership Transfer Caveat', () => {
         type: 'ownershipTransfer',
         contractAddress, // Only allows this specific contract
       },
-      caveats: [],
     });
 
     // Sign the delegation
@@ -250,7 +249,6 @@ describe('Ownership Transfer Caveat', () => {
         type: 'ownershipTransfer',
         contractAddress,
       },
-      caveats: [],
     });
 
     const signedDelegation = {
@@ -308,7 +306,6 @@ describe('Ownership Transfer Caveat', () => {
         type: 'ownershipTransfer',
         contractAddress, // Only allows this specific contract
       },
-      caveats: [],
     });
 
     const signedDelegation = {
