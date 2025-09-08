@@ -31,7 +31,13 @@ import {
   getErc20Balance,
   stringToUnprefixedHex,
 } from '../utils/helpers';
-import { concat, encodeFunctionData, Hex, parseEther } from 'viem';
+import {
+  concat,
+  encodeFunctionData,
+  Hex,
+  parseEther,
+  type Address,
+} from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import * as ERC20Token from '../../contracts/out/ERC20Token.sol/ERC20Token.json';
@@ -624,7 +630,7 @@ const runTest_expectSuccess = async (
   amountPerSecond: bigint,
   startTime: number,
   transferAmount: bigint,
-  recipient: `0x${string}`,
+  recipient: Address,
 ) => {
   const { environment } = aliceSmartAccount;
 
@@ -658,7 +664,7 @@ const runTest_expectSuccess = async (
     callData: encodeFunctionData({
       abi: erc20TokenAbi,
       functionName: 'transfer',
-      args: [recipient as `0x${string}`, transferAmount],
+      args: [recipient as Address, transferAmount],
     }),
   });
 
@@ -673,7 +679,7 @@ const runTest_expectSuccess = async (
   });
 
   const recipientBalanceBefore = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -695,7 +701,7 @@ const runTest_expectSuccess = async (
   expectUserOperationToSucceed(receipt);
 
   const recipientBalanceAfter = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -713,7 +719,7 @@ const runTest_expectFailure = async (
   amountPerSecond: bigint,
   startTime: number,
   transferAmount: bigint,
-  recipient: `0x${string}`,
+  recipient: Address,
   expectedError: string,
   execution?: ExecutionStruct,
 ) => {
@@ -750,7 +756,7 @@ const runTest_expectFailure = async (
       callData: encodeFunctionData({
         abi: erc20TokenAbi,
         functionName: 'transfer',
-        args: [recipient as `0x${string}`, transferAmount],
+        args: [recipient as Address, transferAmount],
       }),
     });
   }
@@ -766,7 +772,7 @@ const runTest_expectFailure = async (
   });
 
   const recipientBalanceBefore = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -784,7 +790,7 @@ const runTest_expectFailure = async (
   ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 
   const recipientBalanceAfter = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -880,7 +886,7 @@ const runScopeTest_expectSuccess = async (
         },
       ],
       functionName: 'transfer',
-      args: [recipient as `0x${string}`, transferAmount],
+      args: [recipient as Address, transferAmount],
     }),
   });
 
@@ -895,7 +901,7 @@ const runScopeTest_expectSuccess = async (
   });
 
   const recipientBalanceBefore = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -917,7 +923,7 @@ const runScopeTest_expectSuccess = async (
   expectUserOperationToSucceed(receipt);
 
   const recipientBalanceAfter = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -977,7 +983,7 @@ const runScopeTest_expectFailure = async (
         },
       ],
       functionName: 'transfer',
-      args: [recipient as `0x${string}`, transferAmount],
+      args: [recipient as Address, transferAmount],
     }),
   });
 
@@ -992,7 +998,7 @@ const runScopeTest_expectFailure = async (
   });
 
   const recipientBalanceBefore = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 
@@ -1010,7 +1016,7 @@ const runScopeTest_expectFailure = async (
   ).rejects.toThrow(stringToUnprefixedHex(expectedError));
 
   const recipientBalanceAfter = await getErc20Balance(
-    recipient as `0x${string}`,
+    recipient as Address,
     erc20TokenAddress,
   );
 

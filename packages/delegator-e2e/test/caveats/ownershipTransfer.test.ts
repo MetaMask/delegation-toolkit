@@ -29,14 +29,14 @@ import {
   fundAddress,
   deployerClient,
 } from '../utils/helpers';
-import { encodeFunctionData, type Hex } from 'viem';
+import { encodeFunctionData, type Hex, type Address } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
 describe('Ownership Transfer Caveat', () => {
   let aliceSmartAccount: MetaMaskSmartAccount;
   let bobSmartAccount: MetaMaskSmartAccount;
-  let contractAddress: `0x${string}`;
+  let contractAddress: Address;
 
   beforeEach(async () => {
     // Create Alice's smart account
@@ -65,10 +65,7 @@ describe('Ownership Transfer Caveat', () => {
     await deploySmartAccount(bobSmartAccount);
 
     // Deploy an ERC721 contract that Alice will own (and can transfer ownership of)
-    contractAddress = (await deployErc721Token(
-      'TestNFT',
-      'TNFT',
-    )) as `0x${string}`;
+    contractAddress = (await deployErc721Token('TestNFT', 'TNFT')) as Address;
 
     // Transfer ownership from deployer to Alice's smart account
     const transferOwnershipCallData = transferContractOwnership(
@@ -88,9 +85,9 @@ describe('Ownership Transfer Caveat', () => {
 
   const runTest_expectSuccess = async (
     delegator: MetaMaskSmartAccount,
-    delegate: `0x${string}`,
-    contractAddress: `0x${string}`,
-    newOwner: `0x${string}`,
+    delegate: Address,
+    contractAddress: Address,
+    newOwner: Address,
   ) => {
     const environment = delegator.environment;
     const delegatorAddress = delegator.address;
@@ -150,10 +147,10 @@ describe('Ownership Transfer Caveat', () => {
 
   const runTest_expectFailure = async (
     delegator: MetaMaskSmartAccount,
-    delegate: `0x${string}`,
-    contractAddress: `0x${string}`,
-    targetContract: `0x${string}`,
-    newOwner: `0x${string}`,
+    delegate: Address,
+    contractAddress: Address,
+    targetContract: Address,
+    newOwner: Address,
   ) => {
     const environment = delegator.environment;
     const delegatorAddress = delegator.address;
@@ -215,7 +212,7 @@ describe('Ownership Transfer Caveat', () => {
       aliceSmartAccount,
       bobSmartAccount.address,
       contractAddress,
-      newOwner as `0x${string}`,
+      newOwner as Address,
     );
   });
 
@@ -224,7 +221,7 @@ describe('Ownership Transfer Caveat', () => {
     const unauthorizedContract = (await deployErc721Token(
       'Unauthorized',
       'UNAUTH',
-    )) as `0x${string}`;
+    )) as Address;
     const newOwner = randomAddress();
 
     await runTest_expectFailure(
@@ -232,14 +229,14 @@ describe('Ownership Transfer Caveat', () => {
       bobSmartAccount.address,
       contractAddress, // Delegation only allows this contract
       unauthorizedContract, // But we try to transfer this one
-      newOwner as `0x${string}`,
+      newOwner as Address,
     );
   });
 
   // Scope Tests using createDelegation
   const runScopeTest_expectSuccess = async (
-    contractAddress: `0x${string}`,
-    newOwner: `0x${string}`,
+    contractAddress: Address,
+    newOwner: Address,
   ) => {
     const delegation = createDelegation({
       environment: aliceSmartAccount.environment,
@@ -294,9 +291,9 @@ describe('Ownership Transfer Caveat', () => {
   };
 
   const runScopeTest_expectFailure = async (
-    contractAddress: `0x${string}`,
-    targetContract: `0x${string}`,
-    newOwner: `0x${string}`,
+    contractAddress: Address,
+    targetContract: Address,
+    newOwner: Address,
   ) => {
     const delegation = createDelegation({
       environment: aliceSmartAccount.environment,
@@ -350,10 +347,7 @@ describe('Ownership Transfer Caveat', () => {
   test('Scope: Bob redeems the delegation to transfer ownership using ownershipTransfer scope', async () => {
     const newOwner = randomAddress();
 
-    await runScopeTest_expectSuccess(
-      contractAddress,
-      newOwner as `0x${string}`,
-    );
+    await runScopeTest_expectSuccess(contractAddress, newOwner as Address);
   });
 
   test('Scope: Bob attempts to transfer ownership of unauthorized contract using ownershipTransfer scope', async () => {
@@ -361,13 +355,13 @@ describe('Ownership Transfer Caveat', () => {
     const unauthorizedContract = (await deployErc721Token(
       'Unauthorized',
       'UNAUTH',
-    )) as `0x${string}`;
+    )) as Address;
     const newOwner = randomAddress();
 
     await runScopeTest_expectFailure(
       contractAddress, // Delegation only allows this contract
       unauthorizedContract, // But we try to transfer this one
-      newOwner as `0x${string}`,
+      newOwner as Address,
     );
   });
 });

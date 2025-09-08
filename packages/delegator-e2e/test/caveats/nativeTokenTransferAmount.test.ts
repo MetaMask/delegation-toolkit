@@ -3,6 +3,7 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   createCaveatBuilder,
+  getDelegationHashOffchain,
 } from '@metamask/delegation-toolkit/utils';
 import {
   createExecution,
@@ -28,10 +29,12 @@ import {
   getPayableReceiverTotalReceived,
   encodeReceiveEthCalldata,
   encodeReceiveEthAlternativeCalldata,
+  randomAddress,
 } from '../utils/helpers';
 import { encodeFunctionData, parseEther, type Hex } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { NativeTokenTransferAmountEnforcer } from '@metamask/delegation-toolkit/contracts';
 
 let aliceSmartAccount: MetaMaskSmartAccount;
 let bobSmartAccount: MetaMaskSmartAccount;
@@ -378,6 +381,189 @@ const runScopeTest_expectFailure = async (
     balanceBefore,
   );
 };
+
+test('Utility: getTermsInfo should correctly decode terms from a real delegation', async () => {
+  const maxAmount = parseEther('1'); // 1 ETH allowance
+
+  // Create a delegation with native token transfer amount enforcer
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('nativeTokenTransferAmount', {
+        maxAmount,
+      })
+      .build(),
+    signature: '0x',
+  };
+
+  // Extract terms from the caveat
+  const caveat = delegation.caveats[0];
+  if (!caveat) {
+    throw new Error('No caveats found in delegation');
+  }
+
+  // Get the enforcer address from the environment
+  const enforcerAddress =
+    aliceSmartAccount.environment.caveatEnforcers
+      .NativeTokenTransferAmountEnforcer;
+  if (!enforcerAddress) {
+    throw new Error(
+      'NativeTokenTransferAmountEnforcer not found in environment',
+    );
+  }
+
+  // Test our utility function
+  const result = await NativeTokenTransferAmountEnforcer.read.getTermsInfo({
+    client: publicClient,
+    contractAddress: enforcerAddress,
+    terms: caveat.terms,
+  });
+
+  // Verify the decoded terms match our input
+  expect(result).toBe(maxAmount);
+
+  // Also test that the utility matches manual contract call
+  const manualResult = await publicClient.readContract({
+    address: enforcerAddress,
+    abi: [
+      {
+        inputs: [{ name: '_terms', type: 'bytes' }],
+        name: 'getTermsInfo',
+        outputs: [{ name: 'allowance_', type: 'uint256' }],
+        stateMutability: 'pure',
+        type: 'function',
+      },
+    ],
+    functionName: 'getTermsInfo',
+    args: [caveat.terms],
+  });
+
+  expect(result).toBe(manualResult);
+});
+
+test('Utility: getSpentAmount should track spending correctly before and after transfers', async () => {
+  const maxAmount = parseEther('2');
+  const transferAmount = parseEther('0.5');
+
+  const enforcerAddress =
+    aliceSmartAccount.environment.caveatEnforcers
+      .NativeTokenTransferAmountEnforcer!;
+
+  // Create delegation using EXACT same pattern as working runTest_expectSuccess
+  const delegation: Delegation = {
+    delegate: bobSmartAccount.address,
+    delegator: aliceSmartAccount.address,
+    authority: ROOT_AUTHORITY,
+    salt: '0x0',
+    caveats: createCaveatBuilder(aliceSmartAccount.environment)
+      .addCaveat('nativeTokenTransferAmount', { maxAmount })
+      .build(),
+    signature: '0x',
+  };
+
+  const signedDelegation = {
+    ...delegation,
+    signature: await aliceSmartAccount.signDelegation({
+      delegation,
+    }),
+  };
+
+  const delegationHash = getDelegationHashOffchain(signedDelegation);
+
+  // Check initial spent amount
+  const initialSpent =
+    await NativeTokenTransferAmountEnforcer.read.getSpentAmount({
+      client: publicClient,
+      contractAddress: enforcerAddress,
+      delegationManager: aliceSmartAccount.environment.DelegationManager,
+      delegationHash,
+    });
+
+  expect(initialSpent).toBe(0n);
+
+  // Check Bob's balance before (like working tests do)
+  const balanceBefore = await publicClient.getBalance({
+    address: bobSmartAccount.address,
+  });
+
+  // Use EXACT same execution pattern as working tests
+  const execution = createExecution({
+    target: bobSmartAccount.address,
+    value: transferAmount,
+  });
+
+  const redeemData = encodeFunctionData({
+    abi: bobSmartAccount.abi,
+    functionName: 'redeemDelegations',
+    args: [
+      encodePermissionContexts([[signedDelegation]]),
+      [ExecutionMode.SingleDefault],
+      encodeExecutionCalldatas([[execution]]),
+    ],
+  });
+
+  // Execute exactly like working tests
+  const userOpHash = await sponsoredBundlerClient.sendUserOperation({
+    account: bobSmartAccount,
+    calls: [
+      {
+        to: bobSmartAccount.address,
+        data: redeemData,
+      },
+    ],
+    ...gasPrice,
+  });
+
+  const receipt = await sponsoredBundlerClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  });
+
+  expectUserOperationToSucceed(receipt);
+
+  // Verify the transfer actually happened (like working tests)
+  const balanceAfter = await publicClient.getBalance({
+    address: bobSmartAccount.address,
+  });
+
+  expect(
+    balanceAfter - balanceBefore,
+    'Expected balance to increase by transfer amount',
+  ).toEqual(transferAmount);
+
+  // Now check if enforcer tracked the spending
+  const spentAfterTransfer =
+    await NativeTokenTransferAmountEnforcer.read.getSpentAmount({
+      client: publicClient,
+      contractAddress: enforcerAddress,
+      delegationManager: aliceSmartAccount.environment.DelegationManager,
+      delegationHash,
+    });
+
+  // Verify with direct contract call using hardcoded ABI
+  const manualSpentResult = await publicClient.readContract({
+    address: enforcerAddress,
+    abi: [
+      {
+        type: 'function',
+        name: 'spentMap',
+        inputs: [
+          { name: 'delegationManager', type: 'address' },
+          { name: 'delegationHash', type: 'bytes32' },
+        ],
+        outputs: [{ name: 'amount', type: 'uint256' }],
+        stateMutability: 'view',
+      },
+    ],
+    functionName: 'spentMap',
+    args: [aliceSmartAccount.environment.DelegationManager, delegationHash],
+  });
+
+  expect(spentAfterTransfer).toBe(transferAmount);
+  expect(spentAfterTransfer).toBe(manualSpentResult);
+});
 
 test('Caveat with exactCalldata: Bob successfully redeems with exact calldata match', async () => {
   const allowance = parseEther('1');

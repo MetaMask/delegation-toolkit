@@ -1,4 +1,4 @@
-import { encodeAbiParameters, type Address } from 'viem';
+import { encodeAbiParameters, type Address, type Hex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { exactCalldataBatchBuilder } from '../../src/caveatBuilder/exactCalldataBatchBuilder';
@@ -14,7 +14,7 @@ describe('exactCalldataBatchBuilder()', () => {
     executions: {
       target: Address;
       value: bigint;
-      callData: `0x${string}`;
+      callData: Hex;
     }[],
   ) => {
     const config = { executions };
@@ -59,7 +59,7 @@ describe('exactCalldataBatchBuilder()', () => {
           {
             target: randomAddress(),
             value: 0n,
-            callData: 'invalid' as `0x${string}`,
+            callData: 'invalid' as Hex,
           },
         ]),
       ).to.throw('Invalid calldata: must be a hex string starting with 0x');
