@@ -1,3 +1,4 @@
+import type { Address } from 'viem';
 import {
   deployments_1_3_0,
   deployments_1_1_0,
@@ -39,7 +40,7 @@ export const CHAIN_ID = {
 
 type DeployedContracts = Record<
   string,
-  Record<number, Record<string, `0x${string}`>>
+  Record<number, Record<string, Address>>
 >;
 
 export const DELEGATOR_CONTRACTS: DeployedContracts = {

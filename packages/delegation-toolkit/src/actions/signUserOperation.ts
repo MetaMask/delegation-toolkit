@@ -3,6 +3,7 @@ import type {
   Address,
   Chain,
   Client,
+  Hex,
   Transport,
   WalletClient,
 } from 'viem';
@@ -29,7 +30,7 @@ export type SignUserOperationParameters = {
   version?: string;
 };
 
-export type SignUserOperationReturnType = `0x${string}`;
+export type SignUserOperationReturnType = Hex;
 
 /**
  * Signs a user operation using a wallet client.

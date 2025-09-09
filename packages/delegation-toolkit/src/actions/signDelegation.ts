@@ -3,6 +3,7 @@ import type {
   Address,
   Chain,
   Client,
+  Hex,
   Transport,
   WalletClient,
 } from 'viem';
@@ -29,7 +30,7 @@ export type SignDelegationParameters = {
   allowInsecureUnrestrictedDelegation?: boolean;
 };
 
-export type SignDelegationReturnType = `0x${string}`;
+export type SignDelegationReturnType = Hex;
 
 /**
  * Signs a delegation using a wallet client.
