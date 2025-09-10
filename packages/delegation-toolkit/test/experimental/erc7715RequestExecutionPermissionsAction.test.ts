@@ -15,13 +15,10 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { erc7715ProviderActions } from '../../src/experimental';
 import type { RequestExecutionPermissionsParameters } from '../../src/experimental/erc7715RequestExecutionPermissionsAction';
 import { erc7715RequestExecutionPermissionsAction } from '../../src/experimental/erc7715RequestExecutionPermissionsAction';
-import { ensureSnapsAuthorized } from '../../src/experimental/snapsAuthorization';
 
 describe('erc7715RequestExecutionPermissionsAction', () => {
   let alice: Account;
   let bob: Account;
-
-  const kernelSnapId = 'kernel-snap-id';
 
   const stubRequest = stub();
   const mockClient: Client = {
@@ -43,7 +40,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
   });
 
   describe('erc7715RequestExecutionPermissionsAction()', () => {
-    it('calls the wallet RPC method if kernelSnapId is not provided', async () => {
+    it('calls the wallet RPC method', async () => {
       const permissionRequest = {
         chainId: 31337,
         address: bob.address,
@@ -67,7 +64,6 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
       const result = await erc7715RequestExecutionPermissionsAction(
         mockClient,
         parameters,
-        undefined,
       );
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
@@ -128,11 +124,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
       const parameters = [permissionRequest];
       stubRequest.resolves(mockResponse);
 
-      await erc7715RequestExecutionPermissionsAction(
-        mockClient,
-        parameters,
-        kernelSnapId,
-      );
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[1]).to.deep.equal({
@@ -161,11 +153,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
       ];
 
       await expect(
-        erc7715RequestExecutionPermissionsAction(
-          mockClient,
-          parameters,
-          kernelSnapId,
-        ),
+        erc7715RequestExecutionPermissionsAction(mockClient, parameters),
       ).rejects.toThrow('Invalid parameters: amountPerSecond is required');
     });
 
@@ -191,11 +179,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
       stubRequest.resolves(mockResponse);
 
       await expect(
-        erc7715RequestExecutionPermissionsAction(
-          mockClient,
-          parameters,
-          kernelSnapId,
-        ),
+        erc7715RequestExecutionPermissionsAction(mockClient, parameters),
       ).resolves.not.toThrow();
     });
 
@@ -220,52 +204,42 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
       const parameters = [permissionRequest];
       stubRequest.resolves(mockResponse);
 
-      await erc7715RequestExecutionPermissionsAction(
-        mockClient,
-        parameters,
-        kernelSnapId,
-      );
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
-        method: 'wallet_invokeSnap',
-        params: {
-          snapId: kernelSnapId,
-          request: {
-            method: 'wallet_requestExecutionPermissions',
-            params: [
+        method: 'wallet_requestExecutionPermissions',
+        params: [
+          {
+            chainId: '0x7a69',
+            address: bob.address,
+            permission: {
+              type: 'native-token-stream',
+              data: {
+                amountPerSecond: '0x1',
+                maxAmount: '0x2',
+                startTime: 2,
+                justification: 'Test justification',
+              },
+              isAdjustmentAllowed: false,
+            },
+            signer: {
+              type: 'account',
+              data: {
+                address: alice.address,
+              },
+            },
+            rules: [
               {
-                chainId: '0x7a69',
-                address: bob.address,
-                permission: {
-                  type: 'native-token-stream',
-                  data: {
-                    amountPerSecond: '0x1',
-                    maxAmount: '0x2',
-                    startTime: 2,
-                    justification: 'Test justification',
-                  },
-                  isAdjustmentAllowed: false,
+                type: 'expiry',
+                isAdjustmentAllowed: false,
+                data: {
+                  timestamp: 1234567890,
                 },
-                signer: {
-                  type: 'account',
-                  data: {
-                    address: alice.address,
-                  },
-                },
-                rules: [
-                  {
-                    type: 'expiry',
-                    isAdjustmentAllowed: false,
-                    data: {
-                      timestamp: 1234567890,
-                    },
-                  },
-                ],
               },
             ],
           },
-        },
+        ],
       });
     });
 
@@ -291,75 +265,8 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
       ];
 
       await expect(
-        erc7715RequestExecutionPermissionsAction(
-          mockClient,
-          parameters,
-          kernelSnapId,
-        ),
+        erc7715RequestExecutionPermissionsAction(mockClient, parameters),
       ).rejects.toThrow('Failed to grant permissions');
-    });
-
-    it('should use the default snap ID if not provided', async () => {
-      stubRequest.resolves(mockResponse);
-
-      const parameters = [
-        {
-          chainId: 31337,
-          expiry: 1234567890,
-          permission: {
-            type: 'native-token-stream' as const,
-            data: {
-              amountPerSecond: 0x1n,
-              justification: 'Test justification',
-            },
-          },
-          isAdjustmentAllowed: false,
-          signer: alice.address,
-        },
-      ];
-
-      await erc7715RequestExecutionPermissionsAction(
-        mockClient,
-        parameters,
-        kernelSnapId,
-      );
-
-      expect(stubRequest.callCount).to.equal(1);
-      expect(stubRequest.firstCall.args[0].params.snapId).to.equal(
-        kernelSnapId,
-      );
-    });
-
-    it('should use a custom snap ID if provided', async () => {
-      const customKernelId = 'npm:@metamask/custom-snap';
-      stubRequest.resolves(mockResponse);
-
-      const parameters = [
-        {
-          chainId: 31337,
-          expiry: 1234567890,
-          permission: {
-            type: 'native-token-stream' as const,
-            data: {
-              amountPerSecond: 0x1n,
-              justification: 'Test justification',
-            },
-          },
-          isAdjustmentAllowed: false,
-          signer: alice.address,
-        },
-      ];
-
-      await erc7715RequestExecutionPermissionsAction(
-        mockClient,
-        parameters,
-        customKernelId,
-      );
-
-      expect(stubRequest.callCount).to.equal(1);
-      expect(stubRequest.firstCall.args[0].params.snapId).to.equal(
-        customKernelId,
-      );
     });
 
     it('should handle multiple permission requests', async () => {
@@ -397,7 +304,6 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
       const result = await erc7715RequestExecutionPermissionsAction(
         mockClient,
         parameters,
-        kernelSnapId,
       );
 
       expect(result).to.deep.equal(mockResponse);
@@ -424,52 +330,42 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
 
       stubRequest.resolves(mockResponse);
 
-      await erc7715RequestExecutionPermissionsAction(
-        mockClient,
-        parameters,
-        kernelSnapId,
-      );
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
-        method: 'wallet_invokeSnap',
-        params: {
-          snapId: kernelSnapId,
-          request: {
-            method: 'wallet_requestExecutionPermissions',
-            params: [
+        method: 'wallet_requestExecutionPermissions',
+        params: [
+          {
+            chainId: '0x7a69',
+            address: bob.address,
+            permission: {
+              type: 'native-token-stream',
+              data: {
+                amountPerSecond: '0x1',
+                maxAmount: '0x2',
+                startTime: 2,
+                justification: 'Test justification',
+              },
+              isAdjustmentAllowed: false,
+            },
+            signer: {
+              type: 'account',
+              data: {
+                address: alice.address,
+              },
+            },
+            rules: [
               {
-                chainId: '0x7a69',
-                address: bob.address,
-                permission: {
-                  type: 'native-token-stream',
-                  data: {
-                    amountPerSecond: '0x1',
-                    maxAmount: '0x2',
-                    startTime: 2,
-                    justification: 'Test justification',
-                  },
-                  isAdjustmentAllowed: false,
+                type: 'expiry',
+                isAdjustmentAllowed: false,
+                data: {
+                  timestamp: 1234567890,
                 },
-                signer: {
-                  type: 'account',
-                  data: {
-                    address: alice.address,
-                  },
-                },
-                rules: [
-                  {
-                    type: 'expiry',
-                    isAdjustmentAllowed: false,
-                    data: {
-                      timestamp: 1234567890,
-                    },
-                  },
-                ],
               },
             ],
           },
-        },
+        ],
       });
     });
 
@@ -493,51 +389,41 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
 
       stubRequest.resolves(mockResponse);
 
-      await erc7715RequestExecutionPermissionsAction(
-        mockClient,
-        parameters,
-        kernelSnapId,
-      );
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
-        method: 'wallet_invokeSnap',
-        params: {
-          snapId: kernelSnapId,
-          request: {
-            method: 'wallet_requestExecutionPermissions',
-            params: [
+        method: 'wallet_requestExecutionPermissions',
+        params: [
+          {
+            chainId: '0x7a69',
+            address: bob.address,
+            permission: {
+              type: 'native-token-stream',
+              data: {
+                amountPerSecond: '0x1',
+                startTime: 2,
+                justification: 'Test justification',
+              },
+              isAdjustmentAllowed: false,
+            },
+            signer: {
+              type: 'account',
+              data: {
+                address: alice.address,
+              },
+            },
+            rules: [
               {
-                chainId: '0x7a69',
-                address: bob.address,
-                permission: {
-                  type: 'native-token-stream',
-                  data: {
-                    amountPerSecond: '0x1',
-                    startTime: 2,
-                    justification: 'Test justification',
-                  },
-                  isAdjustmentAllowed: false,
+                type: 'expiry',
+                isAdjustmentAllowed: false,
+                data: {
+                  timestamp: 1234567890,
                 },
-                signer: {
-                  type: 'account',
-                  data: {
-                    address: alice.address,
-                  },
-                },
-                rules: [
-                  {
-                    type: 'expiry',
-                    isAdjustmentAllowed: false,
-                    data: {
-                      timestamp: 1234567890,
-                    },
-                  },
-                ],
               },
             ],
           },
-        },
+        ],
       });
     });
 
@@ -562,51 +448,41 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
 
       stubRequest.resolves(mockResponse);
 
-      await erc7715RequestExecutionPermissionsAction(
-        mockClient,
-        parameters,
-        kernelSnapId,
-      );
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
-        method: 'wallet_invokeSnap',
-        params: {
-          snapId: kernelSnapId,
-          request: {
-            method: 'wallet_requestExecutionPermissions',
-            params: [
+        method: 'wallet_requestExecutionPermissions',
+        params: [
+          {
+            chainId: '0x7a69',
+            address: bob.address,
+            permission: {
+              type: 'native-token-stream',
+              data: {
+                amountPerSecond: '0x1',
+                startTime: 2,
+                justification: 'Test justification',
+              },
+              isAdjustmentAllowed: false,
+            },
+            signer: {
+              type: 'account',
+              data: {
+                address: alice.address,
+              },
+            },
+            rules: [
               {
-                chainId: '0x7a69',
-                address: bob.address,
-                permission: {
-                  type: 'native-token-stream',
-                  data: {
-                    amountPerSecond: '0x1',
-                    startTime: 2,
-                    justification: 'Test justification',
-                  },
-                  isAdjustmentAllowed: false,
+                type: 'expiry',
+                isAdjustmentAllowed: false,
+                data: {
+                  timestamp: 1234567890,
                 },
-                signer: {
-                  type: 'account',
-                  data: {
-                    address: alice.address,
-                  },
-                },
-                rules: [
-                  {
-                    type: 'expiry',
-                    isAdjustmentAllowed: false,
-                    data: {
-                      timestamp: 1234567890,
-                    },
-                  },
-                ],
               },
             ],
           },
-        },
+        ],
       });
     });
 
@@ -631,52 +507,42 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
 
       stubRequest.resolves(mockResponse);
 
-      await erc7715RequestExecutionPermissionsAction(
-        mockClient,
-        parameters,
-        kernelSnapId,
-      );
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
-        method: 'wallet_invokeSnap',
-        params: {
-          snapId: kernelSnapId,
-          request: {
-            method: 'wallet_requestExecutionPermissions',
-            params: [
+        method: 'wallet_requestExecutionPermissions',
+        params: [
+          {
+            chainId: '0x7a69',
+            address: bob.address,
+            permission: {
+              type: 'native-token-stream',
+              data: {
+                amountPerSecond: '0x1',
+                maxAmount: '0x2',
+                startTime: 2,
+                justification: 'Test justification',
+              },
+              isAdjustmentAllowed: false,
+            },
+            signer: {
+              type: 'account',
+              data: {
+                address: alice.address,
+              },
+            },
+            rules: [
               {
-                chainId: '0x7a69',
-                address: bob.address,
-                permission: {
-                  type: 'native-token-stream',
-                  data: {
-                    amountPerSecond: '0x1',
-                    maxAmount: '0x2',
-                    startTime: 2,
-                    justification: 'Test justification',
-                  },
-                  isAdjustmentAllowed: false,
+                type: 'expiry',
+                isAdjustmentAllowed: false,
+                data: {
+                  timestamp: 1234567890,
                 },
-                signer: {
-                  type: 'account',
-                  data: {
-                    address: alice.address,
-                  },
-                },
-                rules: [
-                  {
-                    type: 'expiry',
-                    isAdjustmentAllowed: false,
-                    data: {
-                      timestamp: 1234567890,
-                    },
-                  },
-                ],
               },
             ],
           },
-        },
+        ],
       });
     });
 
@@ -701,11 +567,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
 
       stubRequest.resolves(mockResponse);
 
-      await erc7715RequestExecutionPermissionsAction(
-        mockClient,
-        parameters,
-        kernelSnapId,
-      );
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       const expectedRequest: PermissionRequest<
         AccountSigner,
@@ -742,14 +604,8 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
-        method: 'wallet_invokeSnap',
-        params: {
-          snapId: kernelSnapId,
-          request: {
-            method: 'wallet_requestExecutionPermissions',
-            params: [expectedRequest],
-          },
-        },
+        method: 'wallet_requestExecutionPermissions',
+        params: [expectedRequest],
       });
     });
 
@@ -775,11 +631,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
 
       stubRequest.resolves(mockResponse);
 
-      await erc7715RequestExecutionPermissionsAction(
-        mockClient,
-        parameters,
-        kernelSnapId,
-      );
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       const expectedRequest: PermissionRequest<
         AccountSigner,
@@ -817,14 +669,8 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
-        method: 'wallet_invokeSnap',
-        params: {
-          snapId: kernelSnapId,
-          request: {
-            method: 'wallet_requestExecutionPermissions',
-            params: [expectedRequest],
-          },
-        },
+        method: 'wallet_requestExecutionPermissions',
+        params: [expectedRequest],
       });
     });
 
@@ -849,11 +695,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
 
       stubRequest.resolves(mockResponse);
 
-      await erc7715RequestExecutionPermissionsAction(
-        mockClient,
-        parameters,
-        kernelSnapId,
-      );
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       const expectedRequest: PermissionRequest<
         AccountSigner,
@@ -890,14 +732,8 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
-        method: 'wallet_invokeSnap',
-        params: {
-          snapId: kernelSnapId,
-          request: {
-            method: 'wallet_requestExecutionPermissions',
-            params: [expectedRequest],
-          },
-        },
+        method: 'wallet_requestExecutionPermissions',
+        params: [expectedRequest],
       });
     });
 
@@ -923,11 +759,7 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
 
       stubRequest.resolves(mockResponse);
 
-      await erc7715RequestExecutionPermissionsAction(
-        mockClient,
-        parameters,
-        kernelSnapId,
-      );
+      await erc7715RequestExecutionPermissionsAction(mockClient, parameters);
 
       const expectedRequest: PermissionRequest<
         AccountSigner,
@@ -965,38 +797,13 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
 
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
-        method: 'wallet_invokeSnap',
-        params: {
-          snapId: kernelSnapId,
-          request: {
-            method: 'wallet_requestExecutionPermissions',
-            params: [expectedRequest],
-          },
-        },
+        method: 'wallet_requestExecutionPermissions',
+        params: [expectedRequest],
       });
     });
   });
 
   describe('erc7715ProviderActions integration', () => {
-    const allSnapsEnabledResponse = {
-      'npm:@metamask/permissions-kernel-snap': {
-        version: '1.0.0',
-        id: 'npm:@metamask/permissions-kernel-snap',
-        enabled: true,
-        blocked: false,
-      },
-      'npm:@metamask/gator-permissions-snap': {
-        version: '1.0.0',
-        id: 'npm:@metamask/gator-permissions-snap',
-        enabled: true,
-        blocked: false,
-      },
-    };
-
-    beforeEach(() => {
-      stubRequest.onFirstCall().resolves(allSnapsEnabledResponse);
-    });
-
     it('should extend the client with erc7715 actions', async () => {
       const client = createClient({
         transport: custom({
@@ -1022,316 +829,47 @@ describe('erc7715RequestExecutionPermissionsAction', () => {
         signer: alice.address,
       };
 
-      stubRequest.onSecondCall().resolves(mockResponse);
+      stubRequest.resolves(mockResponse);
 
       const parameters: RequestExecutionPermissionsParameters = [
         permissionRequest,
       ];
       await client.requestExecutionPermissions(parameters);
 
-      expect(stubRequest.callCount).to.equal(2);
-
-      expect(stubRequest.secondCall.args[0]).to.deep.equal({
-        method: 'wallet_invokeSnap',
-        params: {
-          snapId: 'npm:@metamask/permissions-kernel-snap',
-          request: {
-            method: 'wallet_requestExecutionPermissions',
-            params: [
-              {
-                chainId: '0x7a69',
-                address: bob.address,
-                permission: {
-                  type: 'native-token-stream',
-                  data: {
-                    amountPerSecond: '0x1',
-                    startTime: 2,
-                    justification: 'Test justification',
-                  },
-                  isAdjustmentAllowed: false,
-                },
-                signer: {
-                  type: 'account',
-                  data: {
-                    address: alice.address,
-                  },
-                },
-                rules: [
-                  {
-                    type: 'expiry',
-                    isAdjustmentAllowed: false,
-                    data: {
-                      timestamp: 1234567890,
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      });
-    });
-
-    it('should wait for the snaps to be authorized', async () => {
-      const client = createClient({
-        transport: custom({
-          request: stubRequest,
-        }),
-      }).extend(erc7715ProviderActions());
-
-      let resolveSnapsPromise: (value: unknown) => void = () => {
-        throw new Error('resolveSnapsPromise not set');
-      };
-
-      const snapsPromise = new Promise((resolve) => {
-        resolveSnapsPromise = resolve;
-      });
-
-      stubRequest.onFirstCall().returns(snapsPromise);
-
-      const permissionRequest = {
-        chainId: 31337,
-        address: bob.address,
-        expiry: 1234567890,
-        permission: {
-          type: 'native-token-stream' as const,
-          data: {
-            amountPerSecond: 0x1n,
-            startTime: 2,
-            justification: 'Test justification',
-          },
-        },
-        isAdjustmentAllowed: false,
-        signer: alice.address,
-      };
-
-      stubRequest.onSecondCall().resolves(mockResponse);
-
-      const parameters = [permissionRequest];
-
-      const grantPromise = client.requestExecutionPermissions(parameters);
-
-      // just let the event loop cycle
-      await new Promise((resolve) => setImmediate(resolve));
-
       expect(stubRequest.callCount).to.equal(1);
       expect(stubRequest.firstCall.args[0]).to.deep.equal({
-        method: 'wallet_getSnaps',
-        params: {},
-      });
-
-      // Resolve the snaps check with authorized snaps
-      resolveSnapsPromise?.(allSnapsEnabledResponse);
-
-      // Wait for the grant permissions operation to complete
-      await grantPromise;
-
-      // Verify the second call was made to grant permissions
-      expect(stubRequest.callCount).to.equal(2);
-      expect(stubRequest.secondCall.args[0]).to.deep.equal({
-        method: 'wallet_invokeSnap',
-        params: {
-          snapId: 'npm:@metamask/permissions-kernel-snap',
-          request: {
-            method: 'wallet_requestExecutionPermissions',
-            params: [
+        method: 'wallet_requestExecutionPermissions',
+        params: [
+          {
+            chainId: '0x7a69',
+            address: bob.address,
+            permission: {
+              type: 'native-token-stream',
+              data: {
+                amountPerSecond: '0x1',
+                startTime: 2,
+                justification: 'Test justification',
+              },
+              isAdjustmentAllowed: false,
+            },
+            signer: {
+              type: 'account',
+              data: {
+                address: alice.address,
+              },
+            },
+            rules: [
               {
-                chainId: '0x7a69',
-                address: bob.address,
-                permission: {
-                  type: 'native-token-stream',
-                  data: {
-                    amountPerSecond: '0x1',
-                    startTime: 2,
-                    justification: 'Test justification',
-                  },
-                  isAdjustmentAllowed: false,
+                type: 'expiry',
+                isAdjustmentAllowed: false,
+                data: {
+                  timestamp: 1234567890,
                 },
-                signer: {
-                  type: 'account',
-                  data: {
-                    address: alice.address,
-                  },
-                },
-                rules: [
-                  {
-                    type: 'expiry',
-                    isAdjustmentAllowed: false,
-                    data: {
-                      timestamp: 1234567890,
-                    },
-                  },
-                ],
               },
             ],
           },
-        },
+        ],
       });
-    });
-  });
-
-  describe('ensureSnapsAuthorized()', () => {
-    const client = createClient({
-      transport: custom({
-        request: stubRequest,
-      }),
-    }).extend(erc7715ProviderActions());
-
-    it('should return true if both snaps are authorized', async () => {
-      stubRequest.resolves({
-        'npm:@metamask/permissions-kernel-snap': {
-          version: '1.0.0',
-          id: 'npm:@metamask/permissions-kernel-snap',
-          enabled: true,
-          blocked: false,
-        },
-        'npm:@metamask/gator-permissions-snap': {
-          version: '1.0.0',
-          id: 'npm:@metamask/gator-permissions-snap',
-          enabled: true,
-          blocked: false,
-        },
-      });
-
-      const res = await ensureSnapsAuthorized(client, {
-        kernelSnapId: 'npm:@metamask/permissions-kernel-snap',
-        providerSnapId: 'npm:@metamask/gator-permissions-snap',
-      });
-
-      expect(res).to.equal(true);
-
-      expect(stubRequest.callCount).to.equal(1);
-
-      expect(stubRequest.firstCall.args).to.deep.equal([
-        {
-          method: 'wallet_getSnaps',
-          params: {},
-        },
-      ]);
-    });
-
-    it('should return true if both specified snaps are enabled', async () => {
-      const customKernelSnapId = 'custom-kernel-id';
-      const customProviderSnapId = 'custom-provider-id';
-      stubRequest.resolves({
-        [customKernelSnapId]: {
-          version: '1.0.0',
-          id: customKernelSnapId,
-          enabled: true,
-          blocked: false,
-        },
-        [customProviderSnapId]: {
-          version: '1.0.0',
-          id: customProviderSnapId,
-          enabled: true,
-          blocked: false,
-        },
-      });
-
-      const res = await ensureSnapsAuthorized(client, {
-        kernelSnapId: customKernelSnapId,
-        providerSnapId: customProviderSnapId,
-      });
-
-      expect(res).to.equal(true);
-
-      expect(stubRequest.callCount).to.equal(1);
-    });
-
-    it('should return false if permissions kernel snap is not enabled', async () => {
-      stubRequest.resolves({
-        'npm:@metamask/permissions-kernel-snap': {
-          version: '1.0.0',
-          id: 'npm:@metamask/permissions-kernel-snap',
-          enabled: false,
-          blocked: false,
-        },
-        'npm:@metamask/gator-permissions-snap': {
-          version: '1.0.0',
-          id: 'npm:@metamask/gator-permissions-snap',
-          enabled: true,
-          blocked: false,
-        },
-      });
-
-      const res = await ensureSnapsAuthorized(client, {
-        kernelSnapId: 'npm:@metamask/permissions-kernel-snap',
-        providerSnapId: 'npm:@metamask/gator-permissions-snap',
-      });
-
-      expect(res).to.equal(false);
-    });
-
-    it('should return false if permissions provider snap is not enabled', async () => {
-      stubRequest.resolves({
-        'npm:@metamask/permissions-kernel-snap': {
-          version: '1.0.0',
-          id: 'npm:@metamask/permissions-kernel-snap',
-          enabled: false,
-          blocked: false,
-        },
-        'npm:@metamask/gator-permissions-snap': {
-          version: '1.0.0',
-          id: 'npm:@metamask/gator-permissions-snap',
-          enabled: true,
-          blocked: false,
-        },
-      });
-
-      const res = await ensureSnapsAuthorized(client, {
-        kernelSnapId: 'npm:@metamask/permissions-kernel-snap',
-        providerSnapId: 'npm:@metamask/gator-permissions-snap',
-      });
-
-      expect(res).to.equal(false);
-    });
-
-    it('should return false if both snaps are not enabled', async () => {
-      stubRequest.resolves({
-        'npm:@metamask/permissions-kernel-snap': {
-          version: '1.0.0',
-          id: 'npm:@metamask/permissions-kernel-snap',
-          enabled: false,
-          blocked: false,
-        },
-        'npm:@metamask/gator-permissions-snap': {
-          version: '1.0.0',
-          id: 'npm:@metamask/gator-permissions-snap',
-          enabled: false,
-          blocked: false,
-        },
-      });
-
-      const res = await ensureSnapsAuthorized(client, {
-        kernelSnapId: 'npm:@metamask/permissions-kernel-snap',
-        providerSnapId: 'npm:@metamask/gator-permissions-snap',
-      });
-
-      expect(res).to.equal(false);
-    });
-
-    it('should return false if both snaps are blocked', async () => {
-      stubRequest.resolves({
-        'npm:@metamask/permissions-kernel-snap': {
-          version: '1.0.0',
-          id: 'npm:@metamask/permissions-kernel-snap',
-          enabled: true,
-          blocked: true,
-        },
-        'npm:@metamask/gator-permissions-snap': {
-          version: '1.0.0',
-          id: 'npm:@metamask/gator-permissions-snap',
-          enabled: true,
-          blocked: true,
-        },
-      });
-
-      const res = await ensureSnapsAuthorized(client, {
-        kernelSnapId: 'npm:@metamask/permissions-kernel-snap',
-        providerSnapId: 'npm:@metamask/gator-permissions-snap',
-      });
-
-      expect(res).to.equal(false);
     });
   });
 });
