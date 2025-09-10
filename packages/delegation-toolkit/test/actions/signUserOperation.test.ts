@@ -1,4 +1,4 @@
-import type { Account, Address } from 'viem';
+import type { Account, Address, Hex } from 'viem';
 import { createWalletClient, custom, isHex } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';
@@ -51,7 +51,7 @@ describe('signUserOperation Action', () => {
     userOperation = {
       sender: randomAddress(),
       nonce: 0n,
-      callData: '0x',
+      callData: '0x' as Hex,
       callGasLimit: 1000000n,
       verificationGasLimit: 1000000n,
       preVerificationGas: 21000n,
@@ -177,7 +177,7 @@ describe('signUserOperation Action', () => {
         paymaster: randomAddress(),
         paymasterVerificationGasLimit: 50000n,
         paymasterPostOpGasLimit: 50000n,
-        paymasterData: '0x1234' as `0x${string}`,
+        paymasterData: '0x1234' as Hex,
       };
 
       const parameters: SignUserOperationParameters = {
@@ -196,7 +196,7 @@ describe('signUserOperation Action', () => {
       const userOpWithFactory = {
         ...userOperation,
         factory: randomAddress(),
-        factoryData: '0x5678' as `0x${string}`,
+        factoryData: '0x5678' as Hex,
       };
 
       const parameters: SignUserOperationParameters = {

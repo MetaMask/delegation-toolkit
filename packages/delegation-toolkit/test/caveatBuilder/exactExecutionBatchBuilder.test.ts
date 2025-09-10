@@ -30,7 +30,7 @@ describe('exactExecutionBatchBuilder()', () => {
     });
 
     it('should fail with an invalid target address', () => {
-      const invalidAddress = 'invalid-address' as Address;
+      const invalidAddress = 'invalid-address' as any;
       expect(() =>
         buildWithParams([
           {
@@ -60,7 +60,7 @@ describe('exactExecutionBatchBuilder()', () => {
           {
             target: randomAddress(),
             value: 0n,
-            callData: 'invalid' as Hex,
+            callData: 'invalid' as any,
           },
         ]),
       ).to.throw('Invalid calldata: must be a hex string starting with 0x');

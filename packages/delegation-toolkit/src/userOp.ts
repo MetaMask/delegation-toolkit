@@ -327,7 +327,7 @@ export const signUserOperation = async ({
   address,
   version = '1',
 }: {
-  privateKey: `0x${string}`;
+  privateKey: Hex;
   userOperation: Omit<UserOperationV07, 'signature'>;
   entryPoint: { address: Address };
   chainId: number;

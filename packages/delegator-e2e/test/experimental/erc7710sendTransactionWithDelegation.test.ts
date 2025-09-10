@@ -19,6 +19,7 @@ import {
 } from '@metamask/delegation-toolkit';
 import { erc7710WalletActions } from '@metamask/delegation-toolkit/experimental';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import type { Hex } from 'viem';
 import {
   Address,
   createWalletClient,
@@ -36,7 +37,7 @@ import CounterMetadata from '../utils/counter/metadata.json';
 
 let aliceSmartAccount: MetaMaskSmartAccount<Implementation.Hybrid>;
 let bob: Account;
-let bobPrivateKey: `0x${string}`;
+let bobPrivateKey: Hex;
 let aliceCounterContractAddress: Address;
 let permissionsContext: Hex;
 let signedDelegation: Delegation;

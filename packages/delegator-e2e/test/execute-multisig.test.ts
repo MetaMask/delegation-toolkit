@@ -23,7 +23,7 @@ import {
 } from '@metamask/delegation-toolkit';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
-import { Account, encodeFunctionData, parseEther } from 'viem';
+import { Account, encodeFunctionData, parseEther, type Hex } from 'viem';
 import { chain } from '../src/config';
 import { sponsoredBundlerClient } from './utils/helpers';
 import CounterMetadata from './utils/counter/metadata.json';
@@ -31,7 +31,7 @@ import CounterMetadata from './utils/counter/metadata.json';
 let aliceSmartAccount: MetaMaskSmartAccount<Implementation.MultiSig>;
 
 let signers: Account[];
-let privateKeys: `0x${string}`[];
+let privateKeys: Hex[];
 
 beforeEach(async () => {
   privateKeys = [

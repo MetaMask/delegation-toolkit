@@ -38,6 +38,13 @@ describe('Ownership Transfer Caveat', () => {
   let bobSmartAccount: MetaMaskSmartAccount;
   let contractAddress: Address;
 
+  /**
+   * These tests verify the OwnershipTransferEnforcer behavior:
+   * - Allows ownership transfer ONLY to the specific contract address in the delegation terms
+   * - Allows transfer to the requested newOwner address (does NOT force transfer to redeemer)
+   * - Rejects attempts to transfer ownership of unauthorized contracts
+   */
+
   beforeEach(async () => {
     // Create Alice's smart account
     const alicePrivateKey = generatePrivateKey();
@@ -92,6 +99,9 @@ describe('Ownership Transfer Caveat', () => {
     const environment = delegator.environment;
     const delegatorAddress = delegator.address;
 
+    // Store initial owner to verify transfer happened
+    const initialOwner = await getContractOwner(contractAddress);
+
     const delegation = createDelegation({
       to: delegate,
       from: delegatorAddress,
@@ -140,9 +150,17 @@ describe('Ownership Transfer Caveat', () => {
 
     await expectUserOperationToSucceed(userOpHash);
 
-    // Verify ownership was transferred
+    // Verify ownership was transferred successfully
     const finalOwner = await getContractOwner(contractAddress);
+
+    // The ownership should have changed from the initial owner
+    expect(finalOwner).not.toBe(initialOwner);
+
+    // The OwnershipTransferEnforcer allows transfer to the requested newOwner address
     expect(finalOwner).toBe(newOwner);
+
+    // Additional validation: ensure it's a valid Ethereum address
+    expect(finalOwner).toMatch(/^0x[a-fA-F0-9]{40}$/);
   };
 
   const runTest_expectFailure = async (
@@ -238,6 +256,9 @@ describe('Ownership Transfer Caveat', () => {
     contractAddress: Address,
     newOwner: Address,
   ) => {
+    // Store initial owner to verify transfer happened
+    const initialOwner = await getContractOwner(contractAddress);
+
     const delegation = createDelegation({
       environment: aliceSmartAccount.environment,
       to: bobSmartAccount.address,
@@ -285,9 +306,17 @@ describe('Ownership Transfer Caveat', () => {
 
     await expectUserOperationToSucceed(userOpHash);
 
-    // Verify ownership was transferred
+    // Verify ownership was transferred successfully
     const finalOwner = await getContractOwner(contractAddress);
+
+    // The ownership should have changed from the initial owner
+    expect(finalOwner).not.toBe(initialOwner);
+
+    // The OwnershipTransferEnforcer allows transfer to the requested newOwner address
     expect(finalOwner).toBe(newOwner);
+
+    // Additional validation: ensure it's a valid Ethereum address
+    expect(finalOwner).toMatch(/^0x[a-fA-F0-9]{40}$/);
   };
 
   const runScopeTest_expectFailure = async (
