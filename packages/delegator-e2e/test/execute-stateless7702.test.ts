@@ -67,7 +67,7 @@ beforeEach(async () => {
     client,
     implementation: Implementation.Stateless7702,
     address: aliceAccount.address,
-    signatory: { account: aliceAccount },
+    signer: { account: aliceAccount },
   });
 
   await upgradeAliceEOAWithEIP7702();
@@ -421,7 +421,7 @@ test('isDeployed() method correctly identifies EIP7702 delegation for Stateless7
     client,
     implementation: Implementation.Stateless7702,
     address: nonDelegatedAccount.address,
-    signatory: { account: nonDelegatedAccount },
+    signer: { account: nonDelegatedAccount },
   });
 
   // Test that a non-delegated account's isDeployed() method returns false
@@ -460,7 +460,7 @@ test('isDeployed() returns false for addresses with code that are not delegated 
     client: publicClient,
     implementation: Implementation.Stateless7702,
     address: counterContract.address, // Point to the contract address
-    signatory: { account: contractAccount },
+    signer: { account: contractAccount },
   });
 
   // Test that isDeployed() returns false even though there is code at the address

@@ -49,7 +49,7 @@ beforeEach(async () => {
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x',
-    signatory: { account: alice },
+    signer: { account: alice },
   });
   await deploySmartAccount(aliceSmartAccount);
 
@@ -58,7 +58,7 @@ beforeEach(async () => {
     implementation: Implementation.Hybrid,
     deployParams: [bob.address, [], [], []],
     deploySalt: '0x',
-    signatory: { account: bob },
+    signer: { account: bob },
   });
 
   const aliceCounter = await deployCounter(aliceSmartAccount.address);
@@ -266,8 +266,8 @@ test('Bob increments the counter with a delegation from a multisig account', asy
   ];
   const signers = privateKeys.map((pk) => privateKeyToAccount(pk));
 
-  // take all but the first signer as the signatory
-  const signatory = signers.slice(1).map((account) => ({
+  // take all but the first signer as the signer
+  const signer = signers.slice(1).map((account) => ({
     account,
   }));
 
@@ -276,7 +276,7 @@ test('Bob increments the counter with a delegation from a multisig account', asy
     implementation: Implementation.MultiSig,
     deployParams: [signers.map((account) => account.address), 2n],
     deploySalt: '0x',
-    signatory,
+    signer,
   });
   await deploySmartAccount(multisigSmartAccount);
 

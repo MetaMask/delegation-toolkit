@@ -13,7 +13,7 @@ import { describe, it, expect } from 'vitest';
 
 import { OWNER_ACCOUNT } from './utils';
 import { Implementation } from '../src/constants';
-import { resolveSignatory } from '../src/signatory';
+import { resolveSigner } from '../src/signer';
 
 const typedData = {
   domain: {
@@ -55,20 +55,20 @@ const createMockTransport = () => {
   });
 };
 
-describe('resolveSignatory', () => {
-  it('resolves Hybrid signatory from WalletSignatoryConfig', async () => {
+describe('resolveSigner', () => {
+  it('resolves Hybrid signer from WalletSignerConfig', async () => {
     const walletClient = createWalletClient({
       account: OWNER_ACCOUNT,
       chain,
       transport: createMockTransport(),
     });
 
-    const signatory = resolveSignatory({
+    const signer = resolveSigner({
       implementation: Implementation.Hybrid,
-      signatory: { walletClient },
+      signer: { walletClient },
     });
 
-    const messageSignature = await signatory.signMessage(message);
+    const messageSignature = await signer.signMessage(message);
 
     const recoveredMessageAddress = await recoverMessageAddress({
       ...message,
@@ -76,7 +76,7 @@ describe('resolveSignatory', () => {
     });
     expect(recoveredMessageAddress).to.equal(OWNER_ACCOUNT.address);
 
-    const typedSignature = await signatory.signTypedData(typedData);
+    const typedSignature = await signer.signTypedData(typedData);
 
     const recoveredTypedDataAddress = await recoverTypedDataAddress({
       ...typedData,
@@ -85,12 +85,12 @@ describe('resolveSignatory', () => {
     expect(recoveredTypedDataAddress).to.equal(OWNER_ACCOUNT.address);
   });
 
-  it('resolves Hybrid signatory from AccountSignatoryConfig', async () => {
-    const signatory = resolveSignatory({
+  it('resolves Hybrid signer from AccountSignerConfig', async () => {
+    const signer = resolveSigner({
       implementation: Implementation.Hybrid,
-      signatory: { account: OWNER_ACCOUNT },
+      signer: { account: OWNER_ACCOUNT },
     });
-    const messageSignature = await signatory.signMessage(message);
+    const messageSignature = await signer.signMessage(message);
 
     const recoveredMessageAddress = await recoverMessageAddress({
       ...message,
@@ -98,7 +98,7 @@ describe('resolveSignatory', () => {
     });
     expect(recoveredMessageAddress).to.equal(OWNER_ACCOUNT.address);
 
-    const typedSignature = await signatory.signTypedData(typedData);
+    const typedSignature = await signer.signTypedData(typedData);
 
     const recoveredTypedDataAddress = await recoverTypedDataAddress({
       ...typedData,
@@ -108,7 +108,7 @@ describe('resolveSignatory', () => {
     expect(recoveredTypedDataAddress).to.equal(OWNER_ACCOUNT.address);
   });
 
-  it('should resolve Hybrid signatory from WebAuthnAccount', async () => {
+  it('should resolve Hybrid signer from WebAuthnAccount', async () => {
     // this test is quite complex, due to the nature of webauthn signature encoding.
     // the verification of this test is very minimal, but the encoding is validated
     // in the webAuthn util tests.
@@ -153,32 +153,32 @@ describe('resolveSignatory', () => {
       }),
     };
 
-    const signatory = resolveSignatory({
+    const signer = resolveSigner({
       implementation: Implementation.Hybrid,
-      signatory: {
+      signer: {
         keyId: '0x1234567890123456789012345678901234567890',
         webAuthnAccount,
       },
     });
 
-    const messageSignature = await signatory.signMessage(message);
-    const typedSignature = await signatory.signTypedData(typedData);
-    const stubSignature = await signatory.getStubSignature();
+    const messageSignature = await signer.signMessage(message);
+    const typedSignature = await signer.signTypedData(typedData);
+    const stubSignature = await signer.getStubSignature();
 
     expect(messageSignature).to.equal(expectedSignature);
     expect(typedSignature).to.equal(expectedSignature);
     expect(stubSignature).to.equal(expectedStubSignature);
   });
 
-  it('resolves MultiSig signatory', async () => {
+  it('resolves MultiSig signer', async () => {
     const config = {
       implementation: Implementation.MultiSig,
-      signatory: [{ account: OWNER_ACCOUNT }],
+      signer: [{ account: OWNER_ACCOUNT }],
     };
 
-    const signatory = resolveSignatory(config);
+    const signer = resolveSigner(config);
 
-    const messageSignature = await signatory.signMessage(message);
+    const messageSignature = await signer.signMessage(message);
 
     const recoveredMessageAddress = await recoverMessageAddress({
       ...message,
@@ -186,7 +186,7 @@ describe('resolveSignatory', () => {
     });
     expect(recoveredMessageAddress).to.equal(OWNER_ACCOUNT.address);
 
-    const typedSignature = await signatory.signTypedData(typedData);
+    const typedSignature = await signer.signTypedData(typedData);
 
     const recoveredTypedDataAddress = await recoverTypedDataAddress({
       ...typedData,
@@ -195,30 +195,30 @@ describe('resolveSignatory', () => {
     expect(recoveredTypedDataAddress).to.equal(OWNER_ACCOUNT.address);
   });
 
-  it('resolves MultiSig signatory with multiple signatories', async () => {
-    // at least 3 signatories, at most 10
-    const numSignatories = Math.floor(Math.random() * 8) + 3;
+  it('resolves MultiSig signer with multiple signers', async () => {
+    // at least 3 signers, at most 10
+    const numSigners = Math.floor(Math.random() * 8) + 3;
 
-    const signatories = Array.from({ length: numSignatories }, () => ({
+    const signers = Array.from({ length: numSigners }, () => ({
       account: privateKeyToAccount(generatePrivateKey()),
     }));
-    const sortedAddresses = signatories
-      .map((signatory) => signatory.account.address)
+    const sortedAddresses = signers
+      .map((signer) => signer.account.address)
       .sort((a, b) => a.localeCompare(b));
 
     const config = {
       implementation: Implementation.MultiSig,
-      signatory: signatories,
+      signer: signers,
     };
 
-    const signatory = resolveSignatory(config);
+    const signer = resolveSigner(config);
 
     const validateSignature = async (
       signature: Hex,
       recoverSignerAddress: (signature: Hex) => Promise<Address>,
     ) => {
       const SIGNATURE_LENGTH = 65;
-      for (let i = 0; i < signatories.length; i++) {
+      for (let i = 0; i < signers.length; i++) {
         const signaturePart = slice(
           signature,
           i * SIGNATURE_LENGTH,
@@ -239,30 +239,30 @@ describe('resolveSignatory', () => {
       }
     };
 
-    const messageSignature = await signatory.signMessage(message);
+    const messageSignature = await signer.signMessage(message);
     await validateSignature(messageSignature, async (signature: Hex) =>
       recoverMessageAddress({ signature, ...message }),
     );
 
-    const typedSignature = await signatory.signTypedData(typedData);
+    const typedSignature = await signer.signTypedData(typedData);
     await validateSignature(typedSignature, async (signature: Hex) =>
       recoverTypedDataAddress({ signature, ...typedData }),
     );
   });
 
-  it('resolves Stateless7702 signatory from WalletSignatoryConfig', async () => {
+  it('resolves Stateless7702 signer from WalletSignerConfig', async () => {
     const walletClient = createWalletClient({
       account: OWNER_ACCOUNT,
       chain,
       transport: createMockTransport(),
     });
 
-    const signatory = resolveSignatory({
+    const signer = resolveSigner({
       implementation: Implementation.Stateless7702,
-      signatory: { walletClient },
+      signer: { walletClient },
     });
 
-    const messageSignature = await signatory.signMessage(message);
+    const messageSignature = await signer.signMessage(message);
 
     const recoveredMessageAddress = await recoverMessageAddress({
       ...message,
@@ -270,7 +270,7 @@ describe('resolveSignatory', () => {
     });
     expect(recoveredMessageAddress).to.equal(OWNER_ACCOUNT.address);
 
-    const typedSignature = await signatory.signTypedData(typedData);
+    const typedSignature = await signer.signTypedData(typedData);
 
     const recoveredTypedDataAddress = await recoverTypedDataAddress({
       ...typedData,
@@ -279,13 +279,13 @@ describe('resolveSignatory', () => {
     expect(recoveredTypedDataAddress).to.equal(OWNER_ACCOUNT.address);
   });
 
-  it('resolves Stateless7702 signatory from AccountSignatoryConfig', async () => {
-    const signatory = resolveSignatory({
+  it('resolves Stateless7702 signer from AccountSignerConfig', async () => {
+    const signer = resolveSigner({
       implementation: Implementation.Stateless7702,
-      signatory: { account: OWNER_ACCOUNT },
+      signer: { account: OWNER_ACCOUNT },
     });
 
-    const messageSignature = await signatory.signMessage(message);
+    const messageSignature = await signer.signMessage(message);
 
     const recoveredMessageAddress = await recoverMessageAddress({
       ...message,
@@ -293,7 +293,7 @@ describe('resolveSignatory', () => {
     });
     expect(recoveredMessageAddress).to.equal(OWNER_ACCOUNT.address);
 
-    const typedSignature = await signatory.signTypedData(typedData);
+    const typedSignature = await signer.signTypedData(typedData);
 
     const recoveredTypedDataAddress = await recoverTypedDataAddress({
       ...typedData,
@@ -302,40 +302,40 @@ describe('resolveSignatory', () => {
     expect(recoveredTypedDataAddress).to.equal(OWNER_ACCOUNT.address);
   });
 
-  it('throws error for Stateless7702 signatory with account that does not support signMessage', async () => {
+  it('throws error for Stateless7702 signer with account that does not support signMessage', async () => {
     const accountWithoutSignMessage = {
       ...OWNER_ACCOUNT,
       signMessage: undefined,
     };
 
     expect(() =>
-      resolveSignatory({
+      resolveSigner({
         implementation: Implementation.Stateless7702,
-        signatory: { account: accountWithoutSignMessage },
+        signer: { account: accountWithoutSignMessage },
       }),
     ).to.throw('Account does not support signMessage');
   });
 
-  it('throws error for Stateless7702 signatory with account that does not support signTypedData', async () => {
+  it('throws error for Stateless7702 signer with account that does not support signTypedData', async () => {
     const accountWithoutSignTypedData = {
       ...OWNER_ACCOUNT,
       signTypedData: undefined,
     };
 
     expect(() =>
-      resolveSignatory({
+      resolveSigner({
         implementation: Implementation.Stateless7702,
-        signatory: { account: accountWithoutSignTypedData },
+        signer: { account: accountWithoutSignTypedData },
       }),
     ).to.throw('Account does not support signTypedData');
   });
 
-  it('throws error for Stateless7702 signatory with invalid config', async () => {
+  it('throws error for Stateless7702 signer with invalid config', async () => {
     expect(() =>
-      resolveSignatory({
+      resolveSigner({
         implementation: Implementation.Stateless7702,
-        signatory: {} as any,
+        signer: {} as any,
       }),
-    ).to.throw('Invalid signatory config');
+    ).to.throw('Invalid signer config');
   });
 });

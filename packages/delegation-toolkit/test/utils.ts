@@ -49,7 +49,7 @@ export const counterfactualAccountConfig: ToMetaMaskSmartAccountParameters<Imple
       [PRIVATE_KEY_X],
       [PRIVATE_KEY_Y],
     ],
-    signatory: { account: OWNER_ACCOUNT },
+    signer: { account: OWNER_ACCOUNT },
     deploySalt: SALT,
   };
 
@@ -59,7 +59,7 @@ export const multiSigAccountConfig: ToMetaMaskSmartAccountParameters<Implementat
     implementation: Implementation.MultiSig,
     deployParams: [[OWNER_ACCOUNT.address], 1n],
     deploySalt: SALT,
-    signatory: [{ account: OWNER_ACCOUNT }],
+    signer: [{ account: OWNER_ACCOUNT }],
   };
 
 export const deployedAccountConfig: ToMetaMaskSmartAccountParameters<Implementation.Hybrid> =
@@ -67,7 +67,7 @@ export const deployedAccountConfig: ToMetaMaskSmartAccountParameters<Implementat
     client: {} as PublicClient,
     implementation: Implementation.Hybrid,
     address: DEPLOYED_ADDRESS,
-    signatory: { account: OWNER_ACCOUNT },
+    signer: { account: OWNER_ACCOUNT },
   };
 
 /**

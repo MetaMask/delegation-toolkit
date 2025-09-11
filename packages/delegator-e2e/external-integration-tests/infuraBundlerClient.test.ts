@@ -104,7 +104,7 @@ beforeAll(async () => {
     deployParams: [delegatorAccount.address, [], [], []],
     deploySalt:
       '0x0000000000000000000000000000000000000000000000000000000000000001',
-    signatory: { account: delegatorAccount },
+    signer: { account: delegatorAccount },
   });
 
   delegateSmartAccount = await toMetaMaskSmartAccount({
@@ -113,7 +113,7 @@ beforeAll(async () => {
     deployParams: [delegateAccount.address, [], [], []],
     deploySalt:
       '0x0000000000000000000000000000000000000000000000000000000000000002',
-    signatory: { account: delegateAccount },
+    signer: { account: delegateAccount },
   });
 
   console.log('🏭 Smart accounts created (counterfactual):');

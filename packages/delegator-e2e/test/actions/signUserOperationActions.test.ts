@@ -36,7 +36,7 @@ beforeEach(async () => {
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x1',
-    signatory: { account: alice },
+    signer: { account: alice },
   });
 
   bobSmartAccount = await toMetaMaskSmartAccount({
@@ -44,7 +44,7 @@ beforeEach(async () => {
     implementation: Implementation.MultiSig,
     deployParams: [[bob.address], 1n],
     deploySalt: '0x1',
-    signatory: [{ account: bob }],
+    signer: [{ account: bob }],
   });
 });
 
