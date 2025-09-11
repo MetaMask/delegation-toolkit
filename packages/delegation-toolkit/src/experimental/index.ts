@@ -10,12 +10,15 @@ import {
   sendUserOperationWithDelegationAction,
 } from './erc7710RedeemDelegationAction';
 import { erc7715RequestExecutionPermissionsAction } from './erc7715RequestExecutionPermissionsAction';
-import type { RequestExecutionPermissionsParameters } from './erc7715RequestExecutionPermissionsAction';
-import { ensureSnapsAuthorized } from './snapsAuthorization';
-import type { SnapClient } from './snapsAuthorization';
+import type {
+  MetaMaskExtensionClient,
+  RequestExecutionPermissionsParameters,
+} from './erc7715RequestExecutionPermissionsAction';
 
 export {
   erc7715RequestExecutionPermissionsAction as requestExecutionPermissions,
+  type MetaMaskExtensionClient,
+  type MetaMaskExtensionSchema,
   type RequestExecutionPermissionsParameters,
   type RequestExecutionPermissionsReturnType,
 } from './erc7715RequestExecutionPermissionsAction';
@@ -27,23 +30,16 @@ export {
   type DelegationStorageConfig,
 } from './delegationStorage';
 
-export const erc7715ProviderActions =
-  (snapIds?: { kernelSnapId: string; providerSnapId: string }) =>
-  (client: Client) => ({
-    requestExecutionPermissions: async (
-      parameters: RequestExecutionPermissionsParameters,
-    ) => {
-      if (!(await ensureSnapsAuthorized(client as SnapClient, snapIds))) {
-        throw new Error('Snaps not authorized');
-      }
-
-      return erc7715RequestExecutionPermissionsAction(
-        client as SnapClient,
-        parameters,
-        snapIds?.kernelSnapId,
-      );
-    },
-  });
+export const erc7715ProviderActions = () => (client: Client) => ({
+  requestExecutionPermissions: async (
+    parameters: RequestExecutionPermissionsParameters,
+  ) => {
+    return erc7715RequestExecutionPermissionsAction(
+      client as MetaMaskExtensionClient,
+      parameters,
+    );
+  },
+});
 
 export const erc7710WalletActions = () => (client: WalletClient) => ({
   sendTransactionWithDelegation: async (

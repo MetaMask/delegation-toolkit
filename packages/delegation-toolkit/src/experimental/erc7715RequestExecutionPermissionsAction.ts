@@ -9,9 +9,47 @@ import type {
   PermissionTypes,
   Rule,
 } from '@metamask/7715-permission-types';
-import { isHex, toHex, type Address } from 'viem';
+import { isHex, toHex } from 'viem';
+import type {
+  Client,
+  Account,
+  RpcSchema,
+  Transport,
+  Chain,
+  Address,
+} from 'viem';
 
-import type { SnapClient } from './snapsAuthorization.js';
+/**
+ * RPC schema for MetaMask related methods.
+ *
+ * Extends the base RPC schema with methods specific to interacting with EIP-7715:
+ * - `wallet_invokeSnap`: Invokes a method on a specific Snap.
+ */
+export type MetaMaskExtensionSchema = RpcSchema &
+  [
+    {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      Method: 'wallet_requestExecutionPermissions';
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      Params: PermissionRequest<AccountSigner, PermissionTypes>[];
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      ReturnType: PermissionResponse<AccountSigner, PermissionTypes>[];
+    },
+  ];
+
+/**
+ * A Viem client extended with MetaMask Snap-specific RPC methods.
+ *
+ * This client type allows for interaction with MetaMask Snaps through
+ * the standard Viem client interface, with added type safety for
+ * Snap-specific methods.
+ */
+export type MetaMaskExtensionClient = Client<
+  Transport,
+  Chain | undefined,
+  Account | undefined,
+  MetaMaskExtensionSchema
+>;
 
 type PermissionParameter = {
   type: string;
@@ -125,38 +163,30 @@ export type RequestExecutionPermissionsReturnType = PermissionResponse<
  * @template Signer - The type of the signer, either an Address or Account.
  * @param client - The client to use for the request.
  * @param parameters - The permissions requests to grant.
- * @param kernelSnapId - The ID of the kernel snap to invoke, defaults to 'npm:@metamask/permissions-kernel-snap'.
  * @returns A promise that resolves to the permission responses.
  * @description
- * This function formats the permissions requests and invokes the wallet snap to grant permissions.
+ * This function formats the permissions requests and invokes the wallet method to grant permissions.
  * It will throw an error if the permissions could not be granted.
  */
 export async function erc7715RequestExecutionPermissionsAction(
-  client: SnapClient,
+  client: MetaMaskExtensionClient,
   parameters: RequestExecutionPermissionsParameters,
-  kernelSnapId = 'npm:@metamask/permissions-kernel-snap',
 ): Promise<RequestExecutionPermissionsReturnType> {
-  const formattedParameters = parameters.map(formatPermissionsRequest);
+  const formattedPermissionRequest = parameters.map(formatPermissionsRequest);
 
   const result = await client.request(
     {
-      method: 'wallet_invokeSnap',
-      params: {
-        snapId: kernelSnapId,
-        request: {
-          method: 'wallet_requestExecutionPermissions',
-          params: formattedParameters,
-        },
-      },
+      method: 'wallet_requestExecutionPermissions',
+      params: formattedPermissionRequest,
     },
     { retryCount: 0 },
   );
 
-  if (result === null) {
+  if (!result) {
     throw new Error('Failed to grant permissions');
   }
 
-  return result as any as RequestExecutionPermissionsReturnType;
+  return result;
 }
 
 /**
