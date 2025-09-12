@@ -35,7 +35,7 @@ beforeEach(async () => {
     deployParams: [alice.address, [], [], []],
     deploySalt:
       '0x0000000000000000000000000000000000000000000000000000000000000001',
-    signatory: { account: alice },
+    signer: { account: alice },
   });
   await deploySmartAccount(aliceSmartAccount);
 
@@ -45,7 +45,7 @@ beforeEach(async () => {
     deployParams: [bob.address, [], [], []],
     deploySalt:
       '0x0000000000000000000000000000000000000000000000000000000000000002',
-    signatory: { account: bob },
+    signer: { account: bob },
   });
   await deploySmartAccount(bobSmartAccount);
 

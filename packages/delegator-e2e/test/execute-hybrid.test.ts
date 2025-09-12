@@ -36,7 +36,7 @@ beforeEach(async () => {
     implementation: Implementation.Hybrid,
     deployParams: [owner.address, [], [], []],
     deploySalt: '0x',
-    signatory: { account: owner },
+    signer: { account: owner },
   });
 });
 

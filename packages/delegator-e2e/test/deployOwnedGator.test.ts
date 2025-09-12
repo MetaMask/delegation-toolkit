@@ -38,7 +38,7 @@ beforeEach(async () => {
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x',
-    signatory: { account: alice },
+    signer: { account: alice },
   });
 });
 
@@ -123,7 +123,7 @@ test('Send a useroperation with a SmartAccount created with the address of a dep
     client: aliceSmartAccount.client,
     implementation: Implementation.Hybrid,
     address,
-    signatory: { account: alice },
+    signer: { account: alice },
   });
 
   const balanceBefore = await publicClient.getBalance({ address: recipient });

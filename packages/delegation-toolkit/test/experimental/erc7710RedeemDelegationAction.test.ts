@@ -66,7 +66,7 @@ describe('erc7710RedeemDelegationAction', () => {
       metaMaskSmartAccount = await toMetaMaskSmartAccount({
         client: publicClient,
         implementation: Implementation.MultiSig,
-        signatory: [{ account: owner }],
+        signer: [{ account: owner }],
         deployParams: [[owner.address], 1n],
         deploySalt: randomBytes(32),
       });

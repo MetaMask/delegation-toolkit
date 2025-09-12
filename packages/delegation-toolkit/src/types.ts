@@ -145,7 +145,7 @@ export type ToMetaMaskSmartAccountParameters<
 > = {
   client: PublicClient;
   implementation: TImplementation;
-  signatory: SignatoryConfigByImplementation<TImplementation>;
+  signer: SignerConfigByImplementation<TImplementation>;
   environment?: DeleGatorEnvironment;
 } & OneOf<
   | {
@@ -189,45 +189,42 @@ export type ToMetaMaskSmartAccountReturnType<
   TImplementation extends Implementation,
 > = Prettify<SmartAccount<MetaMaskSmartAccountImplementation<TImplementation>>>;
 
-// Specific signatory type that is derived from the external SignatoryConfig
-export type InternalSignatory = Pick<
+// Specific signer type that is derived from the external SignerConfig
+export type InternalSigner = Pick<
   SmartAccountImplementation,
   'signMessage' | 'signTypedData' | 'getStubSignature'
 >;
 
-export type WalletSignatoryConfig = {
+export type WalletSignerConfig = {
   walletClient: WalletClient<Transport, Chain | undefined, Account>;
 };
 
-export type AccountSignatoryConfig = {
+export type AccountSignerConfig = {
   account: Pick<Account, 'signMessage' | 'signTypedData' | 'address'>;
 };
 
-export type WebAuthnSignatoryConfig = {
+export type WebAuthnSignerConfig = {
   webAuthnAccount: WebAuthnAccount;
   keyId: Hex;
 };
 
-export type HybridSignatoryConfig =
-  | WalletSignatoryConfig
-  | AccountSignatoryConfig
-  | WebAuthnSignatoryConfig;
+export type HybridSignerConfig =
+  | WalletSignerConfig
+  | AccountSignerConfig
+  | WebAuthnSignerConfig;
 
-export type MultiSigSignatoryConfig = (
-  | WalletSignatoryConfig
-  | AccountSignatoryConfig
-)[];
+export type MultiSigSignerConfig = (WalletSignerConfig | AccountSignerConfig)[];
 
-export type Stateless7702SignatoryConfig =
-  | WalletSignatoryConfig
-  | AccountSignatoryConfig;
+export type Stateless7702SignerConfig =
+  | WalletSignerConfig
+  | AccountSignerConfig;
 
-export type SignatoryConfigByImplementation<
+export type SignerConfigByImplementation<
   TImplementation extends Implementation,
 > = {
-  [Implementation.Hybrid]: HybridSignatoryConfig;
-  [Implementation.MultiSig]: MultiSigSignatoryConfig;
-  [Implementation.Stateless7702]: Stateless7702SignatoryConfig;
+  [Implementation.Hybrid]: HybridSignerConfig;
+  [Implementation.MultiSig]: MultiSigSignerConfig;
+  [Implementation.Stateless7702]: Stateless7702SignerConfig;
 }[TImplementation];
 
 // this type shadows `Call` from viem, which isn't exported

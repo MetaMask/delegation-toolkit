@@ -41,8 +41,8 @@ beforeEach(async () => {
   ];
   signers = privateKeys.map((pk) => privateKeyToAccount(pk));
 
-  // take all but the first signer as the signatory
-  const signatory = signers.slice(1).map((account) => ({
+  // take all but the first signer as the signer
+  const signer = signers.slice(1).map((account) => ({
     account,
   }));
 
@@ -51,7 +51,7 @@ beforeEach(async () => {
     implementation: Implementation.MultiSig,
     deployParams: [signers.map((account) => account.address), 2n],
     deploySalt: '0x',
-    signatory,
+    signer,
   });
 });
 

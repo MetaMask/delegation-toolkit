@@ -10,13 +10,13 @@ import type { SignReturnType as WebAuthnSignReturnType } from 'webauthn-p256';
 import { Implementation } from './constants';
 import { aggregateSignature } from './signatures';
 import type {
-  AccountSignatoryConfig,
-  HybridSignatoryConfig,
-  InternalSignatory,
-  MultiSigSignatoryConfig,
-  SignatoryConfigByImplementation,
-  Stateless7702SignatoryConfig,
-  WalletSignatoryConfig,
+  AccountSignerConfig,
+  HybridSignerConfig,
+  InternalSigner,
+  MultiSigSignerConfig,
+  SignerConfigByImplementation,
+  Stateless7702SignerConfig,
+  WalletSignerConfig,
 } from './types';
 import {
   createDummyWebAuthnSignature,
@@ -27,9 +27,9 @@ import {
 const EOA_STUB_SIGNATURE =
   '0x000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000011b' as const;
 
-const resolveSignatoryFromWalletConfig = (
-  config: WalletSignatoryConfig,
-): InternalSignatory => {
+const resolveSignerFromWalletConfig = (
+  config: WalletSignerConfig,
+): InternalSigner => {
   return {
     signMessage: config.walletClient.signMessage,
     signTypedData: async (typedData) => {
@@ -40,7 +40,7 @@ const resolveSignatoryFromWalletConfig = (
   };
 };
 
-const resolveSignatoryFromAccountConfig = (config: AccountSignatoryConfig) => {
+const resolveSignerFromAccountConfig = (config: AccountSignerConfig) => {
   return {
     signMessage: config.account.signMessage,
     signTypedData: config.account.signTypedData,
@@ -48,14 +48,12 @@ const resolveSignatoryFromAccountConfig = (config: AccountSignatoryConfig) => {
   };
 };
 
-const resolveHybridSignatory = (
-  config: HybridSignatoryConfig,
-): InternalSignatory => {
+const resolveHybridSigner = (config: HybridSignerConfig): InternalSigner => {
   if ('walletClient' in config) {
-    return resolveSignatoryFromWalletConfig(config);
+    return resolveSignerFromWalletConfig(config);
   } else if ('account' in config) {
     const { signMessage, signTypedData, getStubSignature } =
-      resolveSignatoryFromAccountConfig(config);
+      resolveSignerFromAccountConfig(config);
     if (!signMessage) {
       throw new Error('Account does not support signMessage');
     }
@@ -100,23 +98,23 @@ const resolveHybridSignatory = (
   };
 };
 
-const resolveMultiSigSignatory = (
-  config: MultiSigSignatoryConfig,
-): InternalSignatory => {
-  const resolvedSignatories = config.map((signatory) => {
-    let individualSignMessage: InternalSignatory['signMessage'];
-    let individualSignTypedData: InternalSignatory['signTypedData'];
+const resolveMultiSigSigner = (
+  config: MultiSigSignerConfig,
+): InternalSigner => {
+  const resolvedSigners = config.map((signer) => {
+    let individualSignMessage: InternalSigner['signMessage'];
+    let individualSignTypedData: InternalSigner['signTypedData'];
     let address: Address;
-    if ('walletClient' in signatory) {
+    if ('walletClient' in signer) {
       const { signMessage, signTypedData } =
-        resolveSignatoryFromWalletConfig(signatory);
+        resolveSignerFromWalletConfig(signer);
       individualSignMessage = signMessage;
       individualSignTypedData = signTypedData;
 
-      address = signatory.walletClient.account.address;
+      address = signer.walletClient.account.address;
     } else {
       const { signMessage, signTypedData } =
-        resolveSignatoryFromAccountConfig(signatory);
+        resolveSignerFromAccountConfig(signer);
       if (!signMessage) {
         throw new Error('Account does not support signMessage');
       }
@@ -127,7 +125,7 @@ const resolveMultiSigSignatory = (
       individualSignMessage = signMessage;
       individualSignTypedData = signTypedData;
 
-      address = signatory.account.address;
+      address = signer.account.address;
     }
     return {
       address,
@@ -137,7 +135,7 @@ const resolveMultiSigSignatory = (
   });
 
   const signMessage = async (args: { message: SignableMessage }) => {
-    const addressAndSignatures = resolvedSignatories.map(
+    const addressAndSignatures = resolvedSigners.map(
       async ({ individualSignMessage, address }) => ({
         signature: await individualSignMessage(args),
         signer: address,
@@ -158,7 +156,7 @@ const resolveMultiSigSignatory = (
   >(
     typedDataDefinition: TypedDataDefinition<TTypedData, TPrimaryType>,
   ) => {
-    const addressAndSignatures = resolvedSignatories.map(
+    const addressAndSignatures = resolvedSigners.map(
       async ({ individualSignTypedData, address }) => ({
         signature: await individualSignTypedData(typedDataDefinition),
         signer: address,
@@ -174,7 +172,7 @@ const resolveMultiSigSignatory = (
   };
 
   const getStubSignature = async () =>
-    concat(resolvedSignatories.map(() => EOA_STUB_SIGNATURE));
+    concat(resolvedSigners.map(() => EOA_STUB_SIGNATURE));
 
   return {
     signMessage,
@@ -183,14 +181,14 @@ const resolveMultiSigSignatory = (
   };
 };
 
-const resolveStateless7702Signatory = (
-  config: Stateless7702SignatoryConfig,
-): InternalSignatory => {
+const resolveStateless7702Signer = (
+  config: Stateless7702SignerConfig,
+): InternalSigner => {
   if ('walletClient' in config) {
-    return resolveSignatoryFromWalletConfig(config);
+    return resolveSignerFromWalletConfig(config);
   } else if ('account' in config) {
     const { signMessage, signTypedData, getStubSignature } =
-      resolveSignatoryFromAccountConfig(config);
+      resolveSignerFromAccountConfig(config);
     if (!signMessage) {
       throw new Error('Account does not support signMessage');
     }
@@ -205,26 +203,22 @@ const resolveStateless7702Signatory = (
     };
   }
 
-  throw new Error('Invalid signatory config');
+  throw new Error('Invalid signer config');
 };
 
-export const resolveSignatory = <
-  TImplementation extends Implementation,
->(config: {
+export const resolveSigner = <TImplementation extends Implementation>(config: {
   implementation: TImplementation;
-  signatory: SignatoryConfigByImplementation<TImplementation>;
-}): InternalSignatory => {
+  signer: SignerConfigByImplementation<TImplementation>;
+}): InternalSigner => {
   const { implementation } = config;
 
   if (implementation === Implementation.Hybrid) {
-    return resolveHybridSignatory(config.signatory as HybridSignatoryConfig);
+    return resolveHybridSigner(config.signer as HybridSignerConfig);
   } else if (implementation === Implementation.MultiSig) {
-    return resolveMultiSigSignatory(
-      config.signatory as MultiSigSignatoryConfig,
-    );
+    return resolveMultiSigSigner(config.signer as MultiSigSignerConfig);
   } else if (implementation === Implementation.Stateless7702) {
-    return resolveStateless7702Signatory(
-      config.signatory as Stateless7702SignatoryConfig,
+    return resolveStateless7702Signer(
+      config.signer as Stateless7702SignerConfig,
     );
   }
   throw new Error(`Implementation type '${implementation}' not supported`);

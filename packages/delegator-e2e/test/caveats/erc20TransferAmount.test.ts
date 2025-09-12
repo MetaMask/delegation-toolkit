@@ -63,7 +63,7 @@ beforeEach(async () => {
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x1',
-    signatory: { account: alice },
+    signer: { account: alice },
   });
 
   await deploySmartAccount(aliceSmartAccount);
@@ -73,7 +73,7 @@ beforeEach(async () => {
     implementation: Implementation.Hybrid,
     deployParams: [bob.address, [], [], []],
     deploySalt: '0x1',
-    signatory: { account: bob },
+    signer: { account: bob },
   });
 
   erc20TokenAddress = (await deployErc20Token()) as Address;

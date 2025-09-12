@@ -46,7 +46,7 @@ beforeEach(async () => {
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x1',
-    signatory: { account: alice },
+    signer: { account: alice },
   });
 
   await deploySmartAccount(aliceSmartAccount);
@@ -57,7 +57,7 @@ beforeEach(async () => {
     implementation: Implementation.Hybrid,
     deployParams: [bob.address, [], [], []],
     deploySalt: '0x1',
-    signatory: { account: bob },
+    signer: { account: bob },
   });
 
   aliceCounter = await deployCounter(aliceSmartAccount.address);
@@ -349,7 +349,7 @@ describe('NonceEnforcer Contract Read Methods', () => {
       implementation: Implementation.Hybrid,
       deployParams: [charlie.address, [], [], []],
       deploySalt: '0x2',
-      signatory: { account: charlie },
+      signer: { account: charlie },
     });
     await deploySmartAccount(charlieSmartAccount);
     await fundAddress(charlieSmartAccount.address, parseEther('2'));

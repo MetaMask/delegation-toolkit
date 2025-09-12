@@ -50,7 +50,7 @@ beforeEach(async () => {
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x',
-    signatory: { account: alice },
+    signer: { account: alice },
   });
 
   bobSmartAccount = await toMetaMaskSmartAccount({
@@ -58,7 +58,7 @@ beforeEach(async () => {
     implementation: Implementation.Hybrid,
     deployParams: [bob.address, [], [], []],
     deploySalt: '0x',
-    signatory: { account: bob },
+    signer: { account: bob },
   });
 
   const aliceCounter = await deployCounter(aliceSmartAccount.address);

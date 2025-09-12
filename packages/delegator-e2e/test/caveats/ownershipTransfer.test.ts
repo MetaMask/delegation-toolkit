@@ -54,7 +54,7 @@ describe('Ownership Transfer Caveat', () => {
       implementation: Implementation.Hybrid,
       deployParams: [aliceAccount.address, [], [], []],
       deploySalt: '0x1',
-      signatory: { account: aliceAccount },
+      signer: { account: aliceAccount },
     });
     await deploySmartAccount(aliceSmartAccount);
     await fundAddress(aliceSmartAccount.address, BigInt(10 ** 18)); // 1 ETH
@@ -67,7 +67,7 @@ describe('Ownership Transfer Caveat', () => {
       implementation: Implementation.Hybrid,
       deployParams: [bobAccount.address, [], [], []],
       deploySalt: '0x2',
-      signatory: { account: bobAccount },
+      signer: { account: bobAccount },
     });
     await deploySmartAccount(bobSmartAccount);
 

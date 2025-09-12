@@ -53,7 +53,7 @@ beforeEach(async () => {
     implementation: Implementation.Hybrid,
     deployParams: [alice.address, [], [], []],
     deploySalt: '0x',
-    signatory: { account: alice },
+    signer: { account: alice },
   });
 
   const aliceCounter = await deployCounter(aliceSmartAccount.address);

@@ -20,7 +20,7 @@ import {
 import { entryPointGetNonce as _getNonce } from './DelegationFramework/EntryPoint/read';
 import { getDeleGatorEnvironment } from './delegatorEnvironment';
 import { encodeCallsForCaller } from './encodeCalls';
-import { resolveSignatory } from './signatory';
+import { resolveSigner } from './signer';
 import type {
   Call,
   ToMetaMaskSmartAccountParameters,
@@ -59,9 +59,9 @@ export async function toMetaMaskSmartAccount<
     throw new Error('Chain not specified');
   }
 
-  const signatory = resolveSignatory({
+  const signer = resolveSigner({
     implementation,
-    signatory: params.signatory,
+    signer: params.signer,
   });
 
   const environment = params.environment ?? getDeleGatorEnvironment(chain.id);
@@ -132,7 +132,7 @@ export async function toMetaMaskSmartAccount<
       signature: '0x',
     });
 
-    const signature = signatory.signTypedData({
+    const signature = signer.signTypedData({
       domain: {
         chainId: chainId ?? chain.id,
         name: 'DelegationManager',
@@ -156,7 +156,7 @@ export async function toMetaMaskSmartAccount<
       signature: '0x',
     });
 
-    const signature = await signatory.signTypedData({
+    const signature = await signer.signTypedData({
       domain: {
         chainId: chainId ?? chain.id,
         name: contractName,
@@ -195,7 +195,7 @@ export async function toMetaMaskSmartAccount<
     getNonce,
     signUserOperation,
     signDelegation,
-    ...signatory,
+    ...signer,
   });
 
   // Override isDeployed only for EIP-7702 implementation to check proper delegation code

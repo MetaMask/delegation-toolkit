@@ -53,7 +53,7 @@ describe('MetaMaskSmartAccount', () => {
         implementation: Implementation.Hybrid,
         deployParams: [alice.address, [], [], []],
         deploySalt: '0x0',
-        signatory: { account: alice },
+        signer: { account: alice },
         environment,
       });
 
@@ -70,7 +70,7 @@ describe('MetaMaskSmartAccount', () => {
         implementation: Implementation.MultiSig,
         deployParams: [[alice.address, bob.address], 2n],
         deploySalt: '0x0',
-        signatory: [{ account: alice }],
+        signer: [{ account: alice }],
         environment,
       });
 
@@ -86,7 +86,7 @@ describe('MetaMaskSmartAccount', () => {
         client: publicClient,
         implementation: Implementation.Stateless7702,
         address: alice.address,
-        signatory: { account: alice },
+        signer: { account: alice },
         environment,
       });
 
@@ -105,7 +105,7 @@ describe('MetaMaskSmartAccount', () => {
         toMetaMaskSmartAccount({
           client: publicClient,
           implementation: Implementation.Stateless7702,
-          signatory: { account: alice },
+          signer: { account: alice },
           environment,
         } as any),
       ).rejects.toThrow(
@@ -120,7 +120,7 @@ describe('MetaMaskSmartAccount', () => {
           implementation: 99 as any as Implementation,
           deployParams: [alice.address, [], [], []],
           deploySalt: '0x0',
-          signatory: { account: alice },
+          signer: { account: alice },
           environment,
         }),
       ).rejects.toThrow("Implementation type '99' not supported");
@@ -133,7 +133,7 @@ describe('MetaMaskSmartAccount', () => {
         implementation: Implementation.MultiSig,
         deployParams: [[alice.address, bob.address], 2n],
         deploySalt: '0x0',
-        signatory: [{ account: alice }],
+        signer: [{ account: alice }],
         environment,
       });
 
@@ -147,7 +147,7 @@ describe('MetaMaskSmartAccount', () => {
         implementation: Implementation.MultiSig,
         deployParams: [[alice.address, bob.address], 2n],
         deploySalt: '0x0',
-        signatory: [{ account: alice }],
+        signer: [{ account: alice }],
         environment,
       });
 
@@ -193,7 +193,7 @@ describe('MetaMaskSmartAccount', () => {
         implementation: Implementation.Hybrid,
         deployParams: [alice.address, [], [], []],
         deploySalt: '0x0',
-        signatory: { account: alice },
+        signer: { account: alice },
         environment,
       });
 
@@ -238,7 +238,7 @@ describe('MetaMaskSmartAccount', () => {
         client: publicClient,
         implementation: Implementation.Stateless7702,
         address: alice.address,
-        signatory: { account: alice },
+        signer: { account: alice },
         environment,
       });
 
