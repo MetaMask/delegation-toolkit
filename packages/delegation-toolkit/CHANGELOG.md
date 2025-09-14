@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Uncategorized
+
+- Rename Signatory to Signer ([#76](https://github.com/MetaMask/delegation-toolkit/pull/76))
+- Support calling wallet_requestExecutionPermissions directly on the wallet api ([#60](https://github.com/MetaMask/delegation-toolkit/pull/60))
+- refactor: rename signatory to signer
+- feat: improve types by replacing `0x${string}` with proper viem types
+- fix: issue in test
+- chore: deleted duplicated code
+- chore: improved return types in the utils
+- chore: improved address type and imports
+- chore: added SpecificActionERC20TransferBatchEnforcer utils
+- chore: added nonce enforcer utils
+- chore: added limited calls enforcer utils
+- chore: fix yarn lint for nonce utils
+- chore: added IdEnforcer utils
+- chore: nativeTokenTransferAmount utils
+- feat: contract utils for ERC20TransferAmountEnforcer
+- Improve declarative delegation interface ([#63](https://github.com/MetaMask/delegation-toolkit/pull/63))
+- chore: reverted validation changes
+- Tidy up Utilities and Actions ([#68](https://github.com/MetaMask/delegation-toolkit/pull/68))
+- refactor: modernize allowedCalldata checks with optional chaining
+- chore: renamed, and exposed functions
+- Release/11.0.0 ([#71](https://github.com/MetaMask/delegation-toolkit/pull/71))
+- Revert "Release/11.0.0" ([#70](https://github.com/MetaMask/delegation-toolkit/pull/70))
+- Deleted Public Client From CaveatEnforcerClient ([#64](https://github.com/MetaMask/delegation-toolkit/pull/64))
+- fix: update tests
+- refactor: tidy up utilities and actions
+- Fix failing validate changelog CI job
+- Update change log for 7715-permission-types
+- Update yarn lock
+- Initialize Release 11.0.0
+- chore: prevent doble calldata
+- docs: improved comments
+- chore: deleted public client from caveatEnforcerClient
+- fix: empty calldata array bypasses security checks
+- refactor: improve declarative delegation interface
+- test: infura bundler + delegation toolkit ([#59](https://github.com/MetaMask/delegation-toolkit/pull/59))
+- chore: renamed external folder, and types
+- feat: added infura bundler client
+
 ## [0.13.0-rc.3]
 
 ### Added
@@ -38,7 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed a bug where `sendTransactionWithDelegation` failed whenever `value` was specified in the parameters. ([#30](https://github.com/metamask/delegation-toolkit/pull/30))
 
-[Unreleased]: https://github.com/metamask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.3...HEAD
-[0.13.0-rc.3]: https://github.com/metamask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.2...@metamask/delegation-toolkit@0.13.0-rc.3
-[0.13.0-rc.2]: https://github.com/metamask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.1...@metamask/delegation-toolkit@0.13.0-rc.2
-[0.13.0-rc.1]: https://github.com/metamask/delegation-toolkit/releases/tag/@metamask/delegation-toolkit@0.13.0-rc.1
+[Unreleased]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.3...HEAD
+[0.13.0-rc.3]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.2...@metamask/delegation-toolkit@0.13.0-rc.3
+[0.13.0-rc.2]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.1...@metamask/delegation-toolkit@0.13.0-rc.2
+[0.13.0-rc.1]: https://github.com/MetaMask/delegation-toolkit/releases/tag/@metamask/delegation-toolkit@0.13.0-rc.1
