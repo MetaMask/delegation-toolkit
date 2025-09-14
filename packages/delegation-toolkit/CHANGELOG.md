@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0]
+
 ### Uncategorized
 
 - Rename Signatory to Signer ([#76](https://github.com/MetaMask/delegation-toolkit/pull/76))
@@ -78,7 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed a bug where `sendTransactionWithDelegation` failed whenever `value` was specified in the parameters. ([#30](https://github.com/metamask/delegation-toolkit/pull/30))
 
-[Unreleased]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.3...HEAD
+[Unreleased]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0...HEAD
+[0.13.0]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.3...@metamask/delegation-toolkit@0.13.0
 [0.13.0-rc.3]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.2...@metamask/delegation-toolkit@0.13.0-rc.3
 [0.13.0-rc.2]: https://github.com/MetaMask/delegation-toolkit/compare/@metamask/delegation-toolkit@0.13.0-rc.1...@metamask/delegation-toolkit@0.13.0-rc.2
 [0.13.0-rc.1]: https://github.com/MetaMask/delegation-toolkit/releases/tag/@metamask/delegation-toolkit@0.13.0-rc.1

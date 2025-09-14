@@ -7,8 +7,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Uncategorized
-
-- feat: improve types by replacing `0x${string}` with proper viem types
-
-[Unreleased]: https://github.com/MetaMask/delegation-toolkit/
+[Unreleased]: https://github.com/metamask/delegation-toolkit/
