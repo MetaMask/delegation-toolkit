@@ -1,6 +1,6 @@
 {
   "name": "@metamask/delegation-toolkit",
-  "version": "0.13.0-rc.3",
+  "version": "0.13.0",
   "type": "module",
   "description": "The Delegation Toolkit built on top of Viem - a library for interacting with DeleGator Smart Accounts",
   "license": "(MIT-0 OR Apache-2.0)",
@@ -115,7 +115,7 @@
   "dependencies": {
     "@metamask/7715-permission-types": "^0.3.0",
     "@metamask/delegation-abis": "^0.11.0",
-    "@metamask/delegation-core": "^0.2.0-rc.1",
+    "@metamask/delegation-core": "^0.2.0",
     "@metamask/delegation-deployments": "^0.12.0",
     "buffer": "^6.0.3",
     "webauthn-p256": "^0.0.10"
