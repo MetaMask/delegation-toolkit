@@ -22,7 +22,9 @@ export type TokenPeriodConfig = {
   startDate: number;
 };
 
-export type MultiTokenPeriodBuilderConfig = TokenPeriodConfig[];
+export type MultiTokenPeriodBuilderConfig = {
+  tokenConfigs: TokenPeriodConfig[];
+};
 
 export const multiTokenPeriod = 'multiTokenPeriod';
 
@@ -32,27 +34,30 @@ export const multiTokenPeriod = 'multiTokenPeriod';
  * Each token can have its own period amount, duration, and start date.
  *
  * @param environment - The DeleGator environment.
- * @param configs - The configurations for the MultiTokenPeriodBuilder.
+ * @param config - The configuration for the MultiTokenPeriodBuilder.
+ * @param config.tokenConfigs - The token configurations for the MultiTokenPeriodBuilder.
  * @returns The caveat object for the MultiTokenPeriodEnforcer.
  */
 export const multiTokenPeriodBuilder = (
   environment: DeleGatorEnvironment,
-  configs: MultiTokenPeriodBuilderConfig,
+  config: MultiTokenPeriodBuilderConfig,
 ): Caveat => {
-  if (!configs || configs.length === 0) {
-    throw new Error('MultiTokenPeriodBuilder: configs array cannot be empty');
+  if (!config?.tokenConfigs || config.tokenConfigs.length === 0) {
+    throw new Error(
+      'MultiTokenPeriodBuilder: tokenConfigs array cannot be empty',
+    );
   }
 
-  configs.forEach((config) => {
-    if (!isAddress(config.token)) {
-      throw new Error(`Invalid token address: ${String(config.token)}`);
+  config.tokenConfigs.forEach((tokenConfig) => {
+    if (!isAddress(tokenConfig.token)) {
+      throw new Error(`Invalid token address: ${String(tokenConfig.token)}`);
     }
 
-    if (config.periodAmount <= 0) {
+    if (tokenConfig.periodAmount <= 0) {
       throw new Error('Invalid period amount: must be greater than 0');
     }
 
-    if (config.periodDuration <= 0) {
+    if (tokenConfig.periodDuration <= 0) {
       throw new Error('Invalid period duration: must be greater than 0');
     }
   });
@@ -62,7 +67,7 @@ export const multiTokenPeriodBuilder = (
   // - 32 bytes for periodAmount
   // - 32 bytes for periodDuration
   // - 32 bytes for startDate
-  const termsArray = configs.reduce<Hex[]>(
+  const termsArray = config.tokenConfigs.reduce<Hex[]>(
     (acc, { token, periodAmount, periodDuration, startDate }) => [
       ...acc,
       pad(token, { size: 20 }),

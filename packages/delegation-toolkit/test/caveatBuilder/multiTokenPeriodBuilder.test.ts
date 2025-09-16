@@ -1,5 +1,5 @@
 import type { Hex } from 'viem';
-import { concat, size, slice, toHex } from 'viem';
+import { concat, pad, size, slice, toHex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import type { TokenPeriodConfig } from '../../src/caveatBuilder/multiTokenPeriodBuilder';
@@ -38,11 +38,15 @@ describe('multiTokenPeriodBuilder', () => {
   });
 
   it('should encode a single token configuration correctly', () => {
-    const result = multiTokenPeriodBuilder(mockEnvironment, [mockConfig]);
+    const result = multiTokenPeriodBuilder(mockEnvironment, {
+      tokenConfigs: [mockConfig],
+    });
 
     expect(size(result.terms)).to.equal(LENGTH_PER_CONFIG);
 
-    expect(slice(result.terms, 0, 20)).to.equal(mockConfig.token);
+    expect(slice(result.terms, 0, 20)).to.equal(
+      pad(mockConfig.token, { size: 20 }),
+    );
     expect(result.enforcer).to.equal(
       mockEnvironment.caveatEnforcers.MultiTokenPeriodEnforcer,
     );
@@ -50,10 +54,9 @@ describe('multiTokenPeriodBuilder', () => {
   });
 
   it('should encode multiple token correctly', () => {
-    const result = multiTokenPeriodBuilder(mockEnvironment as any, [
-      mockConfig,
-      secondMockConfig,
-    ]);
+    const result = multiTokenPeriodBuilder(mockEnvironment as any, {
+      tokenConfigs: [mockConfig, secondMockConfig],
+    });
 
     expect(result.enforcer).to.equal(
       mockEnvironment.caveatEnforcers.MultiTokenPeriodEnforcer,
@@ -61,11 +64,11 @@ describe('multiTokenPeriodBuilder', () => {
     expect(result.args).to.equal('0x');
     expect(result.terms).to.equal(
       concat([
-        mockConfig.token,
+        pad(mockConfig.token, { size: 20 }),
         toHex(mockConfig.periodAmount, { size: 32 }),
         toHex(mockConfig.periodDuration, { size: 32 }),
         toHex(mockConfig.startDate, { size: 32 }),
-        secondMockConfig.token,
+        pad(secondMockConfig.token, { size: 20 }),
         toHex(secondMockConfig.periodAmount, { size: 32 }),
         toHex(secondMockConfig.periodDuration, { size: 32 }),
         toHex(secondMockConfig.startDate, { size: 32 }),
@@ -74,15 +77,15 @@ describe('multiTokenPeriodBuilder', () => {
   });
 
   it('should throw error for empty configs array', () => {
-    expect(() => multiTokenPeriodBuilder(mockEnvironment as any, [])).to.throw(
-      'MultiTokenPeriodBuilder: configs array cannot be empty',
-    );
+    expect(() =>
+      multiTokenPeriodBuilder(mockEnvironment as any, { tokenConfigs: [] }),
+    ).to.throw('MultiTokenPeriodBuilder: tokenConfigs array cannot be empty');
   });
 
   it('should encode numeric values correctly', () => {
-    const result = multiTokenPeriodBuilder(mockEnvironment as any, [
-      mockConfig,
-    ]);
+    const result = multiTokenPeriodBuilder(mockEnvironment as any, {
+      tokenConfigs: [mockConfig],
+    });
     expect(slice(result.terms, 20, 20 + 32)).to.equal(
       toHex(mockConfig.periodAmount, { size: 32 }),
     );
@@ -92,34 +95,33 @@ describe('multiTokenPeriodBuilder', () => {
   });
 
   it('should validate terms length is multiple of 116 bytes', () => {
-    const result = multiTokenPeriodBuilder(mockEnvironment as any, [
-      mockConfig,
-      secondMockConfig,
-    ]);
+    const result = multiTokenPeriodBuilder(mockEnvironment as any, {
+      tokenConfigs: [mockConfig, secondMockConfig],
+    });
     expect(size(result.terms)).to.equal(LENGTH_PER_CONFIG * 2);
   });
 
   it('should throw error for invalid token address', () => {
     expect(() =>
-      multiTokenPeriodBuilder(mockEnvironment as any, [
-        { ...mockConfig, token: 'invalid' as Hex },
-      ]),
+      multiTokenPeriodBuilder(mockEnvironment as any, {
+        tokenConfigs: [{ ...mockConfig, token: 'invalid' as Hex }],
+      }),
     ).to.throw('Invalid token address: invalid');
   });
 
   it('should throw error for invalid period amount', () => {
     expect(() =>
-      multiTokenPeriodBuilder(mockEnvironment as any, [
-        { ...mockConfig, periodAmount: 0n },
-      ]),
+      multiTokenPeriodBuilder(mockEnvironment as any, {
+        tokenConfigs: [{ ...mockConfig, periodAmount: 0n }],
+      }),
     ).to.throw('Invalid period amount: must be greater than 0');
   });
 
   it('should throw error for invalid period duration', () => {
     expect(() =>
-      multiTokenPeriodBuilder(mockEnvironment as any, [
-        { ...mockConfig, periodDuration: 0 },
-      ]),
+      multiTokenPeriodBuilder(mockEnvironment as any, {
+        tokenConfigs: [{ ...mockConfig, periodDuration: 0 }],
+      }),
     ).to.throw('Invalid period duration: must be greater than 0');
   });
 });
