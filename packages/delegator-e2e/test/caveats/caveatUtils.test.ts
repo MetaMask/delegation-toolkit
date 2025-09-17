@@ -730,7 +730,7 @@ describe('MultiTokenPeriodEnforcer', () => {
               startDate: futureStartDate,
             },
           ],
-        } as any)
+        })
         .build(),
       salt: '0x1' as Hex,
       signature: '0x1',
@@ -818,7 +818,7 @@ describe('MultiTokenPeriodEnforcer', () => {
               startDate,
             },
           ],
-        } as any)
+        })
         .build(),
       salt: '0x1' as Hex,
       signature: '0x1',
@@ -1516,7 +1516,7 @@ describe('Individual action functions vs client extension methods', () => {
               startDate: currentTime,
             },
           ],
-        } as any)
+        })
         .build(),
       salt: '0x1' as Hex,
       signature: '0x1',
