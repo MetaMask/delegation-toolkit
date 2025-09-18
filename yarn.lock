@@ -601,6 +601,7 @@ __metadata:
     "@metamask/auto-changelog": "npm:^5.0.2"
     compare-versions: "npm:^6.1.1"
     tsup: "npm:^8.5.0"
+    tsx: "npm:^4.20.5"
     typescript: "npm:5.0.4"
   languageName: unknown
   linkType: soft
@@ -633,6 +634,7 @@ __metadata:
     ts-node: "npm:^10.9.2"
     tsconfig-paths: "npm:^4.2.0"
     tsup: "npm:^8.5.0"
+    tsx: "npm:^4.20.5"
     typescript: "npm:5.0.4"
     viem: "npm:2.31.4"
     vitest: "npm:^3.2.4"
@@ -649,7 +651,7 @@ __metadata:
     "@metamask/delegation-toolkit": "workspace:*"
     dotenv: "npm:^16.3.1"
     permissionless: "npm:^0.1.44"
-    tsx: "npm:^4.19.3"
+    tsx: "npm:4.20.5"
     vitest: "npm:^3.2.4"
   peerDependencies:
     viem: ^2.31.4
@@ -6576,9 +6578,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:^4.19.3":
-  version: 4.19.3
-  resolution: "tsx@npm:4.19.3"
+"tsx@npm:4.20.5, tsx@npm:^4.20.5":
+  version: 4.20.5
+  resolution: "tsx@npm:4.20.5"
   dependencies:
     esbuild: "npm:~0.25.0"
     fsevents: "npm:~2.3.3"
@@ -6588,7 +6590,7 @@ __metadata:
       optional: true
   bin:
     tsx: dist/cli.mjs
-  checksum: 10/a7e7f41e5593b242772050abacf51908aa8a6d4d9ea6c29e80161eb557d664a0f4cc8d38d0c8c151fddb6c2e9e337af27ba0e269c9707ccd7eeff0e0ea7fcf98
+  checksum: 10/161420678027c43d07b60b7b6b512cc67ff86ae3cca0641a19b0d3e742c5e262bca57034c4bff6d9346f9269e9ada24b6030e1d2bc890df5e1a9754865d3c08a
   languageName: node
   linkType: hard
 
