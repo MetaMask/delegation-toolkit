@@ -45,7 +45,7 @@
     "typecheck": "tsc --noEmit",
     "changelog:update": "../../scripts/update-changelog.sh @metamask/delegation-deployments",
     "changelog:validate": "../../scripts/validate-changelog.sh @metamask/delegation-deployments",
-    "validate-latest-contracts": "npx tsx script/validate-contract-deployments.ts"
+    "validate-latest-contracts": "yarn tsx script/validate-contract-deployments.ts"
   },
   "publishConfig": {
     "access": "public",

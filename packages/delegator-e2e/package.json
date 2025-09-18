@@ -13,10 +13,10 @@
   },
   "scripts": {
     "build": "cd contracts && forge build && cd ..",
-    "setup": "yarn build && docker compose up -d && npx tsx src/await-dependencies.ts",
-    "test": "npx vitest run",
+    "setup": "yarn build && docker compose up -d && yarn tsx src/await-dependencies.ts",
+    "test": "vitest run",
     "test:e2e": "yarn setup && yarn test; EXIT_CODE=$?; yarn teardown; exit $EXIT_CODE",
-    "test:external": "npx vitest --config vitest.external.config.ts --run",
+    "test:external": "vitest --config vitest.external.config.ts --run",
     "teardown": "docker compose down"
   },
   "peerDependencies": {
