@@ -1,8 +1,7 @@
 import { Address } from 'viem';
 import { expect } from 'vitest';
 import { publicClient } from './helpers';
-import { UserOperationReceiptResponse } from '@metamask/delegation-toolkit';
-
+import type { UserOperationReceipt } from 'viem/account-abstraction';
 // common assertions to be shared across tests
 
 export const expectCodeAt = async (address: Address, message?: string) => {
@@ -21,11 +20,11 @@ export const expectNoCodeAt = async (address: Address, message?: string) => {
 // todo: make this attempt to decode the failure logs
 // that is why I've made this asyncronous
 export const expectUserOperationToSucceed = async (
-  receipt: UserOperationReceiptResponse,
+  receipt: UserOperationReceipt,
   message?: string,
 ) => {
   expect(
     receipt.success,
     message || `Expected user operation ${receipt.userOpHash} to succeed`,
-  ).toBeTruthy;
+  ).toBeTruthy();
 };
