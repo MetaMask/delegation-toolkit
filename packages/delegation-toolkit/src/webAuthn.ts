@@ -5,6 +5,7 @@ import {
   encodePacked,
   keccak256,
   concat,
+  hexToBytes,
 } from 'viem';
 import { parseSignature } from 'webauthn-p256';
 
@@ -37,7 +38,7 @@ export const splitOnChallenge = (
     "challenge": "{userOpHash}",
     "origin": "{Domain}",
     "crossOrigin": boolean
-  }  
+  }
   */
   try {
     const { challenge } = JSON.parse(clientDataJson);
@@ -146,14 +147,12 @@ export type AuthenticatorFlags = {
 export function parseAuthenticatorFlags(
   authenticatorData: Hex,
 ): AuthenticatorFlags {
-  // eslint-disable-next-line no-restricted-globals
-  const authenticatorDataBuffer = Buffer.from(
-    authenticatorData.slice(2),
-    'hex',
-  );
-  const flags = authenticatorDataBuffer.readUInt8(
-    AUTHENTICATOR_DATA_FLAGS_OFFSET,
-  );
+  const authenticatorDataBuffer = hexToBytes(authenticatorData);
+  const dataBufferUint8 = new Uint8Array(authenticatorDataBuffer);
+  const flags = dataBufferUint8[AUTHENTICATOR_DATA_FLAGS_OFFSET];
+  if (flags === undefined) {
+    throw new Error('Authenticator flags not found in authenticator data');
+  }
 
   // Bit 0 is the least significant bit in the flags byte, so we left shift 0b1 by the bit index
   // eslint-disable-next-line no-bitwise

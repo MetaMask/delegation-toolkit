@@ -283,5 +283,12 @@ describe('webAuthn', () => {
 
       expect(userVerified).to.equal(false);
     });
+    it('should throw an error if the authenticator flags are not found at the expected offset', () => {
+      const flags = 0b11111011;
+
+      expect(() => parseAuthenticatorFlags(toHex(flags))).to.throw(
+        'Authenticator flags not found in authenticator data',
+      );
+    });
   });
 });
