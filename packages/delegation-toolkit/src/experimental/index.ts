@@ -15,6 +15,8 @@ import type {
   RequestExecutionPermissionsParameters,
 } from './erc7715RequestExecutionPermissionsAction';
 
+export type { DelegatedCall } from './erc7710RedeemDelegationAction';
+
 export {
   erc7715RequestExecutionPermissionsAction as requestExecutionPermissions,
   type MetaMaskExtensionClient,
