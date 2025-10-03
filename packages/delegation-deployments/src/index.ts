@@ -19,6 +19,7 @@ export const CHAIN_ID = {
   berachain: 80094,
   unichain: 130,
   arbitrumNova: 42170,
+  sei: 1329,
   // Testnets
   bscTestnet: 97,
   citreaTestnet: 5115,
@@ -90,6 +91,7 @@ export const DELEGATOR_CONTRACTS: DeployedContracts = {
     [CHAIN_ID.berachain]: deployments_1_3_0,
     [CHAIN_ID.unichain]: deployments_1_3_0,
     [CHAIN_ID.arbitrumNova]: deployments_1_3_0,
+    [CHAIN_ID.sei]: deployments_1_3_0,
     // Testnets
     [CHAIN_ID.sepolia]: deployments_1_3_0,
     [CHAIN_ID.citreaTestnet]: deployments_1_3_0,
