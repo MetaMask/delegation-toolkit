@@ -10,12 +10,9 @@ export enum Implementation {
 
 /**
  * Represents predefined time intervals (in seconds) for transfer windows.
- *
- * @remarks
  * These values are commonly used to specify the duration of transfer periods,
  * such as hourly, daily, weekly, etc., where each enum member's value is the
  * number of seconds in that interval.
- *
  * @enum {number}
  * @property {number} Hourly - 1 hour (3600 seconds)
  * @property {number} Daily - 1 day (86400 seconds)
