@@ -148,7 +148,11 @@ describe('Ownership Transfer Caveat', () => {
       ...gasPrice,
     });
 
-    await expectUserOperationToSucceed(userOpHash);
+    const receipt = await sponsoredBundlerClient.waitForUserOperationReceipt({
+      hash: userOpHash,
+    });
+
+    await expectUserOperationToSucceed(receipt);
 
     // Verify ownership was transferred successfully
     const finalOwner = await getContractOwner(contractAddress);
@@ -304,7 +308,11 @@ describe('Ownership Transfer Caveat', () => {
       ...gasPrice,
     });
 
-    await expectUserOperationToSucceed(userOpHash);
+    const receipt = await sponsoredBundlerClient.waitForUserOperationReceipt({
+      hash: userOpHash,
+    });
+
+    await expectUserOperationToSucceed(receipt);
 
     // Verify ownership was transferred successfully
     const finalOwner = await getContractOwner(contractAddress);
