@@ -36,7 +36,7 @@ export {
   getDeleGatorEnvironment,
 } from './delegatorEnvironment';
 
-export { Implementation } from './constants';
+export { Implementation, TransferWindow } from './constants';
 
 export { createExecution, ExecutionMode } from './executions';
 
