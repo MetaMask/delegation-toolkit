@@ -12,7 +12,6 @@
     "packages/*"
   ],
   "scripts": {
-    "allow-scripts": "echo 'n/a'",
     "build": "turbo build",
     "build:packages": "turbo run build --filter='!./packages/delegator-e2e'",
     "changelog:update": "turbo run changelog:update --filter='!./packages/delegator-e2e'",
@@ -28,6 +27,8 @@
     "test:watch": "turbo run test:watch"
   },
   "devDependencies": {
+    "@lavamoat/allow-scripts": "^3.4.0",
+    "@lavamoat/preinstall-always-fail": "^2.1.1",
     "@metamask/create-release-branch": "^4.1.1",
     "@metamask/eslint-config": "^12.0.0",
     "@metamask/eslint-config-nodejs": "^12.0.0",
@@ -61,5 +62,11 @@
   },
   "resolutions": {
     "elliptic": "^6.6.1"
+  },
+  "lavamoat": {
+    "allowScripts": {
+      "@lavamoat/preinstall-always-fail": false,
+      "keccak": false
+    }
   }
 }
