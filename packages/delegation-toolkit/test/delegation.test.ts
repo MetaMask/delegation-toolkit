@@ -15,7 +15,11 @@ import {
   decodePermissionContexts,
   signDelegation,
 } from '../src/delegation';
-import type { Caveat, Delegation, DeleGatorEnvironment } from '../src/types';
+import type {
+  Caveat,
+  Delegation,
+  SmartAccountsEnvironment,
+} from '../src/types';
 
 const mockDelegate: Address = '0x1234567890123456789012345678901234567890';
 const mockDelegator: Address = '0x0987654321098765432109876543210987654321';
@@ -28,21 +32,22 @@ const erc20Scope = {
   maxAmount: 100n,
 } as const;
 
-const delegatorEnvironment: DeleGatorEnvironment = {
+const smartAccountEnvironment: SmartAccountsEnvironment = {
   caveatEnforcers: {
     ValueLteEnforcer: '0x1234567890123456789012345678901234567890',
     ERC20TransferAmountEnforcer: '0x1234567890123456789012345678901234567890',
   },
-} as unknown as DeleGatorEnvironment;
+} as unknown as SmartAccountsEnvironment;
 
 const erc20ScopeCaveats = [
   {
-    enforcer: delegatorEnvironment.caveatEnforcers.ValueLteEnforcer,
+    enforcer: smartAccountEnvironment.caveatEnforcers.ValueLteEnforcer,
     terms: '0x0000000000000000000000000000000000000000000000000000000000000000',
     args: '0x',
   },
   {
-    enforcer: delegatorEnvironment.caveatEnforcers.ERC20TransferAmountEnforcer,
+    enforcer:
+      smartAccountEnvironment.caveatEnforcers.ERC20TransferAmountEnforcer,
     terms:
       '0x12345678901234567890123456789012345678900000000000000000000000000000000000000000000000000000000000000064',
     args: '0x',
@@ -162,7 +167,7 @@ describe('resolveAuthority', () => {
 describe('createDelegation', () => {
   it('should create a basic delegation with root authority', () => {
     const result = createDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       to: mockDelegate,
       from: mockDelegator,
@@ -183,7 +188,7 @@ describe('createDelegation', () => {
     const parentHash =
       '0x1234567890123456789012345678901234567890123456789012345678901234' as const;
     const result = createDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       to: mockDelegate,
       from: mockDelegator,
@@ -211,7 +216,7 @@ describe('createDelegation', () => {
     ];
 
     const result = createDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       to: mockDelegate,
       from: mockDelegator,
@@ -237,7 +242,7 @@ describe('createDelegation', () => {
 
   it('should create a delegation with no additional caveats', () => {
     const result = createDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       to: mockDelegate,
       from: mockDelegator,
       scope: erc20Scope,
@@ -256,7 +261,7 @@ describe('createDelegation', () => {
   it('should use the provided salt when specified', () => {
     const customSalt = '0xdeadbeef';
     const result = createDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       to: mockDelegate,
       from: mockDelegator,
@@ -275,7 +280,7 @@ describe('createDelegation', () => {
 
   it('should create a delegation with scope-only caveats when caveats parameter is omitted', () => {
     const result = createDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       to: mockDelegate,
       from: mockDelegator,
@@ -293,7 +298,7 @@ describe('createDelegation', () => {
 
   it('should create a delegation with scope-only caveats when caveats parameter is undefined', () => {
     const result = createDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       to: mockDelegate,
       from: mockDelegator,
@@ -312,7 +317,7 @@ describe('createDelegation', () => {
 
   it('should create a delegation with scope-only caveats when caveats parameter is null', () => {
     const result = createDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       to: mockDelegate,
       from: mockDelegator,
@@ -333,7 +338,7 @@ describe('createDelegation', () => {
 describe('createOpenDelegation', () => {
   it('should create a basic open delegation with root authority', () => {
     const result = createOpenDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       from: mockDelegator,
       caveats: [mockCaveat],
@@ -353,7 +358,7 @@ describe('createOpenDelegation', () => {
     const parentHash =
       '0x1234567890123456789012345678901234567890123456789012345678901234' as const;
     const result = createOpenDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       from: mockDelegator,
       caveats: [mockCaveat],
@@ -380,7 +385,7 @@ describe('createOpenDelegation', () => {
     ];
 
     const result = createOpenDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       from: mockDelegator,
       caveats,
@@ -406,7 +411,7 @@ describe('createOpenDelegation', () => {
   it('should use the provided salt when specified', () => {
     const customSalt = '0xdeadbeef';
     const result = createOpenDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       from: mockDelegator,
       caveats: [mockCaveat],
@@ -424,7 +429,7 @@ describe('createOpenDelegation', () => {
 
   it('should create an open delegation with scope-only caveats when caveats parameter is omitted', () => {
     const result = createOpenDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       from: mockDelegator,
     });
@@ -441,7 +446,7 @@ describe('createOpenDelegation', () => {
 
   it('should create an open delegation with scope-only caveats when caveats parameter is undefined', () => {
     const result = createOpenDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       from: mockDelegator,
       caveats: undefined,
@@ -459,7 +464,7 @@ describe('createOpenDelegation', () => {
 
   it('should create an open delegation with scope-only caveats when caveats parameter is null', () => {
     const result = createOpenDelegation({
-      environment: delegatorEnvironment,
+      environment: smartAccountEnvironment,
       scope: erc20Scope,
       from: mockDelegator,
       caveats: null as any,

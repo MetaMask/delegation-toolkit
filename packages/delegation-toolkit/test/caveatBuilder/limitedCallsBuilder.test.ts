@@ -2,14 +2,14 @@ import { pad, size, toHex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { limitedCallsBuilder } from '../../src/caveatBuilder/limitedCallsBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('limitedCallsBuilder()', () => {
   const EXPECTED_TERMS_LENGTH = 32; // 32 bytes for the limit
   const environment = {
     caveatEnforcers: { LimitedCallsEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithLimit = (limit: number) => {
     const config = { limit };

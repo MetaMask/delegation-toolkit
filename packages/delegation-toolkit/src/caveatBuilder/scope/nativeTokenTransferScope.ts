@@ -1,4 +1,4 @@
-import type { DeleGatorEnvironment } from '../../types';
+import type { SmartAccountsEnvironment } from '../../types';
 import type { AllowedCalldataBuilderConfig } from '../allowedCalldataBuilder';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
@@ -17,7 +17,7 @@ export type NativeTokenTransferScopeConfig = {
 /**
  * Creates a caveat builder configured for native token transfers with amount limits.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - Configuration object containing native token transfer parameters.
  * @returns A configured caveat builder with native token transfer amount and exact calldata caveats.
  * @throws Error if any of the native token transfer parameters are invalid.
@@ -25,7 +25,7 @@ export type NativeTokenTransferScopeConfig = {
  * @throws Error if the environment is not properly configured.
  */
 export function createNativeTokenTransferCaveatBuilder(
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: NativeTokenTransferScopeConfig,
 ): CoreCaveatBuilder {
   const { maxAmount, allowedCalldata, exactCalldata } = config;

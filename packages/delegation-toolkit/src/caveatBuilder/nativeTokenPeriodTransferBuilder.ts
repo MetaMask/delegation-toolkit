@@ -1,6 +1,6 @@
 import { createNativeTokenPeriodTransferTerms } from '@metamask/delegation-core';
 
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const nativeTokenPeriodTransfer = 'nativeTokenPeriodTransfer';
 
@@ -25,13 +25,13 @@ export type NativeTokenPeriodTransferBuilderConfig = {
  * within a given time period. The transferable amount resets at the beginning of each period,
  * and any unused ETH is forfeited once the period ends.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object containing periodAmount, periodDuration, and startDate.
  * @returns The Caveat.
  * @throws Error if any of the parameters are invalid.
  */
 export const nativeTokenPeriodTransferBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: NativeTokenPeriodTransferBuilderConfig,
 ): Caveat => {
   const { periodAmount, periodDuration, startDate } = config;

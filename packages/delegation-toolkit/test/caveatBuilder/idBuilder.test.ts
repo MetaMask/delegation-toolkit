@@ -2,14 +2,14 @@ import { maxUint256, size, toHex } from 'viem';
 import { describe, it, expect } from 'vitest';
 
 import { idBuilder } from '../../src/caveatBuilder/idBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('idBuilder()', () => {
   const EXPECTED_TERMS_LENGTH = 32; // 32 bytes for the id
   const environment = {
     caveatEnforcers: { IdEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithId = (idValue: bigint | number) => {
     const config = { id: idValue };

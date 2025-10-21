@@ -19,7 +19,7 @@ import { sepolia as chain } from 'viem/chains';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { Implementation } from '../../src/constants';
-import { overrideDeployedEnvironment } from '../../src/delegatorEnvironment';
+import { overrideDeployedEnvironment } from '../../src/smartAccountsEnvironment';
 import {
   createExecution,
   encodeExecutionCalldatas,
@@ -35,7 +35,7 @@ import type {
 } from '../../src/experimental/erc7710RedeemDelegationAction';
 import { toMetaMaskSmartAccount } from '../../src/toMetaMaskSmartAccount';
 import type {
-  DeleGatorEnvironment,
+  SmartAccountsEnvironment,
   MetaMaskSmartAccount,
 } from '../../src/types';
 import { randomAddress, randomBytes } from '../utils';
@@ -56,7 +56,7 @@ describe('erc7710RedeemDelegationAction', () => {
         implementations: {
           MultiSigDeleGatorImpl: randomAddress(),
         },
-      } as any as DeleGatorEnvironment);
+      } as any as SmartAccountsEnvironment);
 
       publicClient = createPublicClient({
         transport: custom({ request: async () => '0x' }),

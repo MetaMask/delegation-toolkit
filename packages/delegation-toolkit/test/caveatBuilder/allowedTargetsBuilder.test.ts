@@ -2,7 +2,7 @@ import { concat, size, type Address, type Hex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { allowedTargetsBuilder } from '../../src/caveatBuilder/allowedTargetsBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress, randomBytes } from '../utils';
 
 describe('allowedTargetsBuilder()', () => {
@@ -10,7 +10,7 @@ describe('allowedTargetsBuilder()', () => {
 
   const environment = {
     caveatEnforcers: { AllowedTargetsEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithTargets = (targets: Address[]) => {
     const config = { targets };

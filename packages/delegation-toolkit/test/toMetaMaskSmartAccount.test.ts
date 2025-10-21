@@ -15,14 +15,17 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { randomAddress } from './utils';
 import { Implementation } from '../src/constants';
 import { toMetaMaskSmartAccount } from '../src/toMetaMaskSmartAccount';
-import type { DeleGatorEnvironment, MetaMaskSmartAccount } from '../src/types';
+import type {
+  SmartAccountsEnvironment,
+  MetaMaskSmartAccount,
+} from '../src/types';
 import { SIGNABLE_USER_OP_TYPED_DATA } from '../src/userOp';
 
 describe('MetaMaskSmartAccount', () => {
   let publicClient: PublicClient;
   let alice: Account;
   let bob: Account;
-  let environment: DeleGatorEnvironment;
+  let environment: SmartAccountsEnvironment;
 
   beforeEach(async () => {
     const transport = custom({
@@ -39,7 +42,7 @@ describe('MetaMaskSmartAccount', () => {
         MultiSigDeleGatorImpl: randomAddress(),
         Stateless7702DeleGatorImpl: randomAddress(),
       },
-    } as unknown as DeleGatorEnvironment;
+    } as unknown as SmartAccountsEnvironment;
 
     alice = privateKeyToAccount(generatePrivateKey());
     bob = privateKeyToAccount(generatePrivateKey());

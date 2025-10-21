@@ -3,7 +3,7 @@ import { expect, describe, it } from 'vitest';
 
 import { nativeBalanceChangeBuilder } from '../../src/caveatBuilder/nativeBalanceChangeBuilder';
 import { BalanceChangeType } from '../../src/caveatBuilder/types';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('nativeBalanceChangeBuilder', () => {
@@ -11,7 +11,7 @@ describe('nativeBalanceChangeBuilder', () => {
 
   const environment = {
     caveatEnforcers: { NativeBalanceChangeEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithParams = (
     recipient: Address,

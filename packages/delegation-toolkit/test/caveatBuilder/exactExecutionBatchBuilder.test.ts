@@ -3,13 +3,13 @@ import type { Address, Hex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { exactExecutionBatchBuilder } from '../../src/caveatBuilder/exactExecutionBatchBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('exactExecutionBatchBuilder()', () => {
   const environment = {
     caveatEnforcers: { ExactExecutionBatchEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithParams = (
     executions: {

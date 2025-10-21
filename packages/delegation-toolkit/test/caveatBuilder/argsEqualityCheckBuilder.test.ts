@@ -2,13 +2,13 @@ import { size, type Hex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { argsEqualityCheckBuilder } from '../../src/caveatBuilder/argsEqualityCheckBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomBytes, randomAddress } from '../utils';
 
 describe('argsEqualityCheckBuilder()', () => {
   const environment = {
     caveatEnforcers: { ArgsEqualityCheckEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithArgs = (args: Hex) => {
     const config = { args };

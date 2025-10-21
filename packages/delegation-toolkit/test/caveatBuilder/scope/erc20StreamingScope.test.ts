@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 
 import { createErc20StreamingCaveatBuilder } from '../../../src/caveatBuilder/scope/erc20StreamingScope';
 import type { Erc20StreamingScopeConfig } from '../../../src/caveatBuilder/scope/erc20StreamingScope';
-import type { DeleGatorEnvironment } from '../../../src/types';
+import type { SmartAccountsEnvironment } from '../../../src/types';
 import { randomAddress } from '../../utils';
 
 describe('createErc20StreamingCaveatBuilder', () => {
@@ -12,7 +12,7 @@ describe('createErc20StreamingCaveatBuilder', () => {
       ValueLteEnforcer: randomAddress(),
       ERC20StreamingEnforcer: randomAddress(),
     },
-  } as unknown as DeleGatorEnvironment;
+  } as unknown as SmartAccountsEnvironment;
 
   it('creates an ERC20 streaming CaveatBuilder', () => {
     const config: Erc20StreamingScopeConfig = {

@@ -1,6 +1,6 @@
 import { encodePacked } from 'viem';
 
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const nativeTokenTransferAmount = 'nativeTokenTransferAmount';
 
@@ -14,13 +14,13 @@ export type NativeTokenTransferAmountBuilderConfig = {
 /**
  * Builds a caveat struct for the NativeTokenTransferAmountEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object containing the maxAmount.
  * @returns The Caveat.
  * @throws Error if the maxAmount is negative.
  */
 export const nativeTokenTransferAmountBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: NativeTokenTransferAmountBuilderConfig,
 ): Caveat => {
   const { maxAmount } = config;

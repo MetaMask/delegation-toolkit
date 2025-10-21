@@ -2,7 +2,7 @@ import { concat, size, toHex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { blockNumberBuilder } from '../../src/caveatBuilder/blockNumberBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('blockNumberBuilder()', () => {
@@ -10,7 +10,7 @@ describe('blockNumberBuilder()', () => {
 
   const environment = {
     caveatEnforcers: { BlockNumberEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithThresholds = (
     afterThreshold: bigint,

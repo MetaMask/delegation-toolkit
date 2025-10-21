@@ -6,7 +6,7 @@ import * as ERC20StreamingEnforcer from '../DelegationFramework/ERC20StreamingEn
 import * as MultiTokenPeriodEnforcer from '../DelegationFramework/MultiTokenPeriodEnforcer';
 import * as NativeTokenPeriodTransferEnforcer from '../DelegationFramework/NativeTokenPeriodTransferEnforcer';
 import * as NativeTokenStreamingEnforcer from '../DelegationFramework/NativeTokenStreamingEnforcer';
-import type { DeleGatorEnvironment, Delegation } from '../types';
+import type { SmartAccountsEnvironment, Delegation } from '../types';
 
 /**
  * Parameters for all caveat enforcer actions.
@@ -48,7 +48,7 @@ function findMatchingCaveat({
 }: {
   delegation: Delegation;
   enforcerAddress: Address;
-  enforcerName: keyof DeleGatorEnvironment['caveatEnforcers'];
+  enforcerName: keyof SmartAccountsEnvironment['caveatEnforcers'];
 }): { terms: Hex; args: Hex } {
   const matchingCaveats = delegation.caveats.filter(
     (caveat) => caveat.enforcer.toLowerCase() === enforcerAddress.toLowerCase(),
@@ -77,10 +77,10 @@ function findMatchingCaveat({
 /**
  * Gets the delegation manager address from environment.
  *
- * @param environment - The delegator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @returns The delegation manager address.
  */
-function getDelegationManager(environment: DeleGatorEnvironment): Address {
+function getDelegationManager(environment: SmartAccountsEnvironment): Address {
   if (!environment.DelegationManager) {
     throw new Error('Delegation manager address not found');
   }
@@ -93,15 +93,15 @@ function getDelegationManager(environment: DeleGatorEnvironment): Address {
  *
  * @param config - The configuration object.
  * @param config.enforcerName - The name of the enforcer.
- * @param config.environment - The delegator environment.
+ * @param config.environment - The SmartAccountsEnvironment.
  * @returns The enforcer address.
  */
 function getEnforcerAddress({
   enforcerName,
   environment,
 }: {
-  enforcerName: keyof DeleGatorEnvironment['caveatEnforcers'];
-  environment: DeleGatorEnvironment;
+  enforcerName: keyof SmartAccountsEnvironment['caveatEnforcers'];
+  environment: SmartAccountsEnvironment;
 }): Address {
   const enforcerAddress = environment.caveatEnforcers[enforcerName];
   if (!enforcerAddress) {
@@ -115,13 +115,13 @@ function getEnforcerAddress({
  * Get available amount for ERC20 period transfer enforcer.
  *
  * @param client - The viem client.
- * @param environment - The delegator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param params - The parameters for the ERC20 period transfer enforcer.
  * @returns Promise resolving to the period transfer result.
  */
 export async function getErc20PeriodTransferEnforcerAvailableAmount(
   client: Client,
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   params: CaveatEnforcerParams,
 ): Promise<PeriodTransferResult> {
   const enforcerName = 'ERC20PeriodTransferEnforcer';
@@ -152,13 +152,13 @@ export async function getErc20PeriodTransferEnforcerAvailableAmount(
  * Get available amount for ERC20 streaming enforcer.
  *
  * @param client - The viem client.
- * @param environment - The delegator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param params - The parameters for the ERC20 streaming enforcer.
  * @returns Promise resolving to the streaming result.
  */
 export async function getErc20StreamingEnforcerAvailableAmount(
   client: Client,
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   params: CaveatEnforcerParams,
 ): Promise<StreamingResult> {
   const enforcerName = 'ERC20StreamingEnforcer';
@@ -188,13 +188,13 @@ export async function getErc20StreamingEnforcerAvailableAmount(
  * Get available amount for multi-token period enforcer.
  *
  * @param client - The viem client.
- * @param environment - The delegator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param params - The parameters for the multi-token period enforcer.
  * @returns Promise resolving to the period transfer result.
  */
 export async function getMultiTokenPeriodEnforcerAvailableAmount(
   client: Client,
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   params: CaveatEnforcerParams,
 ): Promise<PeriodTransferResult> {
   const enforcerName = 'MultiTokenPeriodEnforcer';
@@ -225,13 +225,13 @@ export async function getMultiTokenPeriodEnforcerAvailableAmount(
  * Get available amount for native token period transfer enforcer.
  *
  * @param client - The viem client.
- * @param environment - The delegator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param params - The parameters for the native token period transfer enforcer.
  * @returns Promise resolving to the period transfer result.
  */
 export async function getNativeTokenPeriodTransferEnforcerAvailableAmount(
   client: Client,
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   params: CaveatEnforcerParams,
 ): Promise<PeriodTransferResult> {
   const enforcerName = 'NativeTokenPeriodTransferEnforcer';
@@ -261,13 +261,13 @@ export async function getNativeTokenPeriodTransferEnforcerAvailableAmount(
  * Get available amount for native token streaming enforcer.
  *
  * @param client - The viem client.
- * @param environment - The delegator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param params - The parameters for the native token streaming enforcer.
  * @returns Promise resolving to the streaming result.
  */
 export async function getNativeTokenStreamingEnforcerAvailableAmount(
   client: Client,
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   params: CaveatEnforcerParams,
 ): Promise<StreamingResult> {
   const enforcerName = 'NativeTokenStreamingEnforcer';
@@ -297,11 +297,11 @@ export async function getNativeTokenStreamingEnforcerAvailableAmount(
  * Caveat enforcer actions for extending viem clients.
  *
  * @param params - The parameters object.
- * @param params.environment - The delegator environment.
+ * @param params.environment - The SmartAccountsEnvironment.
  * @returns A function that takes a client and returns the client extension with caveat enforcer actions.
  */
 export const caveatEnforcerActions =
-  ({ environment }: { environment: DeleGatorEnvironment }) =>
+  ({ environment }: { environment: SmartAccountsEnvironment }) =>
   (client: Client) => ({
     /**
      * Get available amount for ERC20 period transfer enforcer.

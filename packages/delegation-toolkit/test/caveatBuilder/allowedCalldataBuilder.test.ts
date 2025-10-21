@@ -2,7 +2,7 @@ import { concat, size, toHex, type Hex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { allowedCalldataBuilder } from '../../src/caveatBuilder/allowedCalldataBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('allowedCalldataBuilder()', () => {
@@ -10,7 +10,7 @@ describe('allowedCalldataBuilder()', () => {
 
   const environment = {
     caveatEnforcers: { AllowedCalldataEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithParams = (dataStart: number, value: Hex) => {
     const config = { startIndex: dataStart, value };

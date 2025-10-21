@@ -3,7 +3,7 @@ import { expect, describe, it } from 'vitest';
 
 import { erc20BalanceChangeBuilder } from '../../src/caveatBuilder/erc20BalanceChangeBuilder';
 import { BalanceChangeType } from '../../src/caveatBuilder/types';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('erc20BalanceChangeBuilder', () => {
@@ -11,7 +11,7 @@ describe('erc20BalanceChangeBuilder', () => {
 
   const environment = {
     caveatEnforcers: { ERC20BalanceChangeEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithParams = (
     token: Address,

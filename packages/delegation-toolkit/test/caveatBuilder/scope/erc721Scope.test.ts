@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 
 import { createErc721CaveatBuilder } from '../../../src/caveatBuilder/scope/erc721Scope';
 import type { Erc721ScopeConfig } from '../../../src/caveatBuilder/scope/erc721Scope';
-import type { DeleGatorEnvironment } from '../../../src/types';
+import type { SmartAccountsEnvironment } from '../../../src/types';
 import { randomAddress } from '../../utils';
 
 describe('createErc721CaveatBuilder', () => {
@@ -11,7 +11,7 @@ describe('createErc721CaveatBuilder', () => {
     caveatEnforcers: {
       ERC721TransferEnforcer: randomAddress(),
     },
-  } as unknown as DeleGatorEnvironment;
+  } as unknown as SmartAccountsEnvironment;
 
   it('creates an ERC721 transfer CaveatBuilder', () => {
     const config: Erc721ScopeConfig = {

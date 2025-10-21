@@ -1,6 +1,6 @@
 import { type Address, encodePacked, isAddress } from 'viem';
 
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const nativeTokenPayment = 'nativeTokenPayment';
 
@@ -18,13 +18,13 @@ export type NativeTokenPaymentBuilderConfig = {
 /**
  * Builds a caveat struct for the NativeTokenPaymentEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object for the NativeTokenPaymentEnforcer.
  * @returns The Caveat.
  * @throws Error if the amount is invalid or the recipient address is invalid.
  */
 export const nativeTokenPaymentBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: NativeTokenPaymentBuilderConfig,
 ): Caveat => {
   const { recipient, amount } = config;

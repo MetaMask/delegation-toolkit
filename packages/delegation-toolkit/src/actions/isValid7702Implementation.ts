@@ -2,7 +2,7 @@ import type { Client, Address, Hex } from 'viem';
 import { isAddressEqual } from 'viem';
 import { getCode } from 'viem/actions';
 
-import type { DeleGatorEnvironment } from '../types';
+import type { SmartAccountsEnvironment } from '../types';
 
 // EIP-7702 delegation prefix (0xef0100)
 const DELEGATION_PREFIX = '0xef0100' as const;
@@ -15,8 +15,8 @@ export type IsValid7702ImplementationParameters = {
   client: Client;
   /** The address to check for proper delegation. */
   accountAddress: Address;
-  /** The DeleGator environment containing contract addresses. */
-  environment: DeleGatorEnvironment;
+  /** The SmartAccountsEnvironment containing contract addresses. */
+  environment: SmartAccountsEnvironment;
 };
 
 /**
@@ -50,14 +50,14 @@ function extractDelegatedAddress(code: Hex | undefined): Address | null {
  * @param params - The parameters for checking the delegation.
  * @param params.client - The client to use for the query.
  * @param params.accountAddress - The address to check for proper delegation.
- * @param params.environment - The DeleGator environment containing contract addresses.
+ * @param params.environment - The SmartAccountsEnvironment containing contract addresses.
  * @returns A promise that resolves to true if the account is properly delegated to the 7702 implementation, false otherwise.
  * @example
  * ```typescript
  * const isValid = await isValid7702Implementation({
  *   client: publicClient,
  *   accountAddress: '0x...',
- *   environment: delegatorEnvironment,
+ *   environment: smartAccountEnvironment,
  * });
  *
  * if (isValid) {

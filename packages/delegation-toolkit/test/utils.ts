@@ -7,7 +7,7 @@ import {
 } from 'viem/accounts';
 
 import { Implementation } from '../src/constants';
-import { deployDeleGatorEnvironment } from '../src/delegatorEnvironment';
+import { deploySmartAccountsEnvironment } from '../src/smartAccountsEnvironment';
 import type { ToMetaMaskSmartAccountParameters } from '../src/types';
 
 export const OWNER_ACCOUNT: Account = privateKeyToAccount(generatePrivateKey());
@@ -83,7 +83,11 @@ export async function setupDevelopmentEnvironment(
   publicClient: PublicClient,
   chain: Chain,
 ) {
-  return await deployDeleGatorEnvironment(walletClient, publicClient, chain);
+  return await deploySmartAccountsEnvironment(
+    walletClient,
+    publicClient,
+    chain,
+  );
 }
 
 /**

@@ -3,7 +3,7 @@ import type { Address } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { erc20TransferAmountBuilder } from '../../src/caveatBuilder/erc20TransferAmountBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('erc20TransferAmountBuilder()', () => {
@@ -11,7 +11,7 @@ describe('erc20TransferAmountBuilder()', () => {
 
   const environment = {
     caveatEnforcers: { ERC20TransferAmountEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithParams = (tokenAddress: Address, maxAmount: bigint) => {
     const config = { tokenAddress, maxAmount };

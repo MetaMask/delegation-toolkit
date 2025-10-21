@@ -2,13 +2,13 @@ import { encodeAbiParameters, type Address, type Hex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { exactCalldataBatchBuilder } from '../../src/caveatBuilder/exactCalldataBatchBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('exactCalldataBatchBuilder()', () => {
   const environment = {
     caveatEnforcers: { ExactCalldataBatchEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithParams = (
     executions: {

@@ -1,19 +1,19 @@
 import { describe, it, expect } from 'vitest';
 
 import {
-  getDeleGatorEnvironment,
+  getSmartAccountsEnvironment,
   overrideDeployedEnvironment,
-} from '../src/delegatorEnvironment';
-import { type DeleGatorEnvironment } from '../src/types';
+} from '../src/smartAccountsEnvironment';
+import { type SmartAccountsEnvironment } from '../src/types';
 
-describe('DelegatorEnvironment', () => {
+describe('SmartAccountsEnvironment', () => {
   describe('overrideDeployedEnvironment', () => {
     // this is a chainId that never be used - it's negative, and it's dead beef
     // it's important, because these tests may pollute overridden environments
     // for other tests.
     const overriddenChainId = -0xdeadb33f;
     const overriddenVersion = '1.3.0';
-    const overriddenEnvironment = {} as DeleGatorEnvironment;
+    const overriddenEnvironment = {} as SmartAccountsEnvironment;
 
     it('should override the environment for a given chainId and version', () => {
       overrideDeployedEnvironment(
@@ -22,7 +22,7 @@ describe('DelegatorEnvironment', () => {
         overriddenEnvironment,
       );
 
-      const resolvedEnvironment = getDeleGatorEnvironment(
+      const resolvedEnvironment = getSmartAccountsEnvironment(
         overriddenChainId,
         overriddenVersion,
       );
@@ -39,7 +39,7 @@ describe('DelegatorEnvironment', () => {
       const wrongVersion = '1.0.0';
 
       expect(() =>
-        getDeleGatorEnvironment(overriddenChainId, wrongVersion),
+        getSmartAccountsEnvironment(overriddenChainId, wrongVersion),
       ).to.throw(
         `No contracts found for version ${wrongVersion} chain ${overriddenChainId}`,
       );
@@ -54,7 +54,7 @@ describe('DelegatorEnvironment', () => {
       const wrongChainId = 0xdeadb33f;
 
       expect(() =>
-        getDeleGatorEnvironment(wrongChainId, overriddenVersion),
+        getSmartAccountsEnvironment(wrongChainId, overriddenVersion),
       ).to.throw(
         `No contracts found for version ${overriddenVersion} chain ${wrongChainId}`,
       );

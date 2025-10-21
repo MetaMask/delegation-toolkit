@@ -1,7 +1,7 @@
 import { createERC20StreamingTerms } from '@metamask/delegation-core';
 import { type Address } from 'viem';
 
-import type { DeleGatorEnvironment, Caveat } from '../types';
+import type { SmartAccountsEnvironment, Caveat } from '../types';
 
 export const erc20Streaming = 'erc20Streaming';
 
@@ -31,7 +31,7 @@ export type Erc20StreamingBuilderConfig = {
 /**
  * Builds a caveat for ERC20 token streaming with configurable parameters.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration for the ERC20 streaming builder.
  * @returns The Caveat.
  * @throws Error if the token address is invalid.
@@ -42,7 +42,7 @@ export type Erc20StreamingBuilderConfig = {
  * @throws Error if the start time is not a positive number.
  */
 export const erc20StreamingBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: Erc20StreamingBuilderConfig,
 ): Caveat => {
   const { tokenAddress, initialAmount, maxAmount, amountPerSecond, startTime } =

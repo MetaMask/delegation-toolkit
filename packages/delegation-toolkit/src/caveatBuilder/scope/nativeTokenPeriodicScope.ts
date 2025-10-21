@@ -1,4 +1,4 @@
-import type { DeleGatorEnvironment } from '../../types';
+import type { SmartAccountsEnvironment } from '../../types';
 import type { AllowedCalldataBuilderConfig } from '../allowedCalldataBuilder';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
@@ -17,7 +17,7 @@ export type NativeTokenPeriodicScopeConfig = {
 /**
  * Creates a caveat builder configured for native token periodic transfers with recurring limits.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - Configuration object containing native token periodic transfer parameters.
  * @returns A configured caveat builder with native token period transfer and exact calldata caveats.
  * @throws Error if any of the native token periodic transfer parameters are invalid.
@@ -25,7 +25,7 @@ export type NativeTokenPeriodicScopeConfig = {
  * @throws Error if the environment is not properly configured.
  */
 export function createNativeTokenPeriodicCaveatBuilder(
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: NativeTokenPeriodicScopeConfig,
 ): CoreCaveatBuilder {
   const {

@@ -2,7 +2,7 @@ import { concat, size, toHex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { valueLteBuilder } from '../../src/caveatBuilder/valueLteBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('valueLteEnforcerBuilder()', () => {
@@ -10,7 +10,7 @@ describe('valueLteEnforcerBuilder()', () => {
 
   const environment = {
     caveatEnforcers: { ValueLteEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithMaxValue = (maxValue: bigint) => {
     const config = { maxValue };

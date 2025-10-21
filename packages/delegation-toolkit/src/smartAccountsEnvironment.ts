@@ -41,19 +41,19 @@ import {
 import { DELEGATOR_CONTRACTS } from '@metamask/delegation-deployments';
 import type { Chain, Hex, PublicClient, WalletClient } from 'viem';
 
-import type { ContractMetaData, DeleGatorEnvironment } from './types';
+import type { ContractMetaData, SmartAccountsEnvironment } from './types';
 import { deployContract } from './write';
 
 type SupportedVersion = '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0';
 export const PREFERRED_VERSION: SupportedVersion = '1.3.0';
 
-const contractOverrideMap: Map<string, DeleGatorEnvironment> = new Map();
+const contractOverrideMap: Map<string, SmartAccountsEnvironment> = new Map();
 
 const getContractOverrideKey = (chainId: number, version: SupportedVersion) =>
   `${version}:${chainId}`;
 
 /**
- * Overrides the deployed environment for a specific chain and version.
+ * Overrides the default environment for a specific chain and version.
  * @param chainId - The chain ID to override.
  * @param version - The version of the environment to override.
  * @param environment - The environment to use as override.
@@ -61,7 +61,7 @@ const getContractOverrideKey = (chainId: number, version: SupportedVersion) =>
 export function overrideDeployedEnvironment(
   chainId: number,
   version: SupportedVersion,
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
 ) {
   contractOverrideMap.set(
     getContractOverrideKey(chainId, version),
@@ -70,15 +70,15 @@ export function overrideDeployedEnvironment(
 }
 
 /**
- * Gets the DeleGator environment for the specified chain and version.
+ * Gets the SmartAccountsEnvironment for the specified chain and version.
  * @param chainId - The chain ID to get the environment for.
  * @param version - The version of the environment to get.
- * @returns The DeleGator environment.
+ * @returns The SmartAccountsEnvironment.
  */
-export function getDeleGatorEnvironment(
+export function getSmartAccountsEnvironment(
   chainId: number,
   version: SupportedVersion = PREFERRED_VERSION,
-): DeleGatorEnvironment {
+): SmartAccountsEnvironment {
   const overrideKey = getContractOverrideKey(chainId, version);
 
   const overriddenContracts = contractOverrideMap.get(overrideKey);
@@ -92,15 +92,15 @@ export function getDeleGatorEnvironment(
       `No contracts found for version ${version} chain ${chainId}`,
     );
   }
-  return getDeleGatorEnvironmentV1(contracts);
+  return getSmartAccountsEnvironmentV1(contracts);
 }
 
 /**
- * Creates a DeleGator environment from contract addresses.
+ * Creates a SmartAccountsEnvironment from contract addresses.
  * @param contracts - The contract addresses to create the environment from.
- * @returns The created DeleGator environment.
+ * @returns The created SmartAccountsEnvironment.
  */
-export function getDeleGatorEnvironmentV1(contracts: {
+export function getSmartAccountsEnvironmentV1(contracts: {
   [contract: string]: Hex;
 }) {
   return {
@@ -148,7 +148,7 @@ export function getDeleGatorEnvironmentV1(contracts: {
       ExactExecutionBatchEnforcer: contracts.ExactExecutionBatchEnforcer,
       MultiTokenPeriodEnforcer: contracts.MultiTokenPeriodEnforcer,
     },
-  } as DeleGatorEnvironment;
+  } as SmartAccountsEnvironment;
 }
 
 export type DeployedContract = {
@@ -157,14 +157,14 @@ export type DeployedContract = {
 };
 
 /**
- * Deploys the contracts needed for the Delegation Framework and DeleGator SCA to be functional as well as all Caveat Enforcers.
+ * Deploys the contracts needed for the Delegation Framework and MetaMask SCA to be functional as well as all Caveat Enforcers.
  * @param walletClient - The wallet client to use for deployment.
  * @param publicClient - The public client to use for deployment.
  * @param chain - The chain to deploy to.
  * @param deployedContracts - Optional map of already deployed contracts.
- * @returns A promise that resolves when all contracts are deployed.
+ * @returns A promise that resolves to the SmartAccountsEnvironment.
  */
-export async function deployDeleGatorEnvironment(
+export async function deploySmartAccountsEnvironment(
   walletClient: WalletClient,
   publicClient: PublicClient,
   chain: Chain,
@@ -294,5 +294,5 @@ export async function deployDeleGatorEnvironment(
   );
 
   // Format deployments
-  return getDeleGatorEnvironmentV1(deployedContracts);
+  return getSmartAccountsEnvironmentV1(deployedContracts);
 }

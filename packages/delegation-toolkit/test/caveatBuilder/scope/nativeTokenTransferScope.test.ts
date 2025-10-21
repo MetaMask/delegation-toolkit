@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 
 import { createNativeTokenTransferCaveatBuilder } from '../../../src/caveatBuilder/scope/nativeTokenTransferScope';
 import type { NativeTokenTransferScopeConfig } from '../../../src/caveatBuilder/scope/nativeTokenTransferScope';
-import type { DeleGatorEnvironment } from '../../../src/types';
+import type { SmartAccountsEnvironment } from '../../../src/types';
 import { randomAddress } from '../../utils';
 
 describe('createNativeTokenTransferCaveatBuilder', () => {
@@ -13,7 +13,7 @@ describe('createNativeTokenTransferCaveatBuilder', () => {
       AllowedCalldataEnforcer: randomAddress(),
       NativeTokenTransferAmountEnforcer: randomAddress(),
     },
-  } as unknown as DeleGatorEnvironment;
+  } as unknown as SmartAccountsEnvironment;
 
   it('creates a native token transfer CaveatBuilder with default empty calldata', () => {
     const config: NativeTokenTransferScopeConfig = {

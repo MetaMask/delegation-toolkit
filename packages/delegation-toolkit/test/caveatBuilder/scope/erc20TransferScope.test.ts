@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 
 import { createErc20TransferCaveatBuilder } from '../../../src/caveatBuilder/scope/erc20TransferScope';
 import type { Erc20TransferScopeConfig } from '../../../src/caveatBuilder/scope/erc20TransferScope';
-import type { DeleGatorEnvironment } from '../../../src/types';
+import type { SmartAccountsEnvironment } from '../../../src/types';
 import { randomAddress } from '../../utils';
 
 describe('createErc20TransferCaveatBuilder', () => {
@@ -12,7 +12,7 @@ describe('createErc20TransferCaveatBuilder', () => {
       ValueLteEnforcer: randomAddress(),
       ERC20TransferAmountEnforcer: randomAddress(),
     },
-  } as unknown as DeleGatorEnvironment;
+  } as unknown as SmartAccountsEnvironment;
 
   it('creates an ERC20 transfer CaveatBuilder', () => {
     const config: Erc20TransferScopeConfig = {

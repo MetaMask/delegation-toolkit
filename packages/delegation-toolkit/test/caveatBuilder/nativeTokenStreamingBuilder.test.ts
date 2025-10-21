@@ -3,7 +3,7 @@ import { expect, describe, it } from 'vitest';
 
 import { nativeTokenStreamingBuilder } from '../../src/caveatBuilder/nativeTokenStreamingBuilder';
 import { TIMESTAMP_UPPER_BOUND_SECONDS } from '../../src/caveatBuilder/shared';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 
 describe('nativeTokenStreamingBuilder()', () => {
   const EXPECTED_TERMS_LENGTH = 128; // 128 bytes for the allowance (4 uint256 values)
@@ -13,7 +13,7 @@ describe('nativeTokenStreamingBuilder()', () => {
       NativeTokenStreamingEnforcer:
         '0x1234567890123456789012345678901234567890',
     },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithParams = (
     initialAmount: bigint,

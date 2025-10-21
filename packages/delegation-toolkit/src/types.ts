@@ -60,7 +60,7 @@ export type Delegation = {
 /**
  * A version agnostic blob of contract addresses required for the DeleGator system to function.
  */
-export type DeleGatorEnvironment = {
+export type SmartAccountsEnvironment = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   DelegationManager: Hex;
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -146,7 +146,7 @@ export type ToMetaMaskSmartAccountParameters<
   client: PublicClient;
   implementation: TImplementation;
   signer: SignerConfigByImplementation<TImplementation>;
-  environment?: DeleGatorEnvironment;
+  environment?: SmartAccountsEnvironment;
 } & OneOf<
   | {
       deployParams: DeployParams<TImplementation>;
@@ -177,7 +177,7 @@ export type MetaMaskSmartAccountImplementation<
       [Implementation.Stateless7702]: typeof EIP7702StatelessDeleGator.abi;
     }[TImplementation];
     signDelegation: (params: SignDelegationParams) => Promise<Hex>;
-    environment: DeleGatorEnvironment;
+    environment: SmartAccountsEnvironment;
   }
 >;
 

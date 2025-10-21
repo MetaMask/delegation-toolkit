@@ -2,14 +2,14 @@ import { concat, size, toHex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { nativeTokenPeriodTransferBuilder } from '../../src/caveatBuilder/nativeTokenPeriodTransferBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('nativeTokenPeriodTransferBuilder()', () => {
   const EXPECTED_TERMS_LENGTH = 96;
   const environment = {
     caveatEnforcers: { NativeTokenPeriodTransferEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithParams = (
     periodAmount: bigint,

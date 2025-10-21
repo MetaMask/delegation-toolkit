@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 
 import { createNativeTokenStreamingCaveatBuilder } from '../../../src/caveatBuilder/scope/nativeTokenStreamingScope';
 import type { NativeTokenStreamingScopeConfig } from '../../../src/caveatBuilder/scope/nativeTokenStreamingScope';
-import type { DeleGatorEnvironment } from '../../../src/types';
+import type { SmartAccountsEnvironment } from '../../../src/types';
 import { randomAddress } from '../../utils';
 
 describe('createNativeTokenStreamingCaveatBuilder', () => {
@@ -13,7 +13,7 @@ describe('createNativeTokenStreamingCaveatBuilder', () => {
       AllowedCalldataEnforcer: randomAddress(),
       NativeTokenStreamingEnforcer: randomAddress(),
     },
-  } as unknown as DeleGatorEnvironment;
+  } as unknown as SmartAccountsEnvironment;
 
   it('creates a native token streaming CaveatBuilder with default empty calldata', () => {
     const config: NativeTokenStreamingScopeConfig = {

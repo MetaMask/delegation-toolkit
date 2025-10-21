@@ -1,6 +1,6 @@
 import { concat, isAddress, toHex, type Address, type Hex } from 'viem';
 
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const specificActionERC20TransferBatch =
   'specificActionERC20TransferBatch';
@@ -32,13 +32,13 @@ export type SpecificActionErc20TransferBatchBuilderConfig = {
  * Builds a caveat struct for SpecificActionERC20TransferBatchEnforcer.
  * Enforces a batch of exactly 2 transactions: a specific action followed by an ERC20 transfer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration for the specific action ERC20 transfer batch builder.
  * @returns The Caveat.
  * @throws Error if any of the addresses are invalid or if the amount is not a positive number.
  */
 export const specificActionERC20TransferBatchBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: SpecificActionErc20TransferBatchBuilderConfig,
 ): Caveat => {
   const { tokenAddress, recipient, amount, target, calldata } = config;

@@ -22,7 +22,7 @@ import {
   NativeTokenStreamingEnforcer,
 } from '../../src/contracts';
 import { getDelegationHashOffchain } from '../../src/delegation';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress, randomBytes } from '../utils';
 
 // Helper function to generate random bytes32
@@ -30,7 +30,7 @@ const randomBytes32 = (): Hex => randomBytes(32);
 
 describe('Caveat Enforcer Client', () => {
   let publicClient: PublicClient;
-  let mockEnvironment: DeleGatorEnvironment;
+  let mockEnvironment: SmartAccountsEnvironment;
   let caveatClient: CaveatEnforcerClient;
 
   const createParams = (caveat: {
@@ -88,7 +88,7 @@ describe('Caveat Enforcer Client', () => {
         NativeTokenTransferAmountEnforcer: randomAddress(),
         // Add other enforcers as needed
       },
-    } as DeleGatorEnvironment;
+    } as SmartAccountsEnvironment;
 
     // Create caveat client for tests
     caveatClient = createCaveatEnforcerClient({
@@ -286,7 +286,7 @@ describe('Caveat Enforcer Client', () => {
       const environmentWithoutDelegationManager = {
         ...mockEnvironment,
         DelegationManager: undefined,
-      } as unknown as DeleGatorEnvironment;
+      } as unknown as SmartAccountsEnvironment;
 
       const clientWithoutDelegationManager = createCaveatEnforcerClient({
         client: publicClient,
@@ -312,7 +312,7 @@ describe('Caveat Enforcer Client', () => {
           ...mockEnvironment.caveatEnforcers,
           ERC20PeriodTransferEnforcer: undefined,
         },
-      } as unknown as DeleGatorEnvironment;
+      } as unknown as SmartAccountsEnvironment;
 
       const clientWithoutEnforcer = createCaveatEnforcerClient({
         client: publicClient,

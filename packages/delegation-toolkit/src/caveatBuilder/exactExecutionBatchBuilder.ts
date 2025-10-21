@@ -1,7 +1,7 @@
 import { encodeAbiParameters, isAddress } from 'viem';
 
 import type { ExecutionStruct } from '../executions';
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const exactExecutionBatch = 'exactExecutionBatch';
 
@@ -18,13 +18,13 @@ export type ExactExecutionBatchBuilderConfig = {
  * This enforcer ensures that each execution in the batch matches exactly
  * with the expected execution (target, value, and calldata).
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - Configuration object containing executions.
  * @returns The Caveat.
  * @throws Error if any of the execution parameters are invalid.
  */
 export const exactExecutionBatchBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: ExactExecutionBatchBuilderConfig,
 ): Caveat => {
   const { executions } = config;

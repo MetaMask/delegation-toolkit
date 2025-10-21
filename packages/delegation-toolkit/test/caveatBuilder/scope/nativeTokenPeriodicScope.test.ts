@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 
 import { createNativeTokenPeriodicCaveatBuilder } from '../../../src/caveatBuilder/scope/nativeTokenPeriodicScope';
 import type { NativeTokenPeriodicScopeConfig } from '../../../src/caveatBuilder/scope/nativeTokenPeriodicScope';
-import type { DeleGatorEnvironment } from '../../../src/types';
+import type { SmartAccountsEnvironment } from '../../../src/types';
 import { randomAddress } from '../../utils';
 
 describe('createNativeTokenPeriodicCaveatBuilder', () => {
@@ -13,7 +13,7 @@ describe('createNativeTokenPeriodicCaveatBuilder', () => {
       AllowedCalldataEnforcer: randomAddress(),
       NativeTokenPeriodTransferEnforcer: randomAddress(),
     },
-  } as unknown as DeleGatorEnvironment;
+  } as unknown as SmartAccountsEnvironment;
 
   it('creates a native token periodic transfer CaveatBuilder', () => {
     const config: NativeTokenPeriodicScopeConfig = {

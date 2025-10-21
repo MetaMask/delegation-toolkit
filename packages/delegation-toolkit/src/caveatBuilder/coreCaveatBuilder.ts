@@ -1,4 +1,4 @@
-import type { DeleGatorEnvironment } from '../types';
+import type { SmartAccountsEnvironment } from '../types';
 import {
   allowedCalldata,
   allowedCalldataBuilder,
@@ -161,7 +161,7 @@ export type CoreCaveatConfiguration = CaveatConfiguration<CoreCaveatBuilder>;
  * @returns A fully configured CoreCaveatBuilder instance with all core caveat types.
  */
 export const createCaveatBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config?: CaveatBuilderConfig,
 ): CoreCaveatBuilder => {
   const caveatBuilder = new CaveatBuilder(environment, config)

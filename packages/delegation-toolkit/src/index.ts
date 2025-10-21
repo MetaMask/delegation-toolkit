@@ -14,7 +14,7 @@ export type {
 } from './delegation';
 
 export type {
-  DeleGatorEnvironment,
+  SmartAccountsEnvironment,
   MultiSigDeleGatorDeployParams,
   HybridDeleGatorDeployParams,
   SignUserOperationParams,
@@ -33,8 +33,8 @@ export type {
 
 export {
   PREFERRED_VERSION,
-  getDeleGatorEnvironment,
-} from './delegatorEnvironment';
+  getSmartAccountsEnvironment,
+} from './smartAccountsEnvironment';
 
 export { Implementation, TransferWindow } from './constants';
 

@@ -1,4 +1,4 @@
-import type { DeleGatorEnvironment } from '../../types';
+import type { SmartAccountsEnvironment } from '../../types';
 import { hasProperties } from '../../utils';
 import type { AllowedCalldataBuilderConfig } from '../allowedCalldataBuilder';
 import type { AllowedMethodsBuilderConfig } from '../allowedMethodsBuilder';
@@ -27,14 +27,14 @@ const isFunctionCallConfig = (
 /**
  * Creates a caveat builder configured for function call unit of authority.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - Configuration object containing allowed targets, methods, and optionally calldata.
  * @returns A configured caveat builder with the specified caveats.
  * @throws Error if any of the required parameters are invalid.
  * @throws Error if both allowedCalldata and exactCalldata are provided simultaneously.
  */
 export function createFunctionCallCaveatBuilder(
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: FunctionCallScopeConfig,
 ): CoreCaveatBuilder {
   const { targets, selectors, allowedCalldata, exactCalldata } = config;

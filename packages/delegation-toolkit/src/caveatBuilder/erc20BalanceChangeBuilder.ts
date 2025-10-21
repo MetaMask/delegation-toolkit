@@ -1,6 +1,6 @@
 import { type Address, isAddress, encodePacked } from 'viem';
 
-import type { DeleGatorEnvironment, Caveat } from '../types';
+import type { SmartAccountsEnvironment, Caveat } from '../types';
 import { BalanceChangeType } from './types';
 
 export const erc20BalanceChange = 'erc20BalanceChange';
@@ -29,13 +29,13 @@ export type Erc20BalanceChangeBuilderConfig = {
 /**
  * Builds a caveat struct for the ERC20BalanceChangeEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object for the ERC20 balance change.
  * @returns The Caveat.
  * @throws Error if the token address is invalid, the amount is not a positive number, or the change type is invalid.
  */
 export const erc20BalanceChangeBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: Erc20BalanceChangeBuilderConfig,
 ): Caveat => {
   const { tokenAddress, recipient, balance, changeType } = config;

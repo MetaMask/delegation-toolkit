@@ -1,6 +1,6 @@
 import { type Hex, concat, isHex, toHex } from 'viem';
 
-import type { DeleGatorEnvironment, Caveat } from '../types';
+import type { SmartAccountsEnvironment, Caveat } from '../types';
 
 export const allowedCalldata = 'allowedCalldata';
 
@@ -19,13 +19,13 @@ export type AllowedCalldataBuilderConfig = {
 /**
  * Builds a caveat struct for AllowedCalldataEnforcer that restricts calldata to a specific value at a given index.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object containing startIndex and value.
  * @returns The Caveat.
  * @throws Error if the value is not a valid hex string, if startIndex is negative, or if startIndex is not a whole number.
  */
 export const allowedCalldataBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: AllowedCalldataBuilderConfig,
 ): Caveat => {
   const { startIndex, value } = config;

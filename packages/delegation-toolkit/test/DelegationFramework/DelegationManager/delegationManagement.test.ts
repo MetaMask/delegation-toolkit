@@ -5,11 +5,11 @@ import { describe, expect, it } from 'vitest';
 import { createDelegation } from '../../../src/delegation';
 import * as DelegationManager from '../../../src/DelegationFramework/DelegationManager';
 import { ExecutionMode, createExecution } from '../../../src/executions';
-import type { DeleGatorEnvironment } from '../../../src/types';
+import type { SmartAccountsEnvironment } from '../../../src/types';
 import { randomAddress } from '../../utils';
 
 describe('DelegationManager - Delegation Management', () => {
-  const environment: DeleGatorEnvironment = {
+  const environment: SmartAccountsEnvironment = {
     DelegationManager: randomAddress(),
     SimpleFactory: randomAddress(),
     EntryPoint: randomAddress(),
@@ -51,7 +51,7 @@ describe('DelegationManager - Delegation Management', () => {
       MultiTokenPeriodEnforcer: randomAddress(),
       DeployedEnforcer: randomAddress(),
     },
-  } as DeleGatorEnvironment;
+  } as SmartAccountsEnvironment;
 
   describe('API Structure', () => {
     it('should export the correct functions', () => {

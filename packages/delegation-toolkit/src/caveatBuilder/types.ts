@@ -1,8 +1,10 @@
-import type { DeleGatorEnvironment } from 'src/types';
+import type { SmartAccountsEnvironment } from 'src/types';
 
 export enum BalanceChangeType {
   Increase = 0x0,
   Decrease = 0x1,
 }
 
-export type UnitOfAuthorityBaseConfig = { environment: DeleGatorEnvironment };
+export type UnitOfAuthorityBaseConfig = {
+  environment: SmartAccountsEnvironment;
+};

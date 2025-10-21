@@ -36,8 +36,8 @@ export { getCounterfactualAccountData } from '../counterfactualAccountData';
 
 export {
   overrideDeployedEnvironment,
-  deployDeleGatorEnvironment,
-} from '../delegatorEnvironment';
+  deploySmartAccountsEnvironment,
+} from '../smartAccountsEnvironment';
 
 export type { CoreCaveatBuilder, CaveatBuilderConfig } from '../caveatBuilder';
 

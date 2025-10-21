@@ -1,7 +1,7 @@
 import type { Hex } from 'viem';
 import { concat, isAddress, pad, toHex } from 'viem';
 
-import type { DeleGatorEnvironment, Caveat } from '../types';
+import type { SmartAccountsEnvironment, Caveat } from '../types';
 
 export type TokenPeriodConfig = {
   /**
@@ -33,13 +33,13 @@ export const multiTokenPeriod = 'multiTokenPeriod';
  * This enforcer allows setting periodic transfer limits for multiple tokens.
  * Each token can have its own period amount, duration, and start date.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration for the MultiTokenPeriodBuilder.
  * @param config.tokenConfigs - The token configurations for the MultiTokenPeriodBuilder.
  * @returns The caveat object for the MultiTokenPeriodEnforcer.
  */
 export const multiTokenPeriodBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: MultiTokenPeriodBuilderConfig,
 ): Caveat => {
   if (!config?.tokenConfigs || config.tokenConfigs.length === 0) {

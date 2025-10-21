@@ -1,6 +1,6 @@
 import { concat, isAddress, isHex, pad, type Address, type Hex } from 'viem';
 
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const deployed = 'deployed';
 
@@ -22,13 +22,13 @@ export type DeployedBuilderConfig = {
 /**
  * Builds a caveat struct for a DeployedEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration for the deployed builder.
  * @returns The Caveat.
  * @throws Error if the contract address, factory address, or bytecode is invalid.
  */
 export const deployedBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: DeployedBuilderConfig,
 ): Caveat => {
   const { contractAddress, salt, bytecode } = config;

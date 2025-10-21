@@ -4,7 +4,7 @@ import { expect, describe, it } from 'vitest';
 
 import { erc20StreamingBuilder } from '../../src/caveatBuilder/erc20StreamingBuilder';
 import { TIMESTAMP_UPPER_BOUND_SECONDS } from '../../src/caveatBuilder/shared';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('erc20StreamingBuilder()', () => {
@@ -12,7 +12,7 @@ describe('erc20StreamingBuilder()', () => {
 
   const environment = {
     caveatEnforcers: { ERC20StreamingEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithParams = (
     tokenAddress: Address,

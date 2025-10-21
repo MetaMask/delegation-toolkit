@@ -2,13 +2,13 @@ import type { Hex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { exactCalldataBuilder } from '../../src/caveatBuilder/exactCalldataBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('exactCalldataBuilder()', () => {
   const environment = {
     caveatEnforcers: { ExactCalldataEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithParams = (calldata: Hex) => {
     const config = { calldata };

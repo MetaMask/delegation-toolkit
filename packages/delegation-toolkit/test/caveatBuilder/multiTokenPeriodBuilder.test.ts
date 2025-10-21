@@ -7,17 +7,17 @@ import {
   multiTokenPeriodBuilder,
   multiTokenPeriod,
 } from '../../src/caveatBuilder/multiTokenPeriodBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 const LENGTH_PER_CONFIG = 116;
 
 describe('multiTokenPeriodBuilder', () => {
-  const mockEnvironment: DeleGatorEnvironment = {
+  const mockEnvironment: SmartAccountsEnvironment = {
     caveatEnforcers: {
       MultiTokenPeriodEnforcer: randomAddress(),
     },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const mockConfig: TokenPeriodConfig = {
     token: randomAddress(),

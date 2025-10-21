@@ -2,7 +2,7 @@ import { concat, pad, size, type Address, type Hex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { deployedBuilder } from '../../src/caveatBuilder/deployedBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress, randomBytes } from '../utils';
 
 describe('deployedBuilder()', () => {
@@ -10,7 +10,7 @@ describe('deployedBuilder()', () => {
 
   const environment = {
     caveatEnforcers: { DeployedEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithDetails = (
     contractAddress: Address,

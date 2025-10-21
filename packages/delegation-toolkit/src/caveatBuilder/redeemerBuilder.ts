@@ -1,6 +1,6 @@
 import { type Address, concat, isAddress } from 'viem';
 
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const redeemer = 'redeemer';
 
@@ -15,13 +15,13 @@ export type RedeemerBuilderConfig = {
 /**
  * Builds a caveat struct for the RedeemerEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object containing redeemers.
  * @returns The Caveat.
  * @throws Error if the redeemer address is invalid or the array is empty.
  */
 export const redeemerBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: RedeemerBuilderConfig,
 ): Caveat => {
   const { redeemers } = config;

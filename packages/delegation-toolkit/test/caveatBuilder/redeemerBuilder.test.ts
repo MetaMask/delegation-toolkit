@@ -2,18 +2,18 @@ import { size, type Address } from 'viem';
 import { expect, describe, it, beforeEach } from 'vitest';
 
 import { redeemerBuilder } from '../../src/caveatBuilder/redeemerBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('redeemerBuilder()', () => {
   const EXPECTED_TERMS_LENGTH_WITH_TWO_REDEEMERS = 40; // 20 bytes for each redeemer address
 
-  let environment: DeleGatorEnvironment;
+  let environment: SmartAccountsEnvironment;
 
   beforeEach(() => {
     environment = {
       caveatEnforcers: { RedeemerEnforcer: randomAddress() },
-    } as any as DeleGatorEnvironment;
+    } as any as SmartAccountsEnvironment;
   });
 
   const buildWithRedeemerAddresses = (redeemers: Address[]) => {

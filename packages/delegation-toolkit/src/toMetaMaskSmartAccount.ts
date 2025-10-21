@@ -18,7 +18,7 @@ import {
   toDelegationStruct,
 } from './delegation';
 import { entryPointGetNonce as _getNonce } from './DelegationFramework/EntryPoint/read';
-import { getDeleGatorEnvironment } from './delegatorEnvironment';
+import { getSmartAccountsEnvironment } from './smartAccountsEnvironment';
 import { encodeCallsForCaller } from './encodeCalls';
 import { resolveSigner } from './signer';
 import type {
@@ -38,11 +38,11 @@ const ENTRYPOINT_VERSION = '0.7' as const;
  *
  * @template TImplementation - The type of implementation, extending Implementation.
  * @param params - The parameters for creating the smart account.
- * @returns A promise that resolves to a MetaMask DeleGator smart account instance.
+ * @returns A promise that resolves to a MetaMaskSmartAccount instance.
  * @description
  * This function sets up a MetaMask DeleGator smart account with the specified implementation.
  * It handles both deployed accounts, and counterfactual accounts.
- * A caller may specify a DeleGator environment, otherwise the environment will be inferred from the chain.
+ * A caller may specify a SmartAccountsEnvironment, otherwise the environment will be inferred from the chain.
  */
 export async function toMetaMaskSmartAccount<
   TImplementation extends Implementation,
@@ -64,7 +64,8 @@ export async function toMetaMaskSmartAccount<
     signer: params.signer,
   });
 
-  const environment = params.environment ?? getDeleGatorEnvironment(chain.id);
+  const environment =
+    params.environment ?? getSmartAccountsEnvironment(chain.id);
 
   let address: Address, factoryData: Hex | undefined;
 

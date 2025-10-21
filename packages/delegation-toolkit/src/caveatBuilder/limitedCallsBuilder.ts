@@ -1,6 +1,6 @@
 import { type Hex, toHex, pad } from 'viem';
 
-import type { DeleGatorEnvironment, Caveat } from '../types';
+import type { SmartAccountsEnvironment, Caveat } from '../types';
 
 export const limitedCalls = 'limitedCalls';
 
@@ -14,13 +14,13 @@ export type LimitedCallsBuilderConfig = {
 /**
  * Builds a caveat struct for the LimitedCallsEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object containing the limit.
  * @returns The Caveat.
  * @throws Error if the limit is not a positive integer.
  */
 export const limitedCallsBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: LimitedCallsBuilderConfig,
 ): Caveat => {
   const { limit } = config;

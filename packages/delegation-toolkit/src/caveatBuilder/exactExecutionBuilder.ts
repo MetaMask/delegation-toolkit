@@ -1,7 +1,7 @@
 import { isAddress, concat, toHex } from 'viem';
 
 import type { ExecutionStruct } from '../executions';
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const exactExecution = 'exactExecution';
 
@@ -18,13 +18,13 @@ export type ExactExecutionBuilderConfig = {
  * This enforcer ensures that the provided execution matches exactly
  * with the expected execution (target, value, and calldata).
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object containing the execution.
  * @returns The Caveat.
  * @throws Error if any of the execution parameters are invalid.
  */
 export const exactExecutionBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: ExactExecutionBuilderConfig,
 ): Caveat => {
   const { execution } = config;

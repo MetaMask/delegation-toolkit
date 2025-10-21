@@ -1,7 +1,7 @@
 import type { CaveatBuilder } from './caveatBuilder';
 import type { CoreCaveatConfiguration } from './coreCaveatBuilder';
 import { createCaveatBuilderFromScope, type ScopeConfig } from './scope';
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export type Caveats = CaveatBuilder | (Caveat | CoreCaveatConfiguration)[];
 
@@ -18,7 +18,7 @@ export const resolveCaveats = ({
   scope,
   caveats,
 }: {
-  environment: DeleGatorEnvironment;
+  environment: SmartAccountsEnvironment;
   scope: ScopeConfig;
   caveats?: Caveats;
 }) => {

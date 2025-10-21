@@ -5,11 +5,11 @@ import type { CoreCaveatConfiguration } from '../../src/caveatBuilder/coreCaveat
 import { createCaveatBuilder } from '../../src/caveatBuilder/coreCaveatBuilder';
 import { resolveCaveats } from '../../src/caveatBuilder/resolveCaveats';
 import type { ScopeConfig } from '../../src/caveatBuilder/scope';
-import type { Caveat, DeleGatorEnvironment } from '../../src/types';
+import type { Caveat, SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('resolveCaveats', () => {
-  const environment: DeleGatorEnvironment = {
+  const environment: SmartAccountsEnvironment = {
     caveatEnforcers: {
       AllowedMethodsEnforcer: randomAddress(),
       BlockNumberEnforcer: randomAddress(),
@@ -17,7 +17,7 @@ describe('resolveCaveats', () => {
       ERC721TransferEnforcer: randomAddress(),
       ERC20TransferAmountEnforcer: randomAddress(),
     },
-  } as unknown as DeleGatorEnvironment;
+  } as unknown as SmartAccountsEnvironment;
 
   const mockCaveat1: Caveat = {
     enforcer: randomAddress(),

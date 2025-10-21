@@ -2,7 +2,7 @@ import { pad, size, type Hex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { nonceBuilder } from '../../src/caveatBuilder/nonceBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('nonceBuilder()', () => {
@@ -10,7 +10,7 @@ describe('nonceBuilder()', () => {
 
   const environment = {
     caveatEnforcers: { NonceEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithNonce = (nonce: Hex) => {
     const config = { nonce };

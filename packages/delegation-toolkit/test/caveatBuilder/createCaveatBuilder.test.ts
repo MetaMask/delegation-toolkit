@@ -4,11 +4,11 @@ import { expect, describe, it } from 'vitest';
 
 import { createCaveatBuilder, CaveatBuilder } from '../../src/caveatBuilder';
 import { BalanceChangeType } from '../../src/caveatBuilder/types';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress, randomBytes } from '../utils';
 
 describe('createCaveatBuilder()', () => {
-  const environment: DeleGatorEnvironment = {
+  const environment: SmartAccountsEnvironment = {
     caveatEnforcers: {
       AllowedMethodsEnforcer: randomBytes(20),
       AllowedTargetsEnforcer: randomBytes(20),
@@ -28,7 +28,7 @@ describe('createCaveatBuilder()', () => {
       RedeemerEnforcer: randomBytes(20),
       ArgsEqualityCheckEnforcer: randomBytes(20),
     },
-  } as unknown as DeleGatorEnvironment;
+  } as unknown as SmartAccountsEnvironment;
 
   describe('ctor', () => {
     it('should create a CaveatBuilder', () => {

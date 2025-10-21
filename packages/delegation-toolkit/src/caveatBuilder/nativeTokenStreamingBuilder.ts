@@ -1,6 +1,6 @@
 import { createNativeTokenStreamingTerms } from '@metamask/delegation-core';
 
-import type { DeleGatorEnvironment, Caveat } from '../types';
+import type { SmartAccountsEnvironment, Caveat } from '../types';
 
 export const nativeTokenStreaming = 'nativeTokenStreaming';
 
@@ -26,13 +26,13 @@ export type NativeTokenStreamingBuilderConfig = {
 /**
  * Builds a caveat struct for the NativeTokenStreamingEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object for the NativeTokenStreamingEnforcer.
  * @returns The Caveat.
  * @throws Error if any of the parameters are invalid.
  */
 export const nativeTokenStreamingBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: NativeTokenStreamingBuilderConfig,
 ): Caveat => {
   const { initialAmount, maxAmount, amountPerSecond, startTime } = config;

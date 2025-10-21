@@ -5,7 +5,7 @@ import { foundry } from 'viem/chains';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { isValid7702Implementation } from '../../src/actions/isValid7702Implementation';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 
 // Mock the getCode function from viem
 vi.mock('viem/actions', () => ({
@@ -15,7 +15,7 @@ const mockGetCode = vi.mocked(getCode);
 
 describe('isValid7702Implementation', () => {
   let publicClient: PublicClient;
-  let mockEnvironment: DeleGatorEnvironment;
+  let mockEnvironment: SmartAccountsEnvironment;
 
   beforeEach(() => {
     publicClient = createPublicClient({

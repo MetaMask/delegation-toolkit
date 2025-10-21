@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { createOwnershipCaveatBuilder } from '../../../src/caveatBuilder/scope/ownershipScope';
 import type { OwnershipScopeConfig } from '../../../src/caveatBuilder/scope/ownershipScope';
-import type { DeleGatorEnvironment } from '../../../src/types';
+import type { SmartAccountsEnvironment } from '../../../src/types';
 import { randomAddress } from '../../utils';
 
 describe('createOwnershipTransferCaveatBuilder', () => {
@@ -10,7 +10,7 @@ describe('createOwnershipTransferCaveatBuilder', () => {
     caveatEnforcers: {
       OwnershipTransferEnforcer: randomAddress(),
     },
-  } as unknown as DeleGatorEnvironment;
+  } as unknown as SmartAccountsEnvironment;
 
   it('creates an Ownership Transfer CaveatBuilder', () => {
     const config: OwnershipScopeConfig = {

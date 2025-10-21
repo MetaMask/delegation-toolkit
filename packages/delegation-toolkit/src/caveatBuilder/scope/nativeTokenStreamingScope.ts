@@ -1,4 +1,4 @@
-import type { DeleGatorEnvironment } from '../../types';
+import type { SmartAccountsEnvironment } from '../../types';
 import type { AllowedCalldataBuilderConfig } from '../allowedCalldataBuilder';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
@@ -17,7 +17,7 @@ export type NativeTokenStreamingScopeConfig = {
 /**
  * Creates a caveat builder configured for native token streaming with time-based limits.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - Configuration object containing native token streaming parameters.
  * @returns A configured caveat builder with native token streaming and exact calldata caveats.
  * @throws Error if any of the native token streaming parameters are invalid.
@@ -25,7 +25,7 @@ export type NativeTokenStreamingScopeConfig = {
  * @throws Error if the environment is not properly configured.
  */
 export function createNativeTokenStreamingCaveatBuilder(
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: NativeTokenStreamingScopeConfig,
 ): CoreCaveatBuilder {
   const {

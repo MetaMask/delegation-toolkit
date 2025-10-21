@@ -1,6 +1,6 @@
 import { createValueLteTerms } from '@metamask/delegation-core';
 
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const valueLte = 'valueLte';
 
@@ -14,13 +14,13 @@ export type ValueLteBuilderConfig = {
 /**
  * Builds a caveat struct for ValueLteEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object containing the maximum value allowed for the transaction.
  * @returns The Caveat.
  * @throws Error if any of the parameters are invalid.
  */
 export const valueLteBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: ValueLteBuilderConfig,
 ): Caveat => {
   const { maxValue } = config;

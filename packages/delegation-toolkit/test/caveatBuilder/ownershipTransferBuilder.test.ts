@@ -2,7 +2,7 @@ import { size, type Address } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { ownershipTransferBuilder } from '../../src/caveatBuilder/ownershipTransferBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('ownershipTransferBuilder()', () => {
@@ -10,7 +10,7 @@ describe('ownershipTransferBuilder()', () => {
 
   const environment = {
     caveatEnforcers: { OwnershipTransferEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithParams = (contractAddress: Address) => {
     const config = { contractAddress };

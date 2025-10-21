@@ -2,7 +2,7 @@ import { concat, size, toHex, type Hex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { nativeTokenPaymentBuilder } from '../../src/caveatBuilder/nativeTokenPaymentBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('nativeTokenPaymentBuilder()', () => {
@@ -10,7 +10,7 @@ describe('nativeTokenPaymentBuilder()', () => {
 
   const environment = {
     caveatEnforcers: { NativeTokenPaymentEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithAmountAndRecipient = (recipient: Hex, amount: bigint) => {
     const config = { recipient, amount };

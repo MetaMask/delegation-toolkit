@@ -1,6 +1,6 @@
 import { concat, isAddress, type Address } from 'viem';
 
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const allowedTargets = 'allowedTargets';
 
@@ -15,13 +15,13 @@ export type AllowedTargetsBuilderConfig = {
 /**
  * Builds a caveat struct for AllowedTargetsEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object containing the targets.
  * @returns The Caveat.
  * @throws Error if no targets are provided or if any of the addresses are invalid.
  */
 export const allowedTargetsBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: AllowedTargetsBuilderConfig,
 ): Caveat => {
   const { targets } = config;

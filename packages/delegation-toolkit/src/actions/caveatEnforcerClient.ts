@@ -1,6 +1,6 @@
 import type { Client, Transport, Chain, Account } from 'viem';
 
-import type { DeleGatorEnvironment } from '../types';
+import type { SmartAccountsEnvironment } from '../types';
 import {
   caveatEnforcerActions,
   type CaveatEnforcerParams,
@@ -23,7 +23,7 @@ export type CaveatEnforcerClient<
  *
  * @param params - The parameters object.
  * @param params.client - The viem client.
- * @param params.environment - The delegator environment.
+ * @param params.environment - The SmartAccountsEnvironment.
  * @returns The extended client with caveat enforcer actions.
  */
 export function createCaveatEnforcerClient<
@@ -35,7 +35,7 @@ export function createCaveatEnforcerClient<
   environment,
 }: {
   client: Client<TTransport, TChain, TAccount>;
-  environment: DeleGatorEnvironment;
+  environment: SmartAccountsEnvironment;
 }): CaveatEnforcerClient<TTransport, TChain, TAccount> {
   return client.extend(caveatEnforcerActions({ environment }));
 }

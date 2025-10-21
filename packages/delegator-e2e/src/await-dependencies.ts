@@ -7,7 +7,7 @@ import {
 } from 'viem';
 import { nodeUrl, bundlerUrl, paymasterUrl, chain, deployPk } from './config';
 import { privateKeyToAccount } from 'viem/accounts';
-import { deployDeleGatorEnvironment } from '@metamask/delegation-toolkit/utils';
+import { deploySmartAccountsEnvironment } from '@metamask/delegation-toolkit/utils';
 import { ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 import { writeFile } from 'fs/promises';
 
@@ -45,7 +45,7 @@ const waitFor = async (name: string, url: string) => {
 };
 
 const deployEnvironment = async () => {
-  const gatorEnvironment = await deployDeleGatorEnvironment(
+  const smartAccountEnvironment = await deploySmartAccountsEnvironment(
     createWalletClient({
       account: privateKeyToAccount(deployPk),
       chain,
@@ -61,7 +61,7 @@ const deployEnvironment = async () => {
     },
   );
 
-  return gatorEnvironment;
+  return smartAccountEnvironment;
 };
 
 (async () => {

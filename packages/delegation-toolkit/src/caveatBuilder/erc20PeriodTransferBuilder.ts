@@ -1,7 +1,7 @@
 import { createERC20TokenPeriodTransferTerms } from '@metamask/delegation-core';
 import type { Address } from 'viem';
 
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const erc20PeriodTransfer = 'erc20PeriodTransfer';
 
@@ -30,13 +30,13 @@ export type Erc20PeriodTransferBuilderConfig = {
  * within a given time period. The transferable amount resets at the beginning of each period,
  * and any unused tokens are forfeited once the period ends.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration for the ERC20 period transfer builder.
  * @returns The Caveat.
  * @throws Error if the token address is invalid or if any of the numeric parameters are invalid.
  */
 export const erc20PeriodTransferBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: Erc20PeriodTransferBuilderConfig,
 ): Caveat => {
   const { tokenAddress, periodAmount, periodDuration, startDate } = config;

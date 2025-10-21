@@ -1,6 +1,6 @@
 import { type Address, isAddress, encodePacked } from 'viem';
 
-import type { DeleGatorEnvironment, Caveat } from '../types';
+import type { SmartAccountsEnvironment, Caveat } from '../types';
 import { BalanceChangeType } from './types';
 
 export const nativeBalanceChange = 'nativeBalanceChange';
@@ -25,13 +25,13 @@ export type NativeBalanceChangeBuilderConfig = {
 /**
  * Builds a caveat struct for the NativeBalanceChangeEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object for the NativeBalanceChangeEnforcer.
  * @returns The Caveat.
  * @throws Error if the recipient address is invalid or the amount is not a positive number.
  */
 export const nativeBalanceChangeBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: NativeBalanceChangeBuilderConfig,
 ): Caveat => {
   const { recipient, balance, changeType } = config;

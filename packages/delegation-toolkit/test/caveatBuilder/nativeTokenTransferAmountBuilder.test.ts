@@ -2,7 +2,7 @@ import { size, toHex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { nativeTokenTransferAmountBuilder } from '../../src/caveatBuilder/nativeTokenTransferAmountBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('nativeTokenTransferAmountBuilder()', () => {
@@ -10,7 +10,7 @@ describe('nativeTokenTransferAmountBuilder()', () => {
 
   const environment = {
     caveatEnforcers: { NativeTokenTransferAmountEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithAllowance = (maxAmount: bigint) => {
     const config = { maxAmount };

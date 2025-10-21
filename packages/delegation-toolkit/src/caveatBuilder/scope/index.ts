@@ -34,7 +34,7 @@ import {
   createOwnershipCaveatBuilder,
   type OwnershipScopeConfig,
 } from './ownershipScope';
-import type { DeleGatorEnvironment } from '../../types';
+import type { SmartAccountsEnvironment } from '../../types';
 // Import caveat builder name constants
 import { erc20PeriodTransfer } from '../erc20PeriodTransferBuilder';
 import { erc20Streaming } from '../erc20StreamingBuilder';
@@ -57,7 +57,7 @@ export type ScopeConfig =
   | FunctionCallScopeConfig;
 
 export const createCaveatBuilderFromScope = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   scopeConfig: ScopeConfig,
 ) => {
   switch (scopeConfig.type) {

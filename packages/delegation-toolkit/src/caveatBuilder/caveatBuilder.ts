@@ -1,4 +1,4 @@
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 type CaveatWithOptionalArgs = Omit<Caveat, 'args'> & {
   args?: Caveat['args'];
@@ -9,7 +9,7 @@ const INSECURE_UNRESTRICTED_DELEGATION_ERROR_MESSAGE =
 
 type CaveatBuilderMap = {
   [key: string]: (
-    environment: DeleGatorEnvironment,
+    environment: SmartAccountsEnvironment,
     ...args: [...any]
   ) => Caveat;
 };
@@ -29,14 +29,14 @@ export class CaveatBuilder<
 
   #hasBeenBuilt = false;
 
-  #environment: DeleGatorEnvironment;
+  #environment: SmartAccountsEnvironment;
 
   #config: CaveatBuilderConfig;
 
   #enforcerBuilders: TCaveatBuilderMap;
 
   constructor(
-    environment: DeleGatorEnvironment,
+    environment: SmartAccountsEnvironment,
     config: CaveatBuilderConfig = {},
     enforcerBuilders: TCaveatBuilderMap = {} as TCaveatBuilderMap,
     builtCaveats: Caveat[] = [],
@@ -58,7 +58,7 @@ export class CaveatBuilder<
   extend<
     TEnforcerName extends string,
     TFunction extends (
-      environment: DeleGatorEnvironment,
+      environment: SmartAccountsEnvironment,
       config: any,
     ) => Caveat,
   >(

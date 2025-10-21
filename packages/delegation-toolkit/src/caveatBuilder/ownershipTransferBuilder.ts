@@ -1,6 +1,6 @@
 import { type Address, isAddress } from 'viem';
 
-import type { DeleGatorEnvironment, Caveat } from '../types';
+import type { SmartAccountsEnvironment, Caveat } from '../types';
 
 export const ownershipTransfer = 'ownershipTransfer';
 
@@ -14,13 +14,13 @@ export type OwnershipTransferBuilderConfig = {
 /**
  * Builds a caveat struct for the OwnershipTransferEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object for the ownership transfer builder.
  * @returns The Caveat representing the caveat for ownership transfer.
  * @throws Error if the target contract address is invalid.
  */
 export const ownershipTransferBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: OwnershipTransferBuilderConfig,
 ): Caveat => {
   const { contractAddress } = config;

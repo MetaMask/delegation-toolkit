@@ -17,7 +17,7 @@ import type {
   SmartAccount,
 } from 'viem/account-abstraction';
 
-import { getDeleGatorEnvironment } from '../delegatorEnvironment';
+import { getSmartAccountsEnvironment } from '../smartAccountsEnvironment';
 import {
   createExecution,
   encodeExecutionCalldatas,
@@ -157,7 +157,7 @@ export async function sendUserOperationWithDelegationAction<
       throw new Error('Chain ID is not set');
     }
 
-    const { SimpleFactory } = getDeleGatorEnvironment(chainId);
+    const { SimpleFactory } = getSmartAccountsEnvironment(chainId);
 
     const uniqueAccountMetadatas = parameters.accountMetadata.filter(
       (accountMetadata) => {

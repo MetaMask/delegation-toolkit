@@ -3,7 +3,7 @@ import type { Address, Hex } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { specificActionERC20TransferBatchBuilder } from '../../src/caveatBuilder/specificActionERC20TransferBatchBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('specificActionERC20TransferBatchBuilder()', () => {
@@ -12,7 +12,7 @@ describe('specificActionERC20TransferBatchBuilder()', () => {
     caveatEnforcers: {
       SpecificActionERC20TransferBatchEnforcer: randomAddress(),
     },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithParams = (
     tokenAddress: Address,

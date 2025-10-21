@@ -1,6 +1,6 @@
 import { concat, toHex } from 'viem';
 
-import type { DeleGatorEnvironment, Caveat } from '../types';
+import type { SmartAccountsEnvironment, Caveat } from '../types';
 
 export const blockNumber = 'blockNumber';
 
@@ -20,13 +20,13 @@ export type BlockNumberBuilderConfig = {
 /**
  * Builds a caveat struct for the BlockNumberEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object for the BlockNumberEnforcer.
  * @returns The Caveat.
  * @throws Error if both thresholds are zero, if blockAfterThreshold is greater than or equal to blockBeforeThreshold, or if BlockNumberEnforcer is not available in the environment.
  */
 export const blockNumberBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: BlockNumberBuilderConfig,
 ): Caveat => {
   const { afterThreshold, beforeThreshold } = config;

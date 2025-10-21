@@ -7,7 +7,7 @@ import { initializeMultiSigDeleGator } from './DelegationFramework/MultiSigDeleG
 import { create2Deploy as encodeCreate2Deploy } from './DelegationFramework/SimpleFactory/encode';
 import { encodeProxyCreationCode } from './DelegationFramework/utils';
 import type {
-  DeleGatorEnvironment,
+  SmartAccountsEnvironment,
   HybridDeleGatorDeployParams,
   MultiSigDeleGatorDeployParams,
   DeployParams,
@@ -38,7 +38,7 @@ export const getCounterfactualAccountData = async <
   deploySalt,
 }: {
   factory: Address;
-  implementations: DeleGatorEnvironment['implementations'];
+  implementations: SmartAccountsEnvironment['implementations'];
   implementation: TImplementation;
   deployParams: DeployParams<TImplementation>;
   deploySalt: Hex;

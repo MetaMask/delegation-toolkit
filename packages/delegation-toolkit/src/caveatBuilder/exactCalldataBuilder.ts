@@ -1,7 +1,7 @@
 import { createExactCalldataTerms } from '@metamask/delegation-core';
 import type { Hex } from 'viem';
 
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const exactCalldata = 'exactCalldata';
 
@@ -17,13 +17,13 @@ export type ExactCalldataBuilderConfig = {
  * This enforcer ensures that the provided execution calldata matches exactly
  * the expected calldata.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration for the ExactCalldataBuilder.
  * @returns The Caveat.
  * @throws Error if any of the parameters are invalid.
  */
 export const exactCalldataBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: ExactCalldataBuilderConfig,
 ): Caveat => {
   const { calldata } = config;

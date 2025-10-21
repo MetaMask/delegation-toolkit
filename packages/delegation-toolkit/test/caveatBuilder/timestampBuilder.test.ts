@@ -3,14 +3,14 @@ import { expect, describe, it } from 'vitest';
 
 import { TIMESTAMP_UPPER_BOUND_SECONDS } from '../../src/caveatBuilder/shared';
 import { timestampBuilder } from '../../src/caveatBuilder/timestampBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('timestampBuilder()', () => {
   const EXPECTED_TERMS_LENGTH = 32; // 32 bytes for the after and before thresholds
   const environment = {
     caveatEnforcers: { TimestampEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithTimestamps = (
     afterThreshold: number,

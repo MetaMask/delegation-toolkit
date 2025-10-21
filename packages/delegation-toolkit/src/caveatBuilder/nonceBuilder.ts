@@ -1,7 +1,7 @@
 import { createNonceTerms } from '@metamask/delegation-core';
 import { type Hex } from 'viem';
 
-import type { DeleGatorEnvironment, Caveat } from '../types';
+import type { SmartAccountsEnvironment, Caveat } from '../types';
 
 export const nonce = 'nonce';
 
@@ -15,13 +15,13 @@ export type NonceBuilderConfig = {
 /**
  * Builds a caveat struct for the NonceEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object containing the nonce value.
  * @returns The Caveat.
  * @throws Error if the nonce is invalid.
  */
 export const nonceBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: NonceBuilderConfig,
 ): Caveat => {
   const { nonce: nonceValue } = config;

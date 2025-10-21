@@ -1,6 +1,6 @@
 import { type Address, isAddress, toHex, concat } from 'viem';
 
-import type { DeleGatorEnvironment, Caveat } from '../types';
+import type { SmartAccountsEnvironment, Caveat } from '../types';
 
 export const erc721Transfer = 'erc721Transfer';
 
@@ -18,13 +18,13 @@ export type Erc721TransferBuilderConfig = {
 /**
  * Builds a caveat struct for the ERC721TransferEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object for the ERC721 transfer builder.
  * @returns The Caveat representing the caveat for ERC721 transfer.
  * @throws Error if the permitted contract address is invalid.
  */
 export const erc721TransferBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: Erc721TransferBuilderConfig,
 ): Caveat => {
   const { tokenAddress, tokenId } = config;

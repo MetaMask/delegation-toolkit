@@ -1,7 +1,7 @@
 import { isHex, concat, toFunctionSelector } from 'viem';
 import type { AbiFunction, Hex } from 'viem';
 
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const allowedMethods = 'allowedMethods';
 
@@ -21,13 +21,13 @@ export type AllowedMethodsBuilderConfig = {
 /**
  * Builds a caveat struct for the AllowedMethodsEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object containing the allowed function selectors.
  * @returns The Caveat.
  * @throws Error if no selectors are provided or if any selector is invalid.
  */
 export const allowedMethodsBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: AllowedMethodsBuilderConfig,
 ): Caveat => {
   const { selectors } = config;

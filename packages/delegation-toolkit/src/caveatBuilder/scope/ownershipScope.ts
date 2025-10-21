@@ -1,4 +1,4 @@
-import type { DeleGatorEnvironment } from '../../types';
+import type { SmartAccountsEnvironment } from '../../types';
 import { hasProperties } from '../../utils';
 import { createCaveatBuilder } from '../coreCaveatBuilder';
 import type { CoreCaveatBuilder } from '../coreCaveatBuilder';
@@ -26,13 +26,13 @@ const isOwnershipTransferConfig = (
 /**
  * Creates a caveat builder configured for ownership transfer unit of authority.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - Configuration object containing the target contract.
  * @returns A configured caveat builder with the specified caveats.
  * @throws Error if any of the required parameters are invalid.
  */
 export function createOwnershipCaveatBuilder(
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: OwnershipScopeConfig,
 ): CoreCaveatBuilder {
   if (!isOwnershipTransferConfig(config)) {

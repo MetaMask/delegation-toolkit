@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 
 import { createFunctionCallCaveatBuilder } from '../../../src/caveatBuilder/scope/functionCallScope';
 import type { FunctionCallScopeConfig } from '../../../src/caveatBuilder/scope/functionCallScope';
-import type { DeleGatorEnvironment } from '../../../src/types';
+import type { SmartAccountsEnvironment } from '../../../src/types';
 import { randomAddress } from '../../utils';
 
 describe('createFunctionCallCaveatBuilder', () => {
@@ -15,7 +15,7 @@ describe('createFunctionCallCaveatBuilder', () => {
       AllowedCalldataEnforcer: randomAddress(),
       ExactCalldataEnforcer: randomAddress(),
     },
-  } as unknown as DeleGatorEnvironment;
+  } as unknown as SmartAccountsEnvironment;
 
   it('creates a Function Call CaveatBuilder', () => {
     const config: FunctionCallScopeConfig = {

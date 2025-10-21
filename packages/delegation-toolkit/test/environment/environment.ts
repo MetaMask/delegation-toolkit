@@ -1,6 +1,6 @@
 import type { Abi, Chain, Hex, PublicClient, WalletClient } from 'viem';
 
-import type { DeployedContract } from '../../src/delegatorEnvironment';
+import type { DeployedContract } from '../../src/smartAccountsEnvironment';
 import type { ContractMetaData } from '../../src/types';
 import { deployContract } from '../../src/write';
 import {

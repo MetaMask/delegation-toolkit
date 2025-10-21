@@ -11,7 +11,7 @@ import {
   getNativeTokenStreamingEnforcerAvailableAmount,
 } from '../../src/actions/getCaveatAvailableAmount';
 import { getDelegationHashOffchain } from '../../src/delegation';
-import type { DeleGatorEnvironment, Delegation } from '../../src/types';
+import type { SmartAccountsEnvironment, Delegation } from '../../src/types';
 
 // Mock the contract read functions
 vi.mock(
@@ -51,7 +51,7 @@ vi.mock(
 
 describe('getCaveatAvailableAmount', () => {
   let client: PublicClient;
-  let environment: DeleGatorEnvironment;
+  let environment: SmartAccountsEnvironment;
   let delegation: Delegation;
 
   beforeEach(() => {

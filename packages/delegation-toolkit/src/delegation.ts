@@ -14,7 +14,7 @@ import { signTypedData } from 'viem/accounts';
 import { type Caveats, resolveCaveats } from './caveatBuilder';
 import type { ScopeConfig } from './caveatBuilder/scope';
 import { CAVEAT_ABI_TYPE_COMPONENTS } from './caveats';
-import type { Delegation, DeleGatorEnvironment } from './types';
+import type { Delegation, SmartAccountsEnvironment } from './types';
 
 export {
   ANY_BENEFICIARY,
@@ -182,7 +182,7 @@ export const getDelegationHashOffchain = (input: Delegation): Hex => {
 };
 
 type BaseCreateDelegationOptions = {
-  environment: DeleGatorEnvironment;
+  environment: SmartAccountsEnvironment;
   scope: ScopeConfig;
   from: Hex;
   caveats?: Caveats;

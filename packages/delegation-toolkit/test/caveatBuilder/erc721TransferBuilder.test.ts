@@ -2,7 +2,7 @@ import { concat, size, toHex, type Address } from 'viem';
 import { expect, describe, it } from 'vitest';
 
 import { erc721TransferBuilder } from '../../src/caveatBuilder/erc721TransferBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('erc721TransferBuilder()', () => {
@@ -10,7 +10,7 @@ describe('erc721TransferBuilder()', () => {
 
   const environment = {
     caveatEnforcers: { ERC721TransferEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithParams = (tokenAddress: Address, tokenId: bigint) => {
     const config = { tokenAddress, tokenId };

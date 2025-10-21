@@ -1,6 +1,6 @@
 import { maxUint256, toHex } from 'viem';
 
-import type { DeleGatorEnvironment, Caveat } from '../types';
+import type { SmartAccountsEnvironment, Caveat } from '../types';
 
 export type IdBuilderConfig = {
   /**
@@ -14,13 +14,13 @@ export const id = 'id';
 /**
  * Builds a caveat struct for the IdEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object containing the id to use in the caveat.
  * @returns The Caveat.
  * @throws Error if the provided id is not a number, not an integer, or is not 32 bytes or fewer in length.
  */
 export const idBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: IdBuilderConfig,
 ): Caveat => {
   const { id: idValue } = config;

@@ -3,7 +3,7 @@ import { toHex } from 'viem';
 import { expect, describe, it, beforeEach } from 'vitest';
 
 import { CaveatBuilder } from '../../src/caveatBuilder/caveatBuilder';
-import type { Caveat, DeleGatorEnvironment } from '../../src/types';
+import type { Caveat, SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress } from '../utils';
 
 describe('CaveatBuilder', () => {
@@ -21,7 +21,7 @@ describe('CaveatBuilder', () => {
 
   describe('ctor', () => {
     it('should instantiate a CaveatBuilder', () => {
-      const builder = new CaveatBuilder({} as DeleGatorEnvironment);
+      const builder = new CaveatBuilder({} as SmartAccountsEnvironment);
 
       expect(builder).to.be.instanceOf(CaveatBuilder);
     });
@@ -29,7 +29,7 @@ describe('CaveatBuilder', () => {
 
   describe('allowInsecureUnrestrictedDelegation', () => {
     it('should disallow empty caveats', () => {
-      const builder = new CaveatBuilder({} as DeleGatorEnvironment);
+      const builder = new CaveatBuilder({} as SmartAccountsEnvironment);
 
       expect(() => builder.build()).to.throw(
         'No caveats found. If you definitely want to create an empty caveat collection, set `allowInsecureUnrestrictedDelegation` to `true`.',
@@ -37,7 +37,7 @@ describe('CaveatBuilder', () => {
     });
 
     it('should allow empty caveats', () => {
-      const builder = new CaveatBuilder({} as DeleGatorEnvironment, {
+      const builder = new CaveatBuilder({} as SmartAccountsEnvironment, {
         allowInsecureUnrestrictedDelegation: true,
       });
 
@@ -45,7 +45,7 @@ describe('CaveatBuilder', () => {
     });
 
     it('should allow empty caveats when extended', () => {
-      const builder = new CaveatBuilder({} as DeleGatorEnvironment, {
+      const builder = new CaveatBuilder({} as SmartAccountsEnvironment, {
         allowInsecureUnrestrictedDelegation: true,
       }).extend('caveat', () => caveat1);
 
@@ -55,9 +55,9 @@ describe('CaveatBuilder', () => {
 
   describe('extend()', () => {
     it('should extend the builder with an addable CaveatBuilder', () => {
-      const builder = new CaveatBuilder({} as DeleGatorEnvironment).extend(
+      const builder = new CaveatBuilder({} as SmartAccountsEnvironment).extend(
         'caveat1',
-        (_environment: DeleGatorEnvironment, _arg: string) => caveat1,
+        (_environment: SmartAccountsEnvironment, _arg: string) => caveat1,
       );
 
       const extendedBuilder = builder.addCaveat('caveat1', 'string');
@@ -66,14 +66,14 @@ describe('CaveatBuilder', () => {
     });
 
     it('should be extended with multiple caveat builders', () => {
-      const builder = new CaveatBuilder({} as DeleGatorEnvironment)
+      const builder = new CaveatBuilder({} as SmartAccountsEnvironment)
         .extend(
           'caveat1',
-          (_environment: DeleGatorEnvironment, _arg: string) => caveat1,
+          (_environment: SmartAccountsEnvironment, _arg: string) => caveat1,
         )
         .extend(
           'caveat2',
-          (_environment: DeleGatorEnvironment, _arg: number) => caveat2,
+          (_environment: SmartAccountsEnvironment, _arg: number) => caveat2,
         );
 
       const extendedBuilder = builder
@@ -85,14 +85,14 @@ describe('CaveatBuilder', () => {
   });
 
   describe('addCaveat()', () => {
-    const environment = {} as DeleGatorEnvironment;
+    const environment = {} as SmartAccountsEnvironment;
 
     const caveatBuilderFunc1 = spy(
-      (_environment: DeleGatorEnvironment, _arg: string) => caveat1,
+      (_environment: SmartAccountsEnvironment, _arg: string) => caveat1,
     );
 
     const caveatBuilderFunc2 = spy(
-      (_environment: DeleGatorEnvironment, _arg: number) => caveat2,
+      (_environment: SmartAccountsEnvironment, _arg: number) => caveat2,
     );
 
     let builder: CaveatBuilder<{
@@ -173,13 +173,13 @@ describe('CaveatBuilder', () => {
   });
 
   describe('build()', () => {
-    const environment = {} as DeleGatorEnvironment;
+    const environment = {} as SmartAccountsEnvironment;
 
     const caveat1Address = randomAddress();
     const caveat2Address = randomAddress();
 
     const caveatBuilderFunc1 = spy(
-      (_environment: DeleGatorEnvironment, arg: string) => ({
+      (_environment: SmartAccountsEnvironment, arg: string) => ({
         enforcer: caveat1Address,
         terms: toHex(arg),
         args: '0x' as const,
@@ -187,7 +187,7 @@ describe('CaveatBuilder', () => {
     );
 
     const caveatBuilderFunc2 = spy(
-      (_environment: DeleGatorEnvironment, arg: number) => ({
+      (_environment: SmartAccountsEnvironment, arg: number) => ({
         enforcer: caveat2Address,
         terms: toHex(arg),
         args: '0x' as const,

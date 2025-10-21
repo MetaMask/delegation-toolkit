@@ -4,7 +4,7 @@ import { expect, describe, it } from 'vitest';
 
 import type { MethodSelector } from '../../src/caveatBuilder/allowedMethodsBuilder';
 import { allowedMethodsBuilder } from '../../src/caveatBuilder/allowedMethodsBuilder';
-import type { DeleGatorEnvironment } from '../../src/types';
+import type { SmartAccountsEnvironment } from '../../src/types';
 import { randomAddress, randomBytes } from '../utils';
 
 describe('allowedMethodsBuilder()', () => {
@@ -12,7 +12,7 @@ describe('allowedMethodsBuilder()', () => {
 
   const environment = {
     caveatEnforcers: { AllowedMethodsEnforcer: randomAddress() },
-  } as any as DeleGatorEnvironment;
+  } as any as SmartAccountsEnvironment;
 
   const buildWithSelectors = (selectors: MethodSelector[]) => {
     const config = { selectors };

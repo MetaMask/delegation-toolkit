@@ -1,6 +1,6 @@
 import { createTimestampTerms } from '@metamask/delegation-core';
 
-import type { Caveat, DeleGatorEnvironment } from '../types';
+import type { Caveat, SmartAccountsEnvironment } from '../types';
 
 export const timestamp = 'timestamp';
 
@@ -20,13 +20,13 @@ export type TimestampBuilderConfig = {
 /**
  * Builds a caveat struct for the TimestampEnforcer.
  *
- * @param environment - The DeleGator environment.
+ * @param environment - The SmartAccountsEnvironment.
  * @param config - The configuration object for the TimestampEnforcer.
  * @returns The Caveat.
  * @throws Error if any of the parameters are invalid.
  */
 export const timestampBuilder = (
-  environment: DeleGatorEnvironment,
+  environment: SmartAccountsEnvironment,
   config: TimestampBuilderConfig,
 ): Caveat => {
   const { afterThreshold, beforeThreshold } = config;

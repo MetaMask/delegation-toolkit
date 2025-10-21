@@ -25,7 +25,7 @@ import {
   ERC20TransferAmountEnforcer,
   NativeTokenTransferAmountEnforcer,
 } from '../src/contracts';
-import type { DeleGatorEnvironment } from '../src/types';
+import type { SmartAccountsEnvironment } from '../src/types';
 
 // Mock the readContract function
 vi.mock('viem/actions', async () => {
@@ -41,7 +41,7 @@ const randomBytes32 = (): Hex => randomBytes(32);
 
 describe('Caveat Contract Methods', () => {
   let publicClient: PublicClient;
-  let mockEnvironment: DeleGatorEnvironment;
+  let mockEnvironment: SmartAccountsEnvironment;
   let caveatClient: CaveatEnforcerClient;
 
   const createParams = (caveat: {
@@ -99,7 +99,7 @@ describe('Caveat Contract Methods', () => {
         NativeTokenTransferAmountEnforcer: randomAddress(),
         // Add other enforcers as needed
       },
-    } as DeleGatorEnvironment;
+    } as SmartAccountsEnvironment;
 
     caveatClient = createCaveatEnforcerClient({
       client: publicClient,
