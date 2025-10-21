@@ -1,20 +1,20 @@
 {
-  "name": "@metamask/delegation-toolkit",
+  "name": "@metamask/smart-accounts-kit",
   "version": "0.13.0",
   "type": "module",
-  "description": "The Delegation Toolkit built on top of Viem - a library for interacting with DeleGator Smart Accounts",
+  "description": "Toolkit for managing and interacting with MetaMask Smart Accounts, built on Viem",
   "license": "(MIT-0 OR Apache-2.0)",
   "keywords": [
     "MetaMask",
     "Ethereum"
   ],
-  "homepage": "https://github.com/metamask/delegation-toolkit/tree/main/packages/delegation-toolkit#readme",
+  "homepage": "https://github.com/metamask/smart-accounts-kit/tree/main/packages/smart-accounts-kit#readme",
   "bugs": {
-    "url": "https://github.com/metamask/delegation-toolkit/issues"
+    "url": "https://github.com/metamask/smart-accounts-kit/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/metamask/delegation-toolkit.git"
+    "url": "https://github.com/metamask/smart-accounts-kit.git"
   },
   "files": [
     "dist/**",
@@ -83,8 +83,8 @@
   "scripts": {
     "build": "yarn typecheck && tsup",
     "typecheck": "tsc --noEmit",
-    "changelog:update": "../../scripts/update-changelog.sh @metamask/delegation-toolkit",
-    "changelog:validate": "../../scripts/validate-changelog.sh @metamask/delegation-toolkit",
+    "changelog:update": "../../scripts/update-changelog.sh @metamask/smart-accounts-kit",
+    "changelog:validate": "../../scripts/validate-changelog.sh @metamask/smart-accounts-kit",
     "clean": "rm -rf dist",
     "test": "vitest run --coverage",
     "test:watch": "vitest watch",

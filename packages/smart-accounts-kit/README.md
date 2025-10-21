@@ -1,6 +1,6 @@
-# MetaMask Delegation Toolkit
+# MetaMask Smart Accounts Kit
 
-The MetaMask Delegation Toolkit is a [Viem](https://viem.sh)-based collection of tools for integrating MetaMask embedded smart account and create frictionless new experiences based on granular permission sharing and trust.
+The MetaMask Smart Accounts Kit is a [Viem](https://viem.sh)-based collection of tools for integrating MetaMask Smart Account and creating frictionless new experiences based on granular permission sharing and trust.
 
 ## Features
 
@@ -19,13 +19,13 @@ The MetaMask Delegation Toolkit is a [Viem](https://viem.sh)-based collection of
 Yarn:
 
 ```sh
-yarn add @metamask/delegation-toolkit
+yarn add @metamask/smart-accounts-kit
 ```
 
 Npm:
 
 ```sh
-npm install @metamask/delegation-toolkit
+npm install @metamask/smart-accounts-kit
 ```
 
 ## Overview
@@ -39,7 +39,7 @@ import { privateKeyToAccount } from 'viem/accounts';
 import {
   Implementation,
   toMetaMaskSmartAccount,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 
 const publicClient = createPublicClient({
   chain,
@@ -61,7 +61,7 @@ const smartAccount = await toMetaMaskSmartAccount({
 
 ---
 
-[Head to our documentation](https://docs.gator.metamask.io) to learn more about the Delegation Toolkit.
+[Head to our documentation](https://docs.gator.metamask.io) to learn more about the MetaMask Smart Accounts Kit.
 
 ## Contributing
 
@@ -71,7 +71,7 @@ If you are interested in contributing, please [see the contribution guide](/CONT
 
 ## Useful Links
 
-- [Delegation Toolkit Quick start](https://docs.metamask.io/delegation-toolkit/get-started/quickstart/)
-- [Delegation Toolkit CLI Quick start](https://docs.metamask.io/delegation-toolkit/development/get-started/cli-quickstart/)
+- [MetaMask Smart Accounts Kit Quick start](https://docs.metamask.io/smart-accounts-kit/get-started/quickstart/)
+- [MetaMask Smart Accounts Kit CLI Quick start](https://docs.metamask.io/smart-accounts-kit/get-started/use-the-cli)
 - [Scaffold ETH extension](https://github.com/metamask/gator-extension)
-- [API reference](https://docs.metamask.io/delegation-toolkit/development/reference/)
+- [API reference](https://docs.metamask.io/smart-accounts-kit/reference/smart-account/)

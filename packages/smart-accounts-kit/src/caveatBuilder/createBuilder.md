@@ -9,8 +9,8 @@ Follow the instructions below exactly. Do not skip steps. Do not change behavior
 ### File Paths (Relative to Project Root)
 
 - Caveat Enforcer contracts: `/lib/delegatable-framework/src/enforcers/`
-- Caveat Builder implementations: `/packages/delegation-toolkit/src/caveatBuilder/`
-- Caveat Builder unit tests: `/packages/delegation-toolkit/test/caveatBuilder/`
+- Caveat Builder implementations: `/packages/smart-accounts-kit/src/caveatBuilder/`
+- Caveat Builder unit tests: `/packages/smart-accounts-kit/test/caveatBuilder/`
 - End-to-end tests: `/packages/delegator-e2e/test/caveats`
 
 ---
@@ -37,7 +37,7 @@ Follow the instructions below exactly. Do not skip steps. Do not change behavior
    → Follow the structure and style used in other Caveat Builder test files.
    → If `terms` has a fixed length, add a test that validates the exact byte length of the encoded `terms`.
 
-5. From the `packages/delegation-toolkit` directory, run the test:
+5. From the `packages/smart-accounts-kit` directory, run the test:
    `yarn test <path-to-your-test-file>`
 
 6. If tests fail:
@@ -45,7 +45,7 @@ Follow the instructions below exactly. Do not skip steps. Do not change behavior
    → Re-run tests until they pass.
 
 7. Register the new Caveat Builder by updating:
-   `/packages/delegation-toolkit/src/caveatBuilder/index.ts`
+   `/packages/smart-accounts-kit/src/caveatBuilder/index.ts`
 
 8. Write an integration test in the `delegator-e2e` project.
    → Match the structure and approach used in existing integration tests.

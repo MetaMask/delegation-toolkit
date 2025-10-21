@@ -102,7 +102,7 @@ export type InfuraBundlerClient<
  * ```typescript
  * import { createPublicClient, http } from 'viem';
  * import { sepolia } from 'viem/chains';
- * import { createInfuraBundlerClient } from '@metamask/delegation-toolkit';
+ * import { createInfuraBundlerClient } from '@metamask/smart-accounts-kit';
  *
  * const publicClient = createPublicClient({
  *   chain: sepolia,
