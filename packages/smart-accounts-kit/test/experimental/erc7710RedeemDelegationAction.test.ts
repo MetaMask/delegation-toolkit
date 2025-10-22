@@ -19,7 +19,6 @@ import { sepolia as chain } from 'viem/chains';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { Implementation } from '../../src/constants';
-import { overrideDeployedEnvironment } from '../../src/smartAccountsEnvironment';
 import {
   createExecution,
   encodeExecutionCalldatas,
@@ -33,6 +32,7 @@ import type {
   SendTransactionWithDelegationParameters,
   SendUserOperationWithDelegationParameters,
 } from '../../src/experimental/erc7710RedeemDelegationAction';
+import { overrideDeployedEnvironment } from '../../src/smartAccountsEnvironment';
 import { toMetaMaskSmartAccount } from '../../src/toMetaMaskSmartAccount';
 import type {
   SmartAccountsEnvironment,

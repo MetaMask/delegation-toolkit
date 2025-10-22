@@ -17,12 +17,12 @@ import type {
   SmartAccount,
 } from 'viem/account-abstraction';
 
-import { getSmartAccountsEnvironment } from '../smartAccountsEnvironment';
 import {
   createExecution,
   encodeExecutionCalldatas,
   ExecutionMode,
 } from '../executions';
+import { getSmartAccountsEnvironment } from '../smartAccountsEnvironment';
 import type { Call } from 'src/types';
 
 export type DelegatedCall = Call &

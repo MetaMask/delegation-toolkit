@@ -18,9 +18,9 @@ import {
   toDelegationStruct,
 } from './delegation';
 import { entryPointGetNonce as _getNonce } from './DelegationFramework/EntryPoint/read';
-import { getSmartAccountsEnvironment } from './smartAccountsEnvironment';
 import { encodeCallsForCaller } from './encodeCalls';
 import { resolveSigner } from './signer';
+import { getSmartAccountsEnvironment } from './smartAccountsEnvironment';
 import type {
   Call,
   ToMetaMaskSmartAccountParameters,
