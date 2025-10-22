@@ -17,7 +17,7 @@ import {
   Implementation,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { createClient, encodeFunctionData, parseEther } from 'viem';
 import { chain } from '../src/config';

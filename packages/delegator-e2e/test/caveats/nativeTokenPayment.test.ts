@@ -5,7 +5,7 @@ import {
   encodePermissionContexts,
   getDelegationHashOffchain,
   createCaveatBuilder,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 import {
   createExecution,
   Implementation,
@@ -14,7 +14,7 @@ import {
   type MetaMaskSmartAccount,
   type Delegation,
   ROOT_AUTHORITY,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import {
   gasPrice,
   sponsoredBundlerClient,

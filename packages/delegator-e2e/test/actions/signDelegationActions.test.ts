@@ -4,8 +4,8 @@ import {
   Implementation,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
-} from '@metamask/delegation-toolkit';
-import { signDelegationActions } from '@metamask/delegation-toolkit/actions';
+} from '@metamask/smart-accounts-kit';
+import { signDelegationActions } from '@metamask/smart-accounts-kit/actions';
 import { createWalletClient, http, isHex } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';

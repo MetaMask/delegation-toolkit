@@ -3,8 +3,8 @@ import {
   Implementation,
   toMetaMaskSmartAccount,
   type MetaMaskSmartAccount,
-} from '@metamask/delegation-toolkit';
-import { signUserOperationActions } from '@metamask/delegation-toolkit/actions';
+} from '@metamask/smart-accounts-kit';
+import { signUserOperationActions } from '@metamask/smart-accounts-kit/actions';
 import { createWalletClient, http, type Hex, type Address, isHex } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';

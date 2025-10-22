@@ -6,16 +6,16 @@ import {
   ExecutionMode,
   ROOT_AUTHORITY,
   createDelegation,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import type {
   MetaMaskSmartAccount,
   Delegation,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import {
   createCaveatBuilder,
   encodeExecutionCalldatas,
   encodePermissionContexts,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 
 import {
   gasPrice,

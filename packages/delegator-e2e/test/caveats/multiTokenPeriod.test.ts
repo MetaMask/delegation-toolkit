@@ -3,7 +3,7 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   createCaveatBuilder,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 import {
   createExecution,
   Implementation,
@@ -12,7 +12,7 @@ import {
   type MetaMaskSmartAccount,
   ROOT_AUTHORITY,
   type Delegation,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import {
   gasPrice,
   sponsoredBundlerClient,

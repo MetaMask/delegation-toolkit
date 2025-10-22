@@ -400,7 +400,7 @@ try {
 
 ## Related Packages
 
-- `@metamask/delegation-toolkit` - Higher-level utilities for delegation management
+- `@metamask/smart-accounts-kit` - Higher-level utilities for delegation management
 - `@metamask/delegation-abis` - Contract ABIs for the delegation framework
 - `@metamask/delegation-deployments` - Contract deployment addresses
 

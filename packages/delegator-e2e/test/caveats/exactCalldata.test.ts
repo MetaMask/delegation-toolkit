@@ -7,12 +7,12 @@ import {
   ROOT_AUTHORITY,
   type Delegation,
   type MetaMaskSmartAccount,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import {
   createCaveatBuilder,
   encodePermissionContexts,
   encodeExecutionCalldatas,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 import {
   gasPrice,
   sponsoredBundlerClient,

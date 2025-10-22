@@ -1,6 +1,6 @@
 import { beforeAll } from 'vitest';
-import type { DeleGatorEnvironment } from '@metamask/delegation-toolkit';
-import { overrideDeployedEnvironment } from '@metamask/delegation-toolkit/utils';
+import type { SmartAccountsEnvironment } from '@metamask/smart-accounts-kit';
+import { overrideDeployedEnvironment } from '@metamask/smart-accounts-kit/utils';
 import { chain } from './config';
 import { readFile } from 'fs/promises';
 
@@ -11,6 +11,6 @@ beforeAll(async () => {
   overrideDeployedEnvironment(
     chain.id,
     '1.3.0',
-    JSON.parse(environment) as DeleGatorEnvironment,
+    JSON.parse(environment) as SmartAccountsEnvironment,
   );
 });

@@ -19,11 +19,11 @@ import {
   createInfuraBundlerClient,
   type InfuraBundlerClient,
   type UserOperationGasPriceResponse,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import {
   encodePermissionContexts,
   encodeExecutionCalldatas,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 import { INFURA_API_KEY, PIMLICO_API_KEY } from '../src/config.js';
 
 /**

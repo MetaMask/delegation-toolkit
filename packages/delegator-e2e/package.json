@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Tests to validate the Delegation Framework end-to-end.",
   "devDependencies": {
-    "@metamask/delegation-toolkit": "workspace:*",
+    "@metamask/smart-accounts-kit": "workspace:*",
     "dotenv": "^16.3.1",
     "permissionless": "^0.1.44",
     "tsx": "4.20.5",
