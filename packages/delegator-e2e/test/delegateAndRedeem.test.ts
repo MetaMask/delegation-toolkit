@@ -20,11 +20,11 @@ import {
   aggregateSignature,
   type MetaMaskSmartAccount,
   type PartialSignature,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import {
   encodePermissionContexts,
   encodeExecutionCalldatas,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import {
   createClient,

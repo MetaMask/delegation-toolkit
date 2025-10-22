@@ -7,7 +7,7 @@ import {
 } from 'viem';
 import { nodeUrl, bundlerUrl, paymasterUrl, chain, deployPk } from './config';
 import { privateKeyToAccount } from 'viem/accounts';
-import { deploySmartAccountsEnvironment } from '@metamask/delegation-toolkit/utils';
+import { deploySmartAccountsEnvironment } from '@metamask/smart-accounts-kit/utils';
 import { ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 import { writeFile } from 'fs/promises';
 

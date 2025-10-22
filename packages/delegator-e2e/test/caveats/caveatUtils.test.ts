@@ -3,7 +3,7 @@ import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
   createCaveatBuilder,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 import {
   createDelegation,
   createExecution,
@@ -14,14 +14,14 @@ import {
   ExecutionMode,
   type MetaMaskSmartAccount,
   ROOT_AUTHORITY,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import {
   getErc20PeriodTransferEnforcerAvailableAmount,
   getErc20StreamingEnforcerAvailableAmount,
   getMultiTokenPeriodEnforcerAvailableAmount,
   getNativeTokenPeriodTransferEnforcerAvailableAmount,
   getNativeTokenStreamingEnforcerAvailableAmount,
-} from '@metamask/delegation-toolkit/actions';
+} from '@metamask/smart-accounts-kit/actions';
 import {
   transport,
   gasPrice,

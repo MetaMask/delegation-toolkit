@@ -4,7 +4,7 @@ import {
   encodePermissionContexts,
   createCaveatBuilder,
   getDelegationHashOffchain,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 import {
   Implementation,
   toMetaMaskSmartAccount,
@@ -13,8 +13,8 @@ import {
   type MetaMaskSmartAccount,
   ROOT_AUTHORITY,
   type Delegation,
-} from '@metamask/delegation-toolkit';
-import { SpecificActionERC20TransferBatchEnforcer } from '@metamask/delegation-toolkit/contracts';
+} from '@metamask/smart-accounts-kit';
+import { SpecificActionERC20TransferBatchEnforcer } from '@metamask/smart-accounts-kit/contracts';
 import {
   encodeFunctionData,
   type Hex,

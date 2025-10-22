@@ -6,16 +6,16 @@ import {
   toMetaMaskSmartAccount,
   ExecutionMode,
   type MetaMaskSmartAccount,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import {
   encodePermissionContexts,
   encodeExecutionCalldatas,
   getDelegationHashOffchain,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 import {
   DeleGatorCore,
   DelegationManager,
-} from '@metamask/delegation-toolkit/contracts';
+} from '@metamask/smart-accounts-kit/contracts';
 import {
   gasPrice,
   sponsoredBundlerClient,

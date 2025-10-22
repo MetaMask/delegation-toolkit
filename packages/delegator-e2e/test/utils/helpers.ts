@@ -1,7 +1,7 @@
 import {
   type MetaMaskSmartAccount,
   Implementation,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 
 import {
   bytesToHex,

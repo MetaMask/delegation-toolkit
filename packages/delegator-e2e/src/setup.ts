@@ -1,6 +1,6 @@
 import { beforeAll } from 'vitest';
-import type { SmartAccountsEnvironment } from '@metamask/delegation-toolkit';
-import { overrideDeployedEnvironment } from '@metamask/delegation-toolkit/utils';
+import type { SmartAccountsEnvironment } from '@metamask/smart-accounts-kit';
+import { overrideDeployedEnvironment } from '@metamask/smart-accounts-kit/utils';
 import { chain } from './config';
 import { readFile } from 'fs/promises';
 

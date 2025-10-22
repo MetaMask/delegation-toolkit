@@ -4,7 +4,7 @@ import {
   encodePermissionContexts,
   createCaveatBuilder,
   getDelegationHashOffchain,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 import {
   createExecution,
   Implementation,
@@ -12,11 +12,11 @@ import {
   ExecutionMode,
   ROOT_AUTHORITY,
   createDelegation,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import type {
   MetaMaskSmartAccount,
   Delegation,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import {
   gasPrice,
   sponsoredBundlerClient,
@@ -34,7 +34,7 @@ import {
 import { encodeFunctionData, parseEther, type Hex } from 'viem';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { NativeTokenTransferAmountEnforcer } from '@metamask/delegation-toolkit/contracts';
+import { NativeTokenTransferAmountEnforcer } from '@metamask/smart-accounts-kit/contracts';
 
 let aliceSmartAccount: MetaMaskSmartAccount;
 let bobSmartAccount: MetaMaskSmartAccount;

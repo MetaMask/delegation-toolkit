@@ -17,8 +17,8 @@ import {
   type MetaMaskSmartAccount,
   createDelegation,
   type Delegation,
-} from '@metamask/delegation-toolkit';
-import { erc7710BundlerActions } from '@metamask/delegation-toolkit/experimental';
+} from '@metamask/smart-accounts-kit';
+import { erc7710BundlerActions } from '@metamask/smart-accounts-kit/experimental';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import {
   createClient,
@@ -27,7 +27,7 @@ import {
   Hex,
   encodeFunctionData,
 } from 'viem';
-import { encodeDelegations } from '@metamask/delegation-toolkit/utils';
+import { encodeDelegations } from '@metamask/smart-accounts-kit/utils';
 import CounterMetadata from '../utils/counter/metadata.json';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 

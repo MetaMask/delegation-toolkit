@@ -640,49 +640,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@metamask/delegation-toolkit@workspace:*, @metamask/delegation-toolkit@workspace:packages/delegation-toolkit":
-  version: 0.0.0-use.local
-  resolution: "@metamask/delegation-toolkit@workspace:packages/delegation-toolkit"
-  dependencies:
-    "@lavamoat/allow-scripts": "npm:^2.3.1"
-    "@lavamoat/preinstall-always-fail": "npm:^1.0.0"
-    "@metamask/7715-permission-types": "npm:^0.3.0"
-    "@metamask/auto-changelog": "npm:^5.0.2"
-    "@metamask/delegation-abis": "npm:^0.11.0"
-    "@metamask/delegation-core": "npm:^0.2.0"
-    "@metamask/delegation-deployments": "npm:^0.12.0"
-    "@metamask/eslint-config": "npm:^12.0.0"
-    "@metamask/eslint-config-nodejs": "npm:^12.0.0"
-    "@metamask/eslint-config-typescript": "npm:^12.0.0"
-    "@types/node": "npm:^20.10.6"
-    "@types/sinon": "npm:^17.0.3"
-    "@typescript-eslint/eslint-plugin": "npm:^5.42.1"
-    "@typescript-eslint/parser": "npm:^5.42.1"
-    "@vitest/coverage-v8": "npm:3.2.4"
-    buffer: "npm:^6.0.3"
-    dotenv: "npm:^16.3.1"
-    eslint: "npm:^8.56.0"
-    import: "npm:^0.0.6"
-    prettier: "npm:^3.3.3"
-    sinon: "npm:^18.0.0"
-    ts-node: "npm:^10.9.2"
-    tsconfig-paths: "npm:^4.2.0"
-    tsup: "npm:^8.5.0"
-    tsx: "npm:^4.20.5"
-    typescript: "npm:5.0.4"
-    viem: "npm:2.31.4"
-    vitest: "npm:^3.2.4"
-    webauthn-p256: "npm:^0.0.10"
-  peerDependencies:
-    viem: ^2.31.4
-  languageName: unknown
-  linkType: soft
-
 "@metamask/delegator-e2e@workspace:packages/delegator-e2e":
   version: 0.0.0-use.local
   resolution: "@metamask/delegator-e2e@workspace:packages/delegator-e2e"
   dependencies:
-    "@metamask/delegation-toolkit": "workspace:*"
+    "@metamask/smart-accounts-kit": "workspace:*"
     dotenv: "npm:^16.3.1"
     permissionless: "npm:^0.1.44"
     tsx: "npm:4.20.5"
@@ -730,6 +692,44 @@ __metadata:
   checksum: 10/6edbf4c2fce34ba8ccd873938501744d69cd13c02047655df596ab551f1aaa390513b8df855145d04c7fed6b5d91b9cfd0ce96ee082abf838292df761f50c520
   languageName: node
   linkType: hard
+
+"@metamask/smart-accounts-kit@workspace:*, @metamask/smart-accounts-kit@workspace:packages/smart-accounts-kit":
+  version: 0.0.0-use.local
+  resolution: "@metamask/smart-accounts-kit@workspace:packages/smart-accounts-kit"
+  dependencies:
+    "@lavamoat/allow-scripts": "npm:^2.3.1"
+    "@lavamoat/preinstall-always-fail": "npm:^1.0.0"
+    "@metamask/7715-permission-types": "npm:^0.3.0"
+    "@metamask/auto-changelog": "npm:^5.0.2"
+    "@metamask/delegation-abis": "npm:^0.11.0"
+    "@metamask/delegation-core": "npm:^0.2.0"
+    "@metamask/delegation-deployments": "npm:^0.12.0"
+    "@metamask/eslint-config": "npm:^12.0.0"
+    "@metamask/eslint-config-nodejs": "npm:^12.0.0"
+    "@metamask/eslint-config-typescript": "npm:^12.0.0"
+    "@types/node": "npm:^20.10.6"
+    "@types/sinon": "npm:^17.0.3"
+    "@typescript-eslint/eslint-plugin": "npm:^5.42.1"
+    "@typescript-eslint/parser": "npm:^5.42.1"
+    "@vitest/coverage-v8": "npm:3.2.4"
+    buffer: "npm:^6.0.3"
+    dotenv: "npm:^16.3.1"
+    eslint: "npm:^8.56.0"
+    import: "npm:^0.0.6"
+    prettier: "npm:^3.3.3"
+    sinon: "npm:^18.0.0"
+    ts-node: "npm:^10.9.2"
+    tsconfig-paths: "npm:^4.2.0"
+    tsup: "npm:^8.5.0"
+    tsx: "npm:^4.20.5"
+    typescript: "npm:5.0.4"
+    viem: "npm:2.31.4"
+    vitest: "npm:^3.2.4"
+    webauthn-p256: "npm:^0.0.10"
+  peerDependencies:
+    viem: ^2.31.4
+  languageName: unknown
+  linkType: soft
 
 "@metamask/superstruct@npm:^3.1.0":
   version: 3.2.1
