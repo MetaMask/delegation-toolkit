@@ -16,8 +16,8 @@ import {
   signDelegation,
   type MetaMaskSmartAccount,
   type Delegation,
-} from '@metamask/delegation-toolkit';
-import { erc7710WalletActions } from '@metamask/delegation-toolkit/experimental';
+} from '@metamask/smart-accounts-kit';
+import { erc7710WalletActions } from '@metamask/smart-accounts-kit/experimental';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import type { Hex } from 'viem';
 import {
@@ -31,7 +31,7 @@ import {
 import {
   encodeDelegations,
   getDelegationHashOffchain,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 
 import CounterMetadata from '../utils/counter/metadata.json';
 

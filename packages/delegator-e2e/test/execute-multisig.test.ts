@@ -20,7 +20,7 @@ import {
   signUserOperation,
   type MetaMaskSmartAccount,
   type PartialSignature,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
 import { Account, encodeFunctionData, parseEther, type Hex } from 'viem';

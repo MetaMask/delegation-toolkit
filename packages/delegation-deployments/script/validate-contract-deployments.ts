@@ -8,7 +8,7 @@ import { compareVersions } from 'compare-versions';
   This test validates that the DeleGator contracts are deployed on the specified chains, 
   as specified in the @metamask-private/delegation-deployments package.
 
-  It does this by getting the DeleGatorEnvironment for each chain and then ensuring that 
+  It does this by getting the SmartAccountsEnvironment for each chain and then ensuring that 
   code is found at the expected address for each contract.
 */
 

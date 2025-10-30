@@ -6,16 +6,16 @@ import {
   toMetaMaskSmartAccount,
   ExecutionMode,
   type MetaMaskSmartAccount,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import {
   encodePermissionContexts,
   encodeExecutionCalldatas,
   getDelegationHashOffchain,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 import {
   DeleGatorCore,
   DelegationManager,
-} from '@metamask/delegation-toolkit/contracts';
+} from '@metamask/smart-accounts-kit/contracts';
 import {
   gasPrice,
   sponsoredBundlerClient,
@@ -138,7 +138,7 @@ test('delegation management lifecycle: create, disable, enable, and check status
   const countAfterFirstUse = await aliceCounter.read.count();
   expect(countAfterFirstUse).toEqual(1n);
 
-  // Step 3: Alice disables the delegation using delegation-toolkit
+  // Step 3: Alice disables the delegation using smart-accounts-kit
   const disableData = DeleGatorCore.encode.disableDelegation({
     delegation,
   });
@@ -161,7 +161,7 @@ test('delegation management lifecycle: create, disable, enable, and check status
 
   expectUserOperationToSucceed(receipt);
 
-  // Step 4: Verify the delegation is disabled using delegation-toolkit
+  // Step 4: Verify the delegation is disabled using smart-accounts-kit
   const isDisabled = await DelegationManager.read.disabledDelegations({
     client: publicClient,
     contractAddress: aliceSmartAccount.environment.DelegationManager,
@@ -189,7 +189,7 @@ test('delegation management lifecycle: create, disable, enable, and check status
   const countAfterDisable = await aliceCounter.read.count();
   expect(countAfterDisable).toEqual(1n);
 
-  // Step 6: Alice re-enables the delegation using delegation-toolkit
+  // Step 6: Alice re-enables the delegation using smart-accounts-kit
   const enableData = DeleGatorCore.encode.enableDelegation({
     delegation,
   });
@@ -212,7 +212,7 @@ test('delegation management lifecycle: create, disable, enable, and check status
 
   expectUserOperationToSucceed(receipt);
 
-  // Step 7: Verify the delegation is no longer disabled using delegation-toolkit
+  // Step 7: Verify the delegation is no longer disabled using smart-accounts-kit
   const isStillDisabled = await DelegationManager.read.disabledDelegations({
     client: publicClient,
     contractAddress: aliceSmartAccount.environment.DelegationManager,

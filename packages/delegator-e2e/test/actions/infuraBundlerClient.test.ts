@@ -10,11 +10,11 @@ import {
   createInfuraBundlerClient,
   type MetaMaskSmartAccount,
   type InfuraBundlerClient,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import {
   encodePermissionContexts,
   encodeExecutionCalldatas,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 import { publicClient, gasPrice, deploySmartAccount } from '../utils/helpers';
 import { expectUserOperationToSucceed } from '../utils/assertions';
 import { bundlerUrl, paymasterUrl } from '../../src/config';

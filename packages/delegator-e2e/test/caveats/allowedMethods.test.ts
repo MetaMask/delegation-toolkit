@@ -2,7 +2,7 @@ import { beforeEach, test, expect } from 'vitest';
 import {
   encodeExecutionCalldatas,
   encodePermissionContexts,
-} from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit/utils';
 import {
   createExecution,
   Implementation,
@@ -10,12 +10,12 @@ import {
   ExecutionMode,
   ROOT_AUTHORITY,
   createDelegation,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import type {
   MetaMaskSmartAccount,
   Delegation,
-} from '@metamask/delegation-toolkit';
-import { createCaveatBuilder } from '@metamask/delegation-toolkit/utils';
+} from '@metamask/smart-accounts-kit';
+import { createCaveatBuilder } from '@metamask/smart-accounts-kit/utils';
 import {
   gasPrice,
   sponsoredBundlerClient,

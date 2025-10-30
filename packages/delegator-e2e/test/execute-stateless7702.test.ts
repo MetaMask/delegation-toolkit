@@ -14,8 +14,8 @@ import {
   Implementation,
   toMetaMaskSmartAccount,
   MetaMaskSmartAccount,
-} from '@metamask/delegation-toolkit';
-import { isValid7702Implementation } from '@metamask/delegation-toolkit/actions';
+} from '@metamask/smart-accounts-kit';
+import { isValid7702Implementation } from '@metamask/smart-accounts-kit/actions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { createClient, encodeFunctionData, parseEther } from 'viem';
 import { chain } from '../src/config';

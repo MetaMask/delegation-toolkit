@@ -4,7 +4,7 @@ A collection of ABIs for the [Delegation Framework](https://github.com/metamask/
 
 ## Installation
 
-This package is normally installed as part of the Delegation Toolkit (@metamask/delegation-toolkit) which is part of this monorepo.
+This package is normally installed as part of the Delegation Toolkit (@metamask/smart-accounts-kit) which is part of this monorepo.
 
 In order to install this package standalone:
 

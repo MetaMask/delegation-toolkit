@@ -8,13 +8,13 @@ import {
   type MetaMaskSmartAccount,
   ROOT_AUTHORITY,
   type Delegation,
-} from '@metamask/delegation-toolkit';
+} from '@metamask/smart-accounts-kit';
 import {
   createCaveatBuilder,
   encodeExecutionCalldatas,
   encodePermissionContexts,
-} from '@metamask/delegation-toolkit/utils';
-import { NonceEnforcer as NonceEnforcerUtils } from '@metamask/delegation-toolkit/contracts';
+} from '@metamask/smart-accounts-kit/utils';
+import { NonceEnforcer as NonceEnforcerUtils } from '@metamask/smart-accounts-kit/contracts';
 import {
   gasPrice,
   sponsoredBundlerClient,
