@@ -17,9 +17,8 @@ import {
   type MetaMaskSmartAccount,
   type Delegation,
 } from '@metamask/smart-accounts-kit';
-import { erc7710WalletActions } from '@metamask/smart-accounts-kit/experimental';
+import { erc7710WalletActions } from '@metamask/smart-accounts-kit/actions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import type { Hex } from 'viem';
 import {
   Address,
   createWalletClient,

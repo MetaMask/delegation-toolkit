@@ -12,9 +12,9 @@ import { createClient, custom } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { erc7715ProviderActions } from '../../src/experimental';
-import type { RequestExecutionPermissionsParameters } from '../../src/experimental/erc7715RequestExecutionPermissionsAction';
-import { erc7715RequestExecutionPermissionsAction } from '../../src/experimental/erc7715RequestExecutionPermissionsAction';
+import { erc7715ProviderActions } from '../../src/actions';
+import type { RequestExecutionPermissionsParameters } from '../../src/actions/erc7715RequestExecutionPermissionsAction';
+import { erc7715RequestExecutionPermissionsAction } from '../../src/actions/erc7715RequestExecutionPermissionsAction';
 
 describe('erc7715RequestExecutionPermissionsAction', () => {
   let alice: Account;

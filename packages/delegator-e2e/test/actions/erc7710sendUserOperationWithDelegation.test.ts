@@ -18,10 +18,10 @@ import {
   createDelegation,
   type Delegation,
 } from '@metamask/smart-accounts-kit';
-import { erc7710BundlerActions } from '@metamask/smart-accounts-kit/experimental';
+import { erc7710BundlerActions } from '@metamask/smart-accounts-kit/actions';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import {
-  createClient,
+  createPublicClient,
   Address,
   getContract,
   Hex,
@@ -43,7 +43,7 @@ beforeEach(async () => {
   const alice = privateKeyToAccount(generatePrivateKey());
   const bob = privateKeyToAccount(generatePrivateKey());
 
-  const client = createClient({ transport, chain });
+  const client = createPublicClient({ transport, chain });
 
   aliceSmartAccount = await toMetaMaskSmartAccount({
     client,

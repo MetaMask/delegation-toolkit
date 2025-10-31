@@ -24,14 +24,11 @@ import {
   encodeExecutionCalldatas,
   ExecutionMode,
 } from '../../src/executions';
-import {
-  erc7710BundlerActions,
-  erc7710WalletActions,
-} from '../../src/experimental';
+import { erc7710BundlerActions, erc7710WalletActions } from '../../src/actions';
 import type {
   SendTransactionWithDelegationParameters,
   SendUserOperationWithDelegationParameters,
-} from '../../src/experimental/erc7710RedeemDelegationAction';
+} from '../../src/actions/erc7710RedeemDelegationAction';
 import { overrideDeployedEnvironment } from '../../src/smartAccountsEnvironment';
 import { toMetaMaskSmartAccount } from '../../src/toMetaMaskSmartAccount';
 import type {

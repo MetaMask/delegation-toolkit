@@ -11,7 +11,7 @@ import {
   createExecution,
   encodeExecutionCalldatas,
 } from './executions';
-import type { DelegatedCall } from './experimental/erc7710RedeemDelegationAction';
+import type { DelegatedCall } from './actions/erc7710RedeemDelegationAction';
 import type { Call } from './types';
 
 /**
