@@ -47,14 +47,14 @@ yarn e2etest
 
 # Contributing
 
-In order to make changes to the Delegation Toolkit, ensure that you:
+In order to make changes to the Smart Accounts Kit, ensure that you:
 
 - Create a fork of the SDK, and name your branch in a descriptive way - ideally follow the [conventional commits](https://www.conventionalcommits.org) naming standard.
 - Create a pull request that describes the changes you are making and follow the [pull request guidelines](https://github.com/MetaMask/contributor-docs/blob/main/docs/pull-requests.md).
 - Thoroughly test your code, including unit tests, and (where apprioriate) end-to-end integration tests.
 - Follow [secure coding standards](https://github.com/MetaMask/contributor-docs/blob/main/docs/secure-coding-guidelines.md).
 
-To learn more about contributing to the Delegation Toolkit, see the MetaMask [contributing guidelines](https://github.com/MetaMask/contributor-docs).
+To learn more about contributing to the Smart Accounts Kit, see the MetaMask [contributing guidelines](https://github.com/MetaMask/contributor-docs).
 
 ## Delegation Framework contracts
 

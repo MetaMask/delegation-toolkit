@@ -4,7 +4,7 @@ Package with types as defined in [ERC-7715](https://eip.tools/eip/7715). This pa
 
 ## Installation
 
-This package is normally installed as part of the Delegation Toolkit (@metamask/smart-accounts-kit) which is part of this monorepo.
+This package is normally installed as part of the Smart Accounts Kit (@metamask/smart-accounts-kit) which is part of this monorepo.
 
 In order to install this package standalone:
 

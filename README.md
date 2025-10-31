@@ -8,7 +8,7 @@ This monorepo consists of a suite of tools to enable developers to build using t
   - `/delegation-abis` has  collection of ABIs corresponding to a specific version of the [Delegation Framework](https://github.com/metamask/delegation-framework).
   - `/delegation-deployments` contains deployments for different versions of the [Delegation Framework](https://github.com/metamask/delegation-framework).
   - `/smart-accounts-kit` has utilities for creating a [DeleGator SCA](https://github.com/MetaMask/delegation-framework/blob/main/documents/DeleGatorCore.md#metamasks-delegatorcore) know as MetaMask smart account, setting up delegations, and redeeming them.
-  - `/delegator-e2e` has end-to-end tests for the Delegation Toolkit.
+  - `/delegator-e2e` has end-to-end tests for the Smart Accounts Kit.
 - `./shared` contains basic shared resources for configuring and testing the packages.
 
 ## Getting Started

@@ -1,6 +1,6 @@
 # DeleGator e2e
 
-End-to-end integration tests for the Delegation Toolkit. It uses local chain, bundler and paymaster made available via [Pimlico's local testing docker compose](https://docs.pimlico.io/permissionless/how-to/local-testing).
+End-to-end integration tests for the Smart Accounts Kit. It uses local chain, bundler and paymaster made available via [Pimlico's local testing docker compose](https://docs.pimlico.io/permissionless/how-to/local-testing).
 
 ## Requirements
 
